@@ -9,28 +9,60 @@
               <v-card-title primary-title>
                 <v-layout justify-center>
                   <h3 class="headline">
-                    Balance:
-                    <v-chip color="green" text-color="white" label>
-                      {{ money | dollars }}
-                    </v-chip>
+                    Audio Classification
                   </h3>
-
                 </v-layout>
               </v-card-title>
               <!-- Current Task -->
               <v-window v-model='step'>
-                <v-window-item v-for='item, index in items' :value='index+1'>
+                <v-window-item v-for='item, index in items'
+                :key='item.file'
+                :value='index+1'>
                   <v-card-text>
-                    <v-audio :file='item.file'></v-audio>
-                    <v-subheader>Classification</v-subheader>
-                    <v-text-field solo label="label" v-model="item.classification"></v-text-field>
-                    <v-subheader>Confidence Bet</v-subheader>
-                    <v-slider thumb-label
-                    v-model="item.betval">
-                      <span slot='append'>
-                        {{ bet(item.betval) | dollars }}
-                      </span>
-                    </v-slider>
+                    <v-container grid-list-lg>
+                      <v-layout column>
+                        <!-- Audio -->
+                        <v-flex>
+                          <v-audio :file='item.file' :ended='() => {item.audio_step=true}'></v-audio>
+                        </v-flex>
+                        <!-- Classification -->
+                        <v-flex v-if='item.audio_step'>
+                          <v-card>
+                            <v-card-title>
+                              <span>Does this contain a(n) {{item.question}}</span>
+                            </v-card-title>
+                            <v-divider></v-divider>
+                            <v-card-actions>
+                              <v-radio-group row
+                              v-model='item.classification'
+                              @change='item.class_step=true'>
+                                <v-radio label="Yes" :value="true"></v-radio>
+                                <v-radio label="No" :value="false"></v-radio>
+                              </v-radio-group>
+                            </v-card-actions>
+                          </v-card>
+                        </v-flex>
+                        <!-- Bet -->
+                        <v-flex v-if='item.class_step'>
+                          <v-card>
+                            <v-card-title>
+                              Confidence Bet
+                            </v-card-title>
+                            <v-divider></v-divider>
+                            <v-card-actions>
+                              <v-slider thumb-label
+                              :color='item.bet_step? "" : "grey"'
+                              v-model="item.betval"
+                              @change='item.bet_step=true'>
+                                <span slot='append'>
+                                  {{ item.betval }}%
+                                </span>
+                              </v-slider>
+                            </v-card-actions>
+                          </v-card>
+                        </v-flex>
+                      </v-layout>
+                    </v-container>
                   </v-card-text>
                 </v-window-item>
               </v-window>
@@ -39,8 +71,7 @@
                 <v-btn
                   :disabled="step === 1"
                   flat
-                  @click="step--"
-                >
+                  @click="step--">
                   Back
                 </v-btn>
                 <v-spacer></v-spacer>
@@ -49,19 +80,18 @@
                 <v-btn v-if="step !== 2"
                   color="primary"
                   depressed
-                  @click="step++"
-                >
+                  :disabled='!items[step-1].bet_step'
+                  @click="step++">
                   Next
                 </v-btn>
                 <v-btn v-else
                   color="success"
                   depressed
-                  @click="submit()"
-                >
+                  :disabled='!items[step-1].bet_step'
+                  @click="submit()">
                   Submit
                 </v-btn>
               </v-card-actions>
-
             </v-card>
           </v-form>
         </v-flex>
@@ -81,17 +111,24 @@ export default {
   data () {
     return {
       step: 1,
-      money: 57,
       items: [
         {
-          betval: 10,
-          file: '',
-          classification: '',
+          audio_step: false,
+          class_step: false,
+          bet_step: false,
+          betval: 50,
+          file: 'https://drive.google.com/uc?export=download&id=1NEmYdc_P49JfULEEk1lbMJaQTxNLoYzc',
+          question: 'kangaroo',
+          classification: null,
         },
         {
-          betval: 38,
-          file: '',
-          classification: '',
+          audio_step: false,
+          class_step: false,
+          bet_step: false,
+          betval: 50,
+          file: 'https://drive.google.com/uc?export=download&id=1NEmYdc_P49JfULEEk1lbMJaQTxNLoYzc',
+          question: 'train',
+          classification: null,
         },
       ],
     }
