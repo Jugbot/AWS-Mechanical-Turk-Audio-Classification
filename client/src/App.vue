@@ -26,7 +26,7 @@
                           <v-audio :file='item.file' :ended='() => {item.audio_step=true}'></v-audio>
                         </v-flex>
                         <!-- Classification -->
-                        <v-flex v-if='item.audio_step'>
+                        <v-flex v-show='item.audio_step'>
                           <v-card>
                             <v-card-title>
                               <span>Does this contain a(n) {{item.question}}</span>
@@ -43,24 +43,61 @@
                           </v-card>
                         </v-flex>
                         <!-- Bet -->
-                        <v-flex v-if='item.class_step'>
-                          <v-card>
-                            <v-card-title>
-                              Confidence
-                            </v-card-title>
-                            <v-divider></v-divider>
-                            <v-card-actions>
-                              <v-slider thumb-label :step='10'
-                              :color='item.bet_step? "" : "grey"'
-                              v-model="item.confidence"
-                              @change='item.bet_step=true'>
-                                <span slot='append'>
-                                  {{ item.confidence }}%
-                                </span>
-                              </v-slider>
-                            </v-card-actions>
-                          </v-card>
-                        </v-flex>
+                        <template v-if='task_type==1'>
+                          <v-flex v-show='item.class_step'>
+                            <v-card>
+                              <v-card-title>
+                                Confidence
+                              </v-card-title>
+                              <v-divider></v-divider>
+                              <v-card-actions>
+                                <v-slider thumb-label :step='10'
+                                :color='item.bet_step? "" : "grey"'
+                                v-model="item.confidence"
+                                @change='item.bet_step=true'>
+                                  <span slot='append'>
+                                    {{ item.confidence }}%
+                                  </span>
+                                </v-slider>
+                              </v-card-actions>
+                            </v-card>
+                          </v-flex>
+                        </template>
+                        <template v-if='task_type==2'>
+                          <v-flex v-show='item.class_step'>
+                            <v-card>
+                              <v-card-title>
+                                Confidence
+                              </v-card-title>
+                              <v-card-text>
+                                If you could win money using a lottery or
+                                the correctness of your answer,
+                                which would you chose?
+                              </v-card-text>
+                              <v-divider></v-divider>
+                              <v-card-actions>
+                                <template v-if='!item.bet_step || item.confidence < 100'>
+                                  <v-spacer></v-spacer>
+                                  <v-btn color="primary"
+                                  :disabled='item.bet_step'
+                                  @click='item.bet_step=true'>
+                                    {{item.confidence}}:{{100-item.confidence}} lottery
+                                  </v-btn>
+                                </template>
+                                  <v-spacer></v-spacer>
+                                <template v-if='!item.bet_step || item.confidence == 100'>
+                                  <v-btn color="primary"
+                                  :disabled='item.bet_step'
+                                  @click='item.confidence+=10; item.bet_step=(item.confidence == 100)'>
+                                    your answer
+                                  </v-btn>
+                                  <v-spacer></v-spacer>
+                                </template>
+                              </v-card-actions>
+                            </v-card>
+                          </v-flex>
+                        </template>
+                        <!--  -->
                       </v-layout>
                     </v-container>
                   </v-card-text>
