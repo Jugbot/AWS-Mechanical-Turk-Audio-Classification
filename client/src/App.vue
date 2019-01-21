@@ -192,7 +192,7 @@ export default {
       let formdata = new FormData()
       let request = new XMLHttpRequest();
       let url = this.args['turkSubmitTo'] + '/mturk/externalSubmit'
-      // formdata.append('user-input', JSON.stringify(data))
+      formdata.append('userInput', JSON.stringify("test"))
       formdata.append('assignmentId', JSON.stringify(this.args['assignmentId']))
       request.open('POST', url);
       request.send(formdata);
