@@ -44,10 +44,10 @@ items = [
         'question': 'some_type',
         'file': 'soundscape_train_bimodal0.wav'
     },
-    {
-        'question': 'another',
-        'file': 'soundscape_train_bimodal0.wav'
-    }
+    # {
+    #     'question': 'another',
+    #     'file': 'soundscape_train_bimodal0.wav'
+    # }
 ]
 task_type = 1
 from json import dumps
