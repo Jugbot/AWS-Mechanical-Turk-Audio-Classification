@@ -147,6 +147,7 @@ export default {
   },
   data () {
     return {
+      args: null,
       task_type: 2,
       step: 1,
       items: [
@@ -155,9 +156,9 @@ export default {
           class_step: false,
           bet_step: false,
           confidence: 50,
+          classification: null,
           file: 'https://drive.google.com/uc?export=download&id=1NEmYdc_P49JfULEEk1lbMJaQTxNLoYzc',
           question: 'kangaroo',
-          classification: null,
         },
       ],
     }
@@ -170,8 +171,7 @@ export default {
       // <input type="hidden" id="workerId" value="{{ name.worker_id }}" name="workerId"/>
       // <input type="hidden" id="hitId" value="{{ name.hit_id }}" name="hitId"/>
       // </form>
-      console.log(window.mturksession)
-      let session = window.mturksession
+      console.log("args: " + this.args)
       let data = []
       for (let item in this.items) {
         data.push({
@@ -183,19 +183,22 @@ export default {
       }
       let formdata = new FormData()
       formdata.append('user-input', JSON.stringify(data))
-      formdata.append('assignmentId', JSON.stringify(session.assignment_id))
-      formdata.append('workerId', JSON.stringify(session.worker_id))
-      formdata.append('hitId', JSON.stringify(session.hit_id))
-      axios.post(session.amazon_host, formdata)
+      formdata.append('assignmentId', JSON.stringify(this.args['assignment_id']))
+      formdata.append('workerId', JSON.stringify(this.args['worker_id']))
+      formdata.append('hitId', JSON.stringify(this.args['hit_id']))
+      axios.post(this.args['amazon_host'], formdata)
+    },
+    getUrlVars() {
+      var vars = {};
+      window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, (m,key,value) => {
+          vars[key] = value;
+      });
+      return vars;
     }
   },
-  filters: {
-    dollars: function (value) {
-      if (!value) value = 0
-      //two decimal places
-      value = Number.parseFloat(value).toFixed(2).toString()
-      return '$'+value
-    }
+  created() {
+    this.args = this.getUrlVars()
+    this.task_type = parseInt(this.args['task_type'], 10)
   }
 }
 </script>

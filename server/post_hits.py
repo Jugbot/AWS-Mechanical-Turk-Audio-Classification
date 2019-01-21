@@ -8,13 +8,15 @@ environments = {
             "endpoint": "https://mturk-requester.us-east-1.amazonaws.com",
             "preview": "https://www.mturk.com/mturk/preview",
             "manage": "https://requester.mturk.com/mturk/manageHITs",
-            "reward": "0.00"
+            "reward": "0.00",
+            "survey_base_url": "https://localhost/?"
         },
         "sandbox": {
             "endpoint": "https://mturk-requester-sandbox.us-east-1.amazonaws.com",
             "preview": "https://workersandbox.mturk.com/mturk/preview",
             "manage": "https://requestersandbox.mturk.com/mturk/manageHITs",
-            "reward": "0.11"
+            "reward": "0.11",
+            "survey_base_url": "https://jugbot.github.io/AWS-Mechanical-Turk-Audio-Classification/?"
         },
 }
 mturk_environment = environments["live"] if create_hits_in_live else environments["sandbox"]
@@ -34,12 +36,20 @@ user_balance = client.get_account_balance()
 # In Sandbox this always returns $10,000. In live, it will be your acutal balance.
 print("Your account balance is {}".format(user_balance['AvailableBalance']))
 
-
-
+# data to pass via url header
+questions = ['some_type', 'another']
+files = ['soundscape_train_bimodal0.wav', 'soundscape_train_bimodal0.wav']
+task_type = 1
 
 # The question we ask the workers is contained in this file.
-question_sample = open("question.xml", "r").read()
-
+question_sample = open("external_question.xml", "r").read()
+# Add extra arguments
+survey_url = mturk_environment["survey_base_url"]
+from urllib.parse import urlencode
+survey_url += "task_type={}&questions={}&files={}".format(task_type, ','.join(questions), ','.join(files))
+print(survey_url)
+question_sample.format(survey_url)
+exit()
 # Example of using qualification to restrict responses to Workers who have had
 # at least 80% of their assignments approved. See:
 # http://docs.aws.amazon.com/AWSMechTurk/latest/AWSMturkAPI/ApiReference_QualificationRequirementDataStructureArticle.html#ApiReference_QualificationType-IDs
@@ -52,7 +62,7 @@ worker_requirements = [{
 
 # Create the HIT
 response = client.create_hit(
-    MaxAssignments=3,
+    MaxAssignments=9,
     LifetimeInSeconds=600,
     AssignmentDurationInSeconds=600,
     Reward=mturk_environment['reward'],
