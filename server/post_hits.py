@@ -77,7 +77,7 @@ worker_requirements = [{
 # Create the HIT
 response = client.create_hit(
     MaxAssignments=9,
-    LifetimeInSeconds=600,
+    LifetimeInSeconds=6000,
     AssignmentDurationInSeconds=600,
     Reward=mturk_environment['reward'],
     Title='TEST',

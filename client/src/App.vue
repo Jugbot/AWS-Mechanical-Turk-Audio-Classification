@@ -10,11 +10,9 @@
             <v-card>
               <v-card-title class="headline">Instructions</v-card-title>
               <v-card-text>
-                Listen to short audio clips and determine if a sound is present.
-
-                You will be asked to give a confidence on your answer.
-
-                Your answer may determine bonus payout.
+                <p>Listen to short audio clips and determine if a sound is present.</p>
+                <p>You will be asked to give a confidence on your answer.</p>
+                <p>Your answer may determine bonus payout.</p>
               </v-card-text>
             </v-card>
           </v-dialog>
@@ -213,20 +211,20 @@ export default {
     }
   },
   mounted() {
-    this.args = this.getUrlVars()
-    if (!('items', 'task_type' in this.args)) {
+    let args = this.getUrlVars()
+    if (!('items', 'task_type' in args)) {
       console.log("Improper url parameters provided.")
-      console.log(this.args)
+      console.log(args)
       return
     }
-    if (!('assignment_id', 'worker_id', 'hit_id', 'amazon_host' in this.args)) {
+    if (!('assignment_id', 'worker_id', 'hit_id', 'amazon_host' in args)) {
       console.log("Amazon params not provided, read-only mode.")
-      console.log(this.args)
+      console.log(args)
     }
 
     // defaults
-    for (let i = 0; i < this.args['items'].length; i++) {
-      this.args['items'][i] = Object.assign(this.args['items'][i], {
+    for (let i = 0; i < args['items'].length; i++) {
+      args['items'][i] = Object.assign(args['items'][i], {
           'audio_step': false,
           'class_step': false,
           'bet_step': false,
@@ -234,8 +232,9 @@ export default {
           'classification': null,
       })
     }
-    this.task_type = parseInt(this.args['task_type'], 10)
-    this.items = this.args['items']
+    this.args = args
+    this.task_type = parseInt(args['task_type'], 10)
+    this.items = args['items']
   }
 }
 </script>
