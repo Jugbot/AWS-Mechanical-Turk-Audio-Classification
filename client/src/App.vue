@@ -180,12 +180,6 @@ export default {
   },
   methods: {
     submit() {
-      // <form id = "endForm" action="{{ name.amazon_host }}" method="POST">
-      // <input type="hidden" id="user-input" value="" name="user-input"/>
-      // <input type="hidden" id="assignmentId" value="{{ name.assignment_id }}" name="assignmentId"/>
-      // <input type="hidden" id="workerId" value="{{ name.worker_id }}" name="workerId"/>
-      // <input type="hidden" id="hitId" value="{{ name.hit_id }}" name="hitId"/>
-      // </form>
       let data = []
       for (let item in this.items) {
         data.push({
@@ -196,9 +190,13 @@ export default {
         })
       }
       let formdata = new FormData()
-      formdata.append('user-input', JSON.stringify(data))
+      let request = new XMLHttpRequest();
+      let url = this.args['turkSubmitTo'] + '/mturk/externalSubmit'
+      // formdata.append('user-input', JSON.stringify(data))
       formdata.append('assignmentId', JSON.stringify(this.args['assignmentId']))
-      axios.post(this.args['turkSubmitTo'] + '/mturk/externalSubmit', formdata)
+      request.open('POST', url);
+      request.send(formdata);
+      // axios.post(url, formdata)
     },
     getUrlVars() {
       var vars = {};
