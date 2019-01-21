@@ -207,7 +207,7 @@ export default {
     getUrlVars() {
       var vars = {};
       decodeURIComponent(window.location.href.replace(/\+/g, '%20')).replace(/[?&]+([^=&]+)=([^&]*)/gi, (m,key,value) => {
-          vars[key] = JSON.parse(value);
+          vars[key] = key=='items' || key=='task_type' ? JSON.parse(value) : value;
       });
       return vars;
     }
