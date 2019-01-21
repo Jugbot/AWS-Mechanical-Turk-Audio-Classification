@@ -197,10 +197,10 @@ export default {
       }
       let formdata = new FormData()
       formdata.append('user-input', JSON.stringify(data))
-      formdata.append('assignmentId', JSON.stringify(this.args['assignment_id']))
-      formdata.append('workerId', JSON.stringify(this.args['worker_id']))
-      formdata.append('hitId', JSON.stringify(this.args['hit_id']))
-      axios.post(this.args['amazon_host'], formdata)
+      formdata.append('assignmentId', JSON.stringify(this.args['assignmentId']))
+      formdata.append('workerId', JSON.stringify(this.args['workerId']))
+      formdata.append('hitId', JSON.stringify(this.args['hitId']))
+      axios.post(this.args['turkSubmitTo'], formdata)
     },
     getUrlVars() {
       var vars = {};
@@ -217,7 +217,7 @@ export default {
       console.log(args)
       return
     }
-    if (!('assignment_id', 'worker_id', 'hit_id', 'amazon_host' in args)) {
+    if (!('assignmentId', 'workerId', 'hitId', 'turkSubmitTo' in args)) {
       console.log("Amazon params not provided, read-only mode.")
       console.log(args)
     }
