@@ -37,19 +37,33 @@ user_balance = client.get_account_balance()
 print("Your account balance is {}".format(user_balance['AvailableBalance']))
 
 # data to pass via url header
-questions = ['some_type', 'another']
-files = ['soundscape_train_bimodal0.wav', 'soundscape_train_bimodal0.wav']
+# questions = ['some_type', 'another']
+# files = ['soundscape_train_bimodal0.wav', 'soundscape_train_bimodal0.wav']
+items = [
+    {
+        'question': 'some_type',
+        'file': 'soundscape_train_bimodal0.wav'
+    },
+    {
+        'question': 'another',
+        'file': 'soundscape_train_bimodal0.wav'
+    }
+]
 task_type = 1
+from json import dumps
+data = {'items': dumps(items), 'task_type': task_type}
 
 # The question we ask the workers is contained in this file.
 question_sample = open("external_question.xml", "r").read()
 # Add extra arguments
 survey_url = mturk_environment["survey_base_url"]
 from urllib.parse import urlencode
-survey_url += "task_type={}&questions={}&files={}".format(task_type, ','.join(questions), ','.join(files))
-print(survey_url)
-question_sample.format(survey_url)
-exit()
+survey_url += urlencode(data) # "task_type={}&questions={}&files={}".format(task_type, ','.join(questions), ','.join(files))
+# print(survey_url)
+from xml.sax.saxutils import escape
+question_sample = question_sample.format(escape(survey_url))
+print(question_sample)
+
 # Example of using qualification to restrict responses to Workers who have had
 # at least 80% of their assignments approved. See:
 # http://docs.aws.amazon.com/AWSMechTurk/latest/AWSMturkAPI/ApiReference_QualificationRequirementDataStructureArticle.html#ApiReference_QualificationType-IDs

@@ -3,8 +3,24 @@
     <v-container>
       <v-layout justify-center align-center fill-height>
         <v-flex>
+          <!-- Instructions -->
+          <v-dialog
+            v-model="instructions_dialog"
+            width="300">
+            <v-card>
+              <v-card-title class="headline">Instructions</v-card-title>
+              <v-card-text>
+                Listen to short audio clips and determine if a sound is present.
+
+                You will be asked to give a confidence on your answer.
+
+                Your answer may determine bonus payout.
+              </v-card-text>
+            </v-card>
+          </v-dialog>
+          <!-- Assignments -->
           <v-form>
-            <v-card color='deep-purple lighten-5'>
+            <v-card color='deep-purple lighten-5' v-if='items.length'>
               <!-- Price -->
               <v-card-title primary-title>
                 <v-layout justify-center>
@@ -16,14 +32,14 @@
               <!-- Current Task -->
               <v-window v-model='step'>
                 <v-window-item v-for='item, index in items'
-                :key='item.file'
+                :key='item.question+item.file'
                 :value='index+1'>
                   <v-card-text>
                     <v-container grid-list-lg>
                       <v-layout column>
                         <!-- Audio -->
                         <v-flex>
-                          <v-audio :file='item.file' :ended='() => {item.audio_step=true}'></v-audio>
+                          <v-audio :file='"train_audio/" + item.file' :ended='() => {item.audio_step=true}'></v-audio>
                         </v-flex>
                         <!-- Classification -->
                         <v-flex v-show='item.audio_step'>
@@ -147,19 +163,20 @@ export default {
   },
   data () {
     return {
+      instructions_dialog: true,
       args: null,
-      task_type: 2,
+      task_type: 0,
       step: 1,
       items: [
-        {
-          audio_step: false,
-          class_step: false,
-          bet_step: false,
-          confidence: 50,
-          classification: null,
-          file: 'https://drive.google.com/uc?export=download&id=1NEmYdc_P49JfULEEk1lbMJaQTxNLoYzc',
-          question: 'kangaroo',
-        },
+        // {
+        //   audio_step: false,
+        //   class_step: false,
+        //   bet_step: false,
+        //   confidence: 50,
+        //   classification: null,
+        //   file: 'https://',
+        //   question: 'kangaroo',
+        // }
       ],
     }
   },
@@ -171,7 +188,6 @@ export default {
       // <input type="hidden" id="workerId" value="{{ name.worker_id }}" name="workerId"/>
       // <input type="hidden" id="hitId" value="{{ name.hit_id }}" name="hitId"/>
       // </form>
-      console.log("args: " + this.args)
       let data = []
       for (let item in this.items) {
         data.push({
@@ -190,15 +206,36 @@ export default {
     },
     getUrlVars() {
       var vars = {};
-      window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, (m,key,value) => {
-          vars[key] = value;
+      decodeURIComponent(window.location.href.replace(/\+/g, '%20')).replace(/[?&]+([^=&]+)=([^&]*)/gi, (m,key,value) => {
+          vars[key] = JSON.parse(value);
       });
       return vars;
     }
   },
-  created() {
+  mounted() {
     this.args = this.getUrlVars()
+    if (!('items', 'task_type' in this.args)) {
+      console.log("Improper url parameters provided.")
+      console.log(this.args)
+      return
+    }
+    if (!('assignment_id', 'worker_id', 'hit_id', 'amazon_host' in this.args)) {
+      console.log("Amazon params not provided, read-only mode.")
+      console.log(this.args)
+    }
+
+    // defaults
+    for (let i = 0; i < this.args['items'].length; i++) {
+      this.args['items'][i] = Object.assign(this.args['items'][i], {
+          'audio_step': false,
+          'class_step': false,
+          'bet_step': false,
+          'confidence': 50,
+          'classification': null,
+      })
+    }
     this.task_type = parseInt(this.args['task_type'], 10)
+    this.items = this.args['items']
   }
 }
 </script>
