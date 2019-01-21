@@ -198,9 +198,9 @@ export default {
       let formdata = new FormData()
       formdata.append('user-input', JSON.stringify(data))
       formdata.append('assignmentId', JSON.stringify(this.args['assignmentId']))
-      formdata.append('workerId', JSON.stringify(this.args['workerId']))
-      formdata.append('hitId', JSON.stringify(this.args['hitId']))
-      axios.post(this.args['turkSubmitTo'], formdata)
+      axios.post(this.args['turkSubmitTo'], formdata, {
+        headers: formdata.getHeaders()
+      })
     },
     getUrlVars() {
       var vars = {};
