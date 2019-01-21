@@ -199,7 +199,7 @@ export default {
       formdata.append('user-input', JSON.stringify(data))
       formdata.append('assignmentId', JSON.stringify(this.args['assignmentId']))
       axios.post(this.args['turkSubmitTo'], formdata, {
-        headers: formdata.getHeaders()
+        headers: {'Content-Type': 'multipart/form-data'}
       })
     },
     getUrlVars() {
