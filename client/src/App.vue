@@ -216,7 +216,7 @@ export default {
       return vars;
     }
   },
-  mounted() {
+  created() {
     let args = this.getUrlVars()
     if (!('items', 'task_type' in args)) {
       console.log("Improper url parameters provided.")
