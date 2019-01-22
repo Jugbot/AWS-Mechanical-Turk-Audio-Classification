@@ -6,7 +6,7 @@
           <!-- Instructions -->
           <v-dialog
             v-model="instructions_dialog"
-            width="300">
+            width="500">
             <v-card>
               <v-card-title class="headline">Instructions</v-card-title>
               <v-card-text>
@@ -14,6 +14,22 @@
                 <p>You will be asked to give a confidence on your answer.</p>
                 <p>Your answer may determine bonus payout.</p>
               </v-card-text>
+              <!-- Dev instructions if no data is passed -->
+              <v-card-actions v-if='no_data' class="blue-grey lighten-5">
+                <v-container fluid>
+                  <p>There were no url parameters provided for content.</p>
+                  <p>Requires <code>task_type</code> and <code>items</code>.</p>
+<code>task_type: 1 or 2
+items: jsonified list of item objects such as
+[{
+'question': 'some_type',
+'file': 'soundscape_train_bimodal0.wav'
+}]</code>
+                  <p>For example, add</p>
+                  <code style="width: 100%;word-wrap: break-word;">?items=%5B%7B%22question%22%3A+%22some_type%22%2C+%22file%22%3A+%22soundscape_train_bimodal0.wav%22%7D%5D&task_type=1</code>
+                  <p>to the url</p>
+                </v-container>
+              </v-card-actions>
             </v-card>
           </v-dialog>
           <!-- Assignments -->
@@ -161,6 +177,7 @@ export default {
   },
   data () {
     return {
+      no_data: false,
       instructions_dialog: true,
       args: null,
       task_type: 0,
@@ -172,39 +189,23 @@ export default {
         //   bet_step: false,
         //   confidence: 50,
         //   classification: null,
-        //   file: 'https://',
-        //   question: 'kangaroo',
+        //   file: 'soundscape_train_bimodal5.wav',
+        //   question: 'this is a test question',
         // }
       ],
     }
   },
   methods: {
     submit() {
-      // let data = []
-      // for (let item in this.items) {
-      //   data.push({
-      //     'file': item.file,
-      //     'question': item.question,
-      //     'classification': item.classification,
-      //     'confidence': item.confidence
-      //   })
-      // }
-      // let formdata = new FormData()
-      // let request = new XMLHttpRequest()
-      // let url = new URL(this.args['turkSubmitTo'] + '/mturk/externalSubmit')
-      // url.searchParams.set('assignmentId', this.args['assignmentId']);
-      // url.searchParams.set('user-input', JSON.stringify(this.items))
-      // formdata.append('assignmentId', this.args['assignmentId'])
-      // formdata.append('user-input', JSON.stringify(this.items))
-      // formdata.append('workerId', this.args['workerId'])
-      // formdata.append('hitId', this.args['hitId'])
-      // // request.open('POST', url);
-      // // request.send(formdata);
-      // axios.post(url, formdata).then((response) => {
-      //   console.log(response)
-      // }).catch((error) => {
-      //   console.log(error)
-      // })
+      let data = []
+      for (let item in this.items) {
+        data.push({
+          'file': item.file,
+          'question': item.question,
+          'classification': item.classification,
+          'confidence': item.confidence
+        })
+      }
 
       var form = document.createElement('form');
       document.body.appendChild(form);
@@ -216,7 +217,7 @@ export default {
         formel.appendChild(input);
       }
       addFormData(form,"assignmentId", this.args['assignmentId']);
-      addFormData(form, "data", JSON.stringify(this.items));
+      addFormData(form, "data", JSON.stringify(data));
       // submit the form
       form.action = this.args['turkSubmitTo'] + "/mturk/externalSubmit";
       form.method = "POST";
@@ -236,11 +237,11 @@ export default {
     if (!('items', 'task_type' in args)) {
       console.log("Improper url parameters provided.")
       console.log(args)
+      this.no_data = true
       return
     }
-    if (!('assignmentId', 'workerId', 'hitId', 'turkSubmitTo' in args)) {
+    if (!('assignmentId', 'turkSubmitTo' in args)) {
       console.log("Amazon params not provided, read-only mode.")
-      console.log(args)
     }
 
     // defaults
