@@ -194,21 +194,17 @@ export default {
       let url = new URL(this.args['turkSubmitTo'] + '/mturk/externalSubmit')
       url.searchParams.set('assignmentId', this.args['assignmentId']);
       url.searchParams.set('user-input', JSON.stringify(this.items))
-      // formdata.append('user-input', JSON.stringify("test"))
-      // formdata.append('assignmentId', JSON.stringify(this.args['assignmentId']))
-      // formdata.append('workerId', JSON.stringify(this.args['workerId']))
-      // formdata.append('hitId', JSON.stringify(this.args['hitId']))
-      request.open('POST', url);
-      request.send(formdata);
-      // axios.post(url, formdata, {
-      //   headers: {
-      //     'content-type': `multipart/form-data; boundary=${formdata._boundary}`,
-      //   }
-      // }).then((response) => {
-      //   console.log(response)
-      // }).catch((error) => {
-      //   console.log(error)
-      // })
+      formdata.append('assignmentId', this.args['assignmentId'])
+      formdata.append('user-input', JSON.stringify(this.items))
+      formdata.append('workerId', this.args['workerId'])
+      formdata.append('hitId', this.args['hitId'])
+      // request.open('POST', url);
+      // request.send(formdata);
+      axios.post(url, formdata).then((response) => {
+        console.log(response)
+      }).catch((error) => {
+        console.log(error)
+      })
     },
     getUrlVars() {
       var vars = {};
