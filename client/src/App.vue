@@ -192,14 +192,20 @@ export default {
       let formdata = new FormData()
       let request = new XMLHttpRequest();
       let url = this.args['turkSubmitTo'] + '/mturk/externalSubmit'
-      formdata.append('userInput', JSON.stringify("test"))
+      formdata.append('user-input', JSON.stringify("test"))
       formdata.append('assignmentId', JSON.stringify(this.args['assignmentId']))
+      formdata.append('workerId', JSON.stringify(this.args['workerId']))
+      formdata.append('hitId', JSON.stringify(this.args['hitId']))
       // request.open('POST', url);
       // request.send(formdata);
       axios.post(url, formdata, {
         headers: {
           'content-type': `multipart/form-data; boundary=${formdata._boundary}`,
         }
+      }).then((response) => {
+        console.log(response)
+      }).catch((error) => {
+        console.log(error)
       })
     },
     getUrlVars() {
