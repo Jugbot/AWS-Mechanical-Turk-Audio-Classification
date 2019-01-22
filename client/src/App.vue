@@ -180,31 +180,48 @@ export default {
   },
   methods: {
     submit() {
-      let data = []
-      for (let item in this.items) {
-        data.push({
-          'file': item.file,
-          'question': item.question,
-          'classification': item.classification,
-          'confidence': item.confidence
-        })
+      // let data = []
+      // for (let item in this.items) {
+      //   data.push({
+      //     'file': item.file,
+      //     'question': item.question,
+      //     'classification': item.classification,
+      //     'confidence': item.confidence
+      //   })
+      // }
+      // let formdata = new FormData()
+      // let request = new XMLHttpRequest()
+      // let url = new URL(this.args['turkSubmitTo'] + '/mturk/externalSubmit')
+      // url.searchParams.set('assignmentId', this.args['assignmentId']);
+      // url.searchParams.set('user-input', JSON.stringify(this.items))
+      // formdata.append('assignmentId', this.args['assignmentId'])
+      // formdata.append('user-input', JSON.stringify(this.items))
+      // formdata.append('workerId', this.args['workerId'])
+      // formdata.append('hitId', this.args['hitId'])
+      // // request.open('POST', url);
+      // // request.send(formdata);
+      // axios.post(url, formdata).then((response) => {
+      //   console.log(response)
+      // }).catch((error) => {
+      //   console.log(error)
+      // })
+
+      var form = document.createElement('form');
+      document.body.appendChild(form);
+      var addFormData = function(formel,key,value) {
+        var input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = key;
+        input.value = value;
+        formel.appendChild(input);
       }
-      let formdata = new FormData()
-      let request = new XMLHttpRequest()
-      let url = new URL(this.args['turkSubmitTo'] + '/mturk/externalSubmit')
-      url.searchParams.set('assignmentId', this.args['assignmentId']);
-      url.searchParams.set('user-input', JSON.stringify(this.items))
-      formdata.append('assignmentId', this.args['assignmentId'])
-      formdata.append('user-input', JSON.stringify(this.items))
-      formdata.append('workerId', this.args['workerId'])
-      formdata.append('hitId', this.args['hitId'])
-      // request.open('POST', url);
-      // request.send(formdata);
-      axios.post(url, formdata).then((response) => {
-        console.log(response)
-      }).catch((error) => {
-        console.log(error)
-      })
+      addFormData(form,"assignmentId", this.args['assignmentId']);
+      addFormData(form, "data", JSON.stringify(this.items));
+      // submit the form
+      form.action = this.args['turkSubmitTo'] + "/mturk/externalSubmit";
+      form.method = "POST";
+      form.submit();
+
     },
     getUrlVars() {
       var vars = {};
