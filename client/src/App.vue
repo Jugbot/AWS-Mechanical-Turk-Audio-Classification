@@ -56,13 +56,13 @@ items: jsonified list of item objects such as
                           <v-audio :file='"train_audio/" + item.file' :ended='() => {item.audio_step=true}'></v-audio>
                         </v-flex>
                         <!-- Classification -->
-                        <v-flex v-show='item.audio_step'>
+                        <v-flex>
                           <v-card>
                             <v-card-title>
                               <span>Does this contain a(n) {{item.question}}</span>
                             </v-card-title>
                             <v-divider></v-divider>
-                            <v-card-actions>
+                            <v-card-actions v-show='item.audio_step'>
                               <v-radio-group row
                               v-model='item.classification'
                               @change='item.class_step=true'>
@@ -77,7 +77,7 @@ items: jsonified list of item objects such as
                           <v-flex v-show='item.class_step'>
                             <v-card>
                               <v-card-title>
-                                Confidence
+                                How confident are you with your answer?
                               </v-card-title>
                               <v-divider></v-divider>
                               <v-card-actions>
@@ -97,11 +97,11 @@ items: jsonified list of item objects such as
                           <v-flex v-show='item.class_step'>
                             <v-card>
                               <v-card-title>
-                                Confidence
+                                How confident are you with your answer?
                               </v-card-title>
                               <v-card-text>
-                                If you could win money using a lottery or
-                                the correctness of your answer,
+                                If you could win a dollar in a <v-chip small>{{item.confidence}}:{{100-item.confidence}}</v-chip> lottery or
+                                if your answer is correct,
                                 which would you chose?
                               </v-card-text>
                               <v-divider></v-divider>
@@ -118,7 +118,8 @@ items: jsonified list of item objects such as
                                 <template v-if='!item.bet_step || item.confidence == 100'>
                                   <v-btn color="primary"
                                   :disabled='item.bet_step'
-                                  @click='item.confidence+=10; item.bet_step=(item.confidence == 100)'>
+                                  @click='item.confidence += 10;
+                                  item.bet_step=(item.confidence == 100)'>
                                     your answer
                                   </v-btn>
                                   <v-spacer></v-spacer>
@@ -178,10 +179,15 @@ export default {
   data () {
     return {
       no_data: false,
+      read_only: false,
       instructions_dialog: true,
       args: null,
       task_type: 0,
       step: 1,
+      random: {
+        m_w: 123456789,
+        m_z: 987654321
+      },
       items: [
         // {
         //   audio_step: false,
@@ -207,44 +213,68 @@ export default {
         })
       }
 
-      var form = document.createElement('form');
-      document.body.appendChild(form);
+      var form = document.createElement('form')
+      document.body.appendChild(form)
       var addFormData = function(formel,key,value) {
-        var input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = key;
-        input.value = value;
-        formel.appendChild(input);
+        var input = document.createElement('input')
+        input.type = 'hidden'
+        input.name = key
+        input.value = value
+        formel.appendChild(input)
       }
-      addFormData(form,"assignmentId", this.args['assignmentId']);
-      addFormData(form, "data", JSON.stringify(data));
+      addFormData(form,"assignmentId", this.args['assignmentId'])
+      addFormData(form, "data", JSON.stringify(data))
       // submit the form
-      form.action = this.args['turkSubmitTo'] + "/mturk/externalSubmit";
-      form.method = "POST";
-      form.submit();
+      form.action = this.args['turkSubmitTo'] + "/mturk/externalSubmit"
+      form.method = "POST"
+      form.submit()
 
     },
     getUrlVars() {
-      var vars = {};
+      var vars = {}
       decodeURIComponent(window.location.href.replace(/\+/g, '%20')).replace(/[?&]+([^=&]+)=([^&]*)/gi, (m,key,value) => {
-          vars[key] = key=='items' || key=='task_type' ? JSON.parse(value) : value;
+          vars[key] = key=='items' || key=='task_type' ? JSON.parse(value) : value
       });
-      return vars;
+      return vars
+    },
+    rand() {
+      // Returns number between 0 (inclusive) and 1.0 (exclusive)
+      var mask = 0xffffffff
+      this.random.m_z = (36969 * (this.random.m_z & 65535) + (this.random.m_z >> 16)) & mask
+      this.random.m_w = (18000 * (this.random.m_w & 65535) + (this.random.m_w >> 16)) & mask
+      var result = ((this.random.m_z << 16) + (this.random.m_w & 65535)) >>> 0
+      result /= 4294967296
+      return result
+
     }
   },
   created() {
     let args = this.getUrlVars()
-    if (!('items', 'task_type' in args)) {
+
+    if (!('items' in args)) {
       console.log("Improper url parameters provided.")
       console.log(args)
       this.no_data = true
       return
     }
-    if (!('assignmentId', 'turkSubmitTo' in args)) {
+
+    if (!('assignmentId', 'turkSubmitTo', 'workerId' in args)) {
       console.log("Amazon params not provided, read-only mode.")
+      this.read_only = true
+    } else {
+      let i = args['workerId'] // seed
+      let mask = 0xffffffff
+      this.random.m_w = (123456789 + i) & mask
+      this.random.m_z = (987654321 - i) & mask
     }
 
-    // defaults
+    if ('task_type' in args) { // use param if given
+      this.task_type = parseInt(args['task_type'], 10)
+    } else { // generate random type instead
+      this.task_type = Math.floor(1 + this.rand() * 2)
+    }
+
+    // add defaults
     for (let i = 0; i < args['items'].length; i++) {
       args['items'][i] = Object.assign(args['items'][i], {
           'audio_step': false,
@@ -254,9 +284,8 @@ export default {
           'classification': null,
       })
     }
-    this.args = args
-    this.task_type = parseInt(args['task_type'], 10)
     this.items = args['items']
+    this.args = args
   }
 }
 </script>
