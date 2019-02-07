@@ -97,13 +97,15 @@ items: jsonified list of item objects such as
                           <v-flex v-show='item.class_step'>
                             <v-card>
                               <v-card-title>
-                                How confident are you with your answer?
+                                <div>
+                                Choose between:
+                                <ul>
+                                  <li>A <v-chip small><b>{{item.confidence}}:{{100-item.confidence}}</b></v-chip> lottery</li>
+                                  <li>Your answer</li>
+                                </ul>
+                                For a chance to win a dollar.
+                                </div>
                               </v-card-title>
-                              <v-card-text>
-                                If you could win a dollar in a <v-chip small>{{item.confidence}}:{{100-item.confidence}}</v-chip> lottery or
-                                if your answer is correct,
-                                which would you chose?
-                              </v-card-text>
                               <v-divider></v-divider>
                               <v-card-actions>
                                 <template v-if='!item.bet_step || item.confidence < 100'>
