@@ -59,7 +59,7 @@ items: jsonified list of item objects such as
                         <v-flex>
                           <v-card>
                             <v-card-title>
-                              <span>Does this contain a(n) {{item.question}}</span>
+                              <span>Is there a(n) {{item.question}}</span>
                             </v-card-title>
                             <v-divider></v-divider>
                             <v-card-actions v-show='item.audio_step'>
