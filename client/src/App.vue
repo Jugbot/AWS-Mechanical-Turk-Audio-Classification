@@ -46,24 +46,25 @@ items: jsonified list of item objects such as
               <!-- Current Task -->
               <v-window v-model='step'>
                 <v-window-item v-for='item, index in items'
-                :key='item.question+item.file'
+                :key='item.label+item.file'
                 :value='index+1'>
                   <v-card-text>
                     <v-container grid-list-lg>
                       <v-layout column>
                         <!-- Audio -->
                         <v-flex>
-                          <v-audio :file='"train_audio/" + item.file' :ended='() => {item.audio_step=true}'></v-audio>
+                          <v-audio :file='"assets/audio/" + item.file' :ended='() => {item.audio_step=true}'></v-audio>
                         </v-flex>
                         <!-- Classification -->
                         <v-flex>
                           <v-card>
                             <v-card-title>
-                              <span>Is there a(n) {{item.question}}</span>
+                              <span>Is there a(n) {{item.label}} present in the recording?</span>
                             </v-card-title>
                             <v-divider></v-divider>
                             <v-card-actions v-show='item.audio_step'>
                               <v-radio-group row
+                              :disabled='item.class_step'
                               v-model='item.classification'
                               @change='item.class_step=true'>
                                 <v-radio label="Yes" :value="true"></v-radio>
@@ -98,12 +99,14 @@ items: jsonified list of item objects such as
                             <v-card>
                               <v-card-title>
                                 <div>
-                                Choose between:
+                                <!-- Choose between:
                                 <ul>
                                   <li>A <v-chip small><b>{{item.confidence}}:{{100-item.confidence}}</b></v-chip> lottery</li>
                                   <li>Your answer</li>
                                 </ul>
-                                For a chance to win a dollar.
+                                For a chance to win a dollar. -->
+                                If you had the opportunity to choose, would you take <v-chip small>{{item.confidence}}¢</v-chip> now or would you keep playing?
+                                Knowing that you can keep all of your dollar if your answer is correct or lose it all if not.
                                 </div>
                               </v-card-title>
                               <v-divider></v-divider>
@@ -113,7 +116,7 @@ items: jsonified list of item objects such as
                                   <v-btn color="primary"
                                   :disabled='item.bet_step'
                                   @click='item.bet_step=true'>
-                                    {{item.confidence}}:{{100-item.confidence}} lottery
+                                    {{item.confidence}}¢
                                   </v-btn>
                                 </template>
                                   <v-spacer></v-spacer>
@@ -122,7 +125,7 @@ items: jsonified list of item objects such as
                                   :disabled='item.bet_step'
                                   @click='item.confidence += 10;
                                   item.bet_step=(item.confidence == 100)'>
-                                    your answer
+                                    keep playing
                                   </v-btn>
                                   <v-spacer></v-spacer>
                                 </template>
@@ -164,6 +167,27 @@ items: jsonified list of item objects such as
               </v-card-actions>
             </v-card>
           </v-form>
+          <!-- Submit Message -->
+          <v-dialog
+            v-model="submit_dialog"
+            width="500">
+            <v-card>
+              <v-card-title class="headline">Survey Code</v-card-title>
+              <v-card-text>
+                <p>Copy the code below to the MTurk assignment to get approved.</p>
+                <v-text-field
+                outline solo readonly
+                :value='id'>
+                  <!-- <v-btn flat
+                  slot='append'
+                  icon
+                  @click='$parent.select()'>
+                    <v-icon>flip_to_front</v-icon>
+                  </v-btn> -->
+                </v-text-field>
+              </v-card-text>
+            </v-card>
+          </v-dialog>
         </v-flex>
       </v-layout>
     </v-container>
@@ -180,9 +204,11 @@ export default {
   },
   data () {
     return {
+      id: 'null',
       no_data: false,
       read_only: false,
       instructions_dialog: true,
+      submit_dialog: false,
       args: null,
       task_type: 0,
       step: 1,
@@ -205,76 +231,74 @@ export default {
   },
   methods: {
     submit() {
-      let data = []
-      for (let item in this.items) {
-        data.push({
-          'file': item.file,
-          'question': item.question,
-          'classification': item.classification,
-          'confidence': item.confidence
-        })
+      let data = {
+        'id': this.id,
+        'items': this.items,
       }
+      axios.post("/post", data)
 
-      var form = document.createElement('form')
-      document.body.appendChild(form)
-      var addFormData = function(formel,key,value) {
-        var input = document.createElement('input')
-        input.type = 'hidden'
-        input.name = key
-        input.value = value
-        formel.appendChild(input)
-      }
-      addFormData(form,"assignmentId", this.args['assignmentId'])
-      addFormData(form, "data", JSON.stringify(data))
-      // submit the form
-      form.action = this.args['turkSubmitTo'] + "/mturk/externalSubmit"
-      form.method = "POST"
-      form.submit()
+      // var form = document.createElement('form')
+      // document.body.appendChild(form)
+      // var addFormData = function(formel,key,value) {
+      //   var input = document.createElement('input')
+      //   input.type = 'hidden'
+      //   input.name = key
+      //   input.value = value
+      //   formel.appendChild(input)
+      // }
+      // addFormData(form,"assignmentId", this.args['assignmentId'])
+      // addFormData(form, "data", JSON.stringify(data))
+      // // submit the form
+      // form.action = this.args['turkSubmitTo'] + "/mturk/externalSubmit"
+      // form.method = "POST"
+      // form.submit()
 
+      this.submit_dialog = true
     },
-    getUrlVars() {
-      var vars = {}
-      decodeURIComponent(window.location.href.replace(/\+/g, '%20')).replace(/[?&]+([^=&]+)=([^&]*)/gi, (m,key,value) => {
-          vars[key] = key=='items' || key=='task_type' ? JSON.parse(value) : value
-      });
-      return vars
-    },
-    rand() {
-      // Returns number between 0 (inclusive) and 1.0 (exclusive)
-      var mask = 0xffffffff
-      this.random.m_z = (36969 * (this.random.m_z & 65535) + (this.random.m_z >> 16)) & mask
-      this.random.m_w = (18000 * (this.random.m_w & 65535) + (this.random.m_w >> 16)) & mask
-      var result = ((this.random.m_z << 16) + (this.random.m_w & 65535)) >>> 0
-      result /= 4294967296
-      return result
-
-    }
+    // getUrlVars() {
+    //   var vars = {}
+    //   decodeURIComponent(window.location.href.replace(/\+/g, '%20')).replace(/[?&]+([^=&]+)=([^&]*)/gi, (m,key,value) => {
+    //       vars[key] = key=='items' || key=='task_type' ? JSON.parse(value) : value
+    //   });
+    //   return vars
+    // },
+    // rand() {
+    //   // Returns number between 0 (inclusive) and 1.0 (exclusive)
+    //   var mask = 0xffffffff
+    //   this.random.m_z = (36969 * (this.random.m_z & 65535) + (this.random.m_z >> 16)) & mask
+    //   this.random.m_w = (18000 * (this.random.m_w & 65535) + (this.random.m_w >> 16)) & mask
+    //   var result = ((this.random.m_z << 16) + (this.random.m_w & 65535)) >>> 0
+    //   result /= 4294967296
+    //   return result
+    //
+    // }
   },
   created() {
-    let args = this.getUrlVars()
+    let args = window.surveydata
+    this.task_type = parseInt(args['task_type'], 10)
+    this.id = args['id']
+    // if (!('items' in args)) {
+    //   console.log("Improper url parameters provided.")
+    //   console.log(args)
+    //   this.no_data = true
+    //   return
+    // }
 
-    if (!('items' in args)) {
-      console.log("Improper url parameters provided.")
-      console.log(args)
-      this.no_data = true
-      return
-    }
+    // if (!('assignmentId', 'turkSubmitTo', 'workerId' in args)) {
+    //   console.log("Amazon params not provided, read-only mode.")
+    //   this.read_only = true
+    // } else {
+    //   let i = args['workerId'] // seed
+    //   let mask = 0xffffffff
+    //   this.random.m_w = (123456789 + i) & mask
+    //   this.random.m_z = (987654321 - i) & mask
+    // }
 
-    if (!('assignmentId', 'turkSubmitTo', 'workerId' in args)) {
-      console.log("Amazon params not provided, read-only mode.")
-      this.read_only = true
-    } else {
-      let i = args['workerId'] // seed
-      let mask = 0xffffffff
-      this.random.m_w = (123456789 + i) & mask
-      this.random.m_z = (987654321 - i) & mask
-    }
-
-    if ('task_type' in args) { // use param if given
-      this.task_type = parseInt(args['task_type'], 10)
-    } else { // generate random type instead
-      this.task_type = Math.floor(1 + this.rand() * 2)
-    }
+    // if ('task_type' in args) { // use param if given
+    //   this.task_type = parseInt(args['task_type'], 10)
+    // } else { // generate random type instead
+    //   this.task_type = Math.floor(1 + this.rand() * 2)
+    // }
 
     // add defaults
     for (let i = 0; i < args['items'].length; i++) {
@@ -287,7 +311,8 @@ export default {
       })
     }
     this.items = args['items']
-    this.args = args
+    console.log(this.items)
+    // this.args = args
   }
 }
 </script>
