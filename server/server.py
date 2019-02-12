@@ -25,7 +25,7 @@ def hello_world():
     id = uuid.uuid4()
     random.seed(id)
     task_type = random.randrange(1, 3)
-    result = ses.query(Recording.file_name).all()
+    result = [r for [r,] in ses.query(Recording.file_name).all()]
     print(result)
     files = random.sample(result, len(result))
     labels = ["jackhammer"] * len(files)

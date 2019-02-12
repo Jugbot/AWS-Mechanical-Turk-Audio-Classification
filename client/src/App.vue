@@ -14,22 +14,6 @@
                 <p>You will be asked to give a confidence on your answer.</p>
                 <p>Your answer may determine bonus payout.</p>
               </v-card-text>
-              <!-- Dev instructions if no data is passed -->
-              <v-card-actions v-if='no_data' class="blue-grey lighten-5">
-                <v-container fluid>
-                  <p>There were no url parameters provided for content.</p>
-                  <p>Requires <code>task_type</code> and <code>items</code>.</p>
-<code>task_type: 1 or 2
-items: jsonified list of item objects such as
-[{
-'question': 'some_type',
-'file': 'soundscape_train_bimodal0.wav'
-}]</code>
-                  <p>For example, add</p>
-                  <code style="width: 100%;word-wrap: break-word;">?items=%5B%7B%22question%22%3A+%22some_type%22%2C+%22file%22%3A+%22soundscape_train_bimodal0.wav%22%7D%5D&task_type=1</code>
-                  <p>to the url</p>
-                </v-container>
-              </v-card-actions>
             </v-card>
           </v-dialog>
           <!-- Assignments -->
@@ -82,14 +66,18 @@ items: jsonified list of item objects such as
                               </v-card-title>
                               <v-divider></v-divider>
                               <v-card-actions>
-                                <v-slider thumb-label :step='10'
-                                :color='item.bet_step? "" : "grey"'
-                                v-model="item.confidence"
-                                @change='item.bet_step=true'>
-                                  <span slot='append'>
-                                    {{ item.confidence }}%
-                                  </span>
-                                </v-slider>
+                                <v-tooltip bottom class='v-input'>
+                                  <span>I am {{ item.confidence }}% certain that there is {{item.classification ? "" : "not"}} a {{item.label}} present in the recording.</span>
+                                  <v-slider thumb-label :step='10'
+                                  slot='activator'
+                                  :color='item.bet_step? "" : "grey"'
+                                  v-model="item.confidence"
+                                  @change='item.bet_step=true'>
+                                    <span slot='append'>
+                                      {{ item.confidence }}%
+                                    </span>
+                                  </v-slider>
+                                </v-tooltip>
                               </v-card-actions>
                             </v-card>
                           </v-flex>
@@ -99,14 +87,8 @@ items: jsonified list of item objects such as
                             <v-card>
                               <v-card-title>
                                 <div>
-                                <!-- Choose between:
-                                <ul>
-                                  <li>A <v-chip small><b>{{item.confidence}}:{{100-item.confidence}}</b></v-chip> lottery</li>
-                                  <li>Your answer</li>
-                                </ul>
-                                For a chance to win a dollar. -->
-                                If you had the opportunity to choose, would you take <v-chip small>{{item.confidence}}¢</v-chip> now or would you keep playing?
-                                Knowing that you can keep all of your dollar if your answer is correct or lose it all if not.
+                                If you had the opportunity to choose, would you take <flash v-model='animate'>{{item.confidence}}¢</flash> now or would you keep playing?
+                                Knowing that you can keep a dollar if your answer is correct or lose it all if not.
                                 </div>
                               </v-card-title>
                               <v-divider></v-divider>
@@ -116,15 +98,16 @@ items: jsonified list of item objects such as
                                   <v-btn color="primary"
                                   :disabled='item.bet_step'
                                   @click='item.bet_step=true'>
-                                    {{item.confidence}}¢
+                                    <flash v-model='animate'>{{item.confidence}}¢</flash>
                                   </v-btn>
                                 </template>
-                                  <v-spacer></v-spacer>
+                                <v-spacer></v-spacer>
                                 <template v-if='!item.bet_step || item.confidence == 100'>
                                   <v-btn color="primary"
                                   :disabled='item.bet_step'
                                   @click='item.confidence += 10;
-                                  item.bet_step=(item.confidence == 100)'>
+                                  item.bet_step=(item.confidence == 100);
+                                  animate = true'>
                                     keep playing
                                   </v-btn>
                                   <v-spacer></v-spacer>
@@ -133,7 +116,6 @@ items: jsonified list of item objects such as
                             </v-card>
                           </v-flex>
                         </template>
-                        <!--  -->
                       </v-layout>
                     </v-container>
                   </v-card-text>
@@ -178,12 +160,6 @@ items: jsonified list of item objects such as
                 <v-text-field
                 outline solo readonly
                 :value='id'>
-                  <!-- <v-btn flat
-                  slot='append'
-                  icon
-                  @click='$parent.select()'>
-                    <v-icon>flip_to_front</v-icon>
-                  </v-btn> -->
                 </v-text-field>
               </v-card-text>
             </v-card>
@@ -194,39 +170,51 @@ items: jsonified list of item objects such as
   </v-app>
 </template>
 
+<style>
+.v-tooltip>span {
+  width: 100%;
+}
+</style>
+
 <script>
 import VuetifyAudio from 'vuetify-audio'
+import TextHighlight from './components/TextHighlight'
 
 export default {
   name: 'App',
   components: {
-    'v-audio': VuetifyAudio
+    'v-audio': VuetifyAudio,
+    'flash': TextHighlight,
   },
   data () {
     return {
-      id: 'null',
+      id: "05cdbc17-fc15-4e48-a29f-756029933bc5",
       no_data: false,
       read_only: false,
       instructions_dialog: true,
       submit_dialog: false,
       args: null,
-      task_type: 0,
+      task_type: 2,
       step: 1,
       random: {
         m_w: 123456789,
         m_z: 987654321
       },
       items: [
-        // {
-        //   audio_step: false,
-        //   class_step: false,
-        //   bet_step: false,
-        //   confidence: 50,
-        //   classification: null,
-        //   file: 'soundscape_train_bimodal5.wav',
-        //   question: 'this is a test question',
-        // }
+        {"file": "soundscape_train_bimodal02.wav", "label": "jackhammer",
+            'audio_step': false,
+            'class_step': false,
+            'bet_step': false,
+            'confidence': 50,
+            'classification': null,},
+        {"file": "soundscape_train_bimodal0.wav", "label": "jackhammer",
+            'audio_step': false,
+            'class_step': false,
+            'bet_step': false,
+            'confidence': 50,
+            'classification': null,}
       ],
+      animate: false
     }
   },
   methods: {
@@ -237,68 +225,13 @@ export default {
       }
       axios.post("/post", data)
 
-      // var form = document.createElement('form')
-      // document.body.appendChild(form)
-      // var addFormData = function(formel,key,value) {
-      //   var input = document.createElement('input')
-      //   input.type = 'hidden'
-      //   input.name = key
-      //   input.value = value
-      //   formel.appendChild(input)
-      // }
-      // addFormData(form,"assignmentId", this.args['assignmentId'])
-      // addFormData(form, "data", JSON.stringify(data))
-      // // submit the form
-      // form.action = this.args['turkSubmitTo'] + "/mturk/externalSubmit"
-      // form.method = "POST"
-      // form.submit()
-
       this.submit_dialog = true
     },
-    // getUrlVars() {
-    //   var vars = {}
-    //   decodeURIComponent(window.location.href.replace(/\+/g, '%20')).replace(/[?&]+([^=&]+)=([^&]*)/gi, (m,key,value) => {
-    //       vars[key] = key=='items' || key=='task_type' ? JSON.parse(value) : value
-    //   });
-    //   return vars
-    // },
-    // rand() {
-    //   // Returns number between 0 (inclusive) and 1.0 (exclusive)
-    //   var mask = 0xffffffff
-    //   this.random.m_z = (36969 * (this.random.m_z & 65535) + (this.random.m_z >> 16)) & mask
-    //   this.random.m_w = (18000 * (this.random.m_w & 65535) + (this.random.m_w >> 16)) & mask
-    //   var result = ((this.random.m_z << 16) + (this.random.m_w & 65535)) >>> 0
-    //   result /= 4294967296
-    //   return result
-    //
-    // }
   },
   created() {
     let args = window.surveydata
     this.task_type = parseInt(args['task_type'], 10)
     this.id = args['id']
-    // if (!('items' in args)) {
-    //   console.log("Improper url parameters provided.")
-    //   console.log(args)
-    //   this.no_data = true
-    //   return
-    // }
-
-    // if (!('assignmentId', 'turkSubmitTo', 'workerId' in args)) {
-    //   console.log("Amazon params not provided, read-only mode.")
-    //   this.read_only = true
-    // } else {
-    //   let i = args['workerId'] // seed
-    //   let mask = 0xffffffff
-    //   this.random.m_w = (123456789 + i) & mask
-    //   this.random.m_z = (987654321 - i) & mask
-    // }
-
-    // if ('task_type' in args) { // use param if given
-    //   this.task_type = parseInt(args['task_type'], 10)
-    // } else { // generate random type instead
-    //   this.task_type = Math.floor(1 + this.rand() * 2)
-    // }
 
     // add defaults
     for (let i = 0; i < args['items'].length; i++) {
@@ -311,8 +244,6 @@ export default {
       })
     }
     this.items = args['items']
-    console.log(this.items)
-    // this.args = args
   }
 }
 </script>
