@@ -34,7 +34,6 @@ class Survey(Base):
     task_type = Column(SmallInteger)
 
 
-
 class Annotation(Base):
     """
     A single annotation of a recording, i.e. specifying one class label.
@@ -77,6 +76,7 @@ class Recording(Base):
     id_hash = Column(String)
     recording_group_id = Column(Integer, ForeignKey("RecordingGroup.id"))
 
+
 class RecordingGroup(Base):
 
     __tablename__ = "RecordingGroup"
@@ -85,13 +85,12 @@ class RecordingGroup(Base):
 
 
 Base.metadata.bind = eng
-
 Session = sessionmaker(bind=eng)
 ses = Session()
-
 
 if __name__ == "__main__":
     print("recreating database...")
     Base.metadata.drop_all()
-    Base.metadata.create_all()
+
+Base.metadata.create_all()
 
