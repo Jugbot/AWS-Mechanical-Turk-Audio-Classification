@@ -42,21 +42,10 @@ class Annotation(Base):
     Fields
     ------
     id : int
-    classification_time : DateTime
-        Date and time when the classification was made
     class_label : str
         The class label of the sound event (e.g. siren_wailing), in the case of binary classification, it will always be the same label.
-    ip_address : str
-        The IP address of the annotators if available and collected.
-    platform_specific_data : str
-        The platform specific user id and subject id corresponding to each annotation.
-    annotator_task : str
-        The task and workflow used to create the annotation.
-    workflow_version : int
-        The version of the workflow used to create the annotation.
-    platform_specific_classification_id : int
-        The platform specific id for each annotation
-
+   survey_id : int
+        The task used to create the annotation.
     recording_id : int
         Reference to the recording which was annotated.
     user_id : int
@@ -66,13 +55,10 @@ class Annotation(Base):
     __tablename__ = "Annotation"
 
     id = Column(Integer, primary_key=True)
-    classification_time = Column(DateTime)
     class_label = Column(String)
     bet = Column(Float)
-    presence_of_label = Column(Float)
-    ip_address = Column(String)
-    platform_specific_data = Column(String)
-    survey_id = Column(String, ForeignKey('Survey.id'))
+    presence_of_label = Column(String)
+    user_id = Column(String, ForeignKey('Survey.id'))
     recording_id = Column(Integer, ForeignKey("Recording.id"))
 
     recording = relationship("Recording", backref="annotations")
@@ -89,6 +75,13 @@ class Recording(Base):
     id = Column(Integer, primary_key=True)
     file_name = Column(String, unique=True)
     id_hash = Column(String)
+    recording_group_id = Column(Integer, ForeignKey("RecordingGroup.id"))
+
+class RecordingGroup(Base):
+
+    __tablename__ = "RecordingGroup"
+
+    id = Column(Integer, primary_key=True)
 
 
 Base.metadata.bind = eng
