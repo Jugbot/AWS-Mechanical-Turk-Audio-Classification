@@ -6,8 +6,13 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
 from sqlalchemy_utils import UUIDType, database_exists, create_database
 
+db_path = ''
+try:
+    # postgres://ydxhqgznjlrimb:298fedc97d3ee382affd81dcdf202fb47d4ec17324d617fd4b6be98afb9320ba@ec2-23-21-165-188.compute-1.amazonaws.com:5432/d5imubgfjut62u
+    db_path = os.environ['DATABASE_URL']
+except:
+    db_path = 'postgresql+psycopg2://postgres:annie779572@sound-annotation.herokuapp.com//annotations1'
 
-db_path = 'postgresql+psycopg2://postgres:annie779572@sound-annotation.herokuapp.com//annotations1'
 eng = create_engine(db_path)
 
 if not database_exists(eng.url):
