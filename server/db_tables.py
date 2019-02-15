@@ -7,8 +7,11 @@ from sqlalchemy.orm import relationship, sessionmaker
 from sqlalchemy_utils import UUIDType, database_exists, create_database
 
 
+try:
+    print(os.environ['DATABASE_URL'])
+except:
+    print("db url not found")
 
-print(os.environ['DATABASE_URL'])
 
 db_path = 'postgresql+psycopg2://postgres:annie779572@localhost/annotations1'
 eng = create_engine(db_path)
