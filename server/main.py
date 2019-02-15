@@ -5,14 +5,6 @@ import uuid
 from flask import *
 from server.db_tables import ses, Recording, Annotation, Survey
 
-try:
-    # sample temp data
-    ses.add(Recording(file_name='soundscape_train_bimodal0.wav', id_hash='whatever'))
-    ses.add(Recording(file_name='soundscape_train_bimodal02.wav', id_hash='whatever2'))
-    ses.commit()
-except:
-    ses.rollback()
-
 
 app = Flask(__name__,
             static_folder="../docs/assets",
