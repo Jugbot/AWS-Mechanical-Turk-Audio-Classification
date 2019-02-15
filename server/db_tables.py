@@ -4,11 +4,17 @@ from sqlalchemy import *
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
-from sqlalchemy_utils import UUIDType
+from sqlalchemy_utils import UUIDType, database_exists, create_database
 import uuid
 
-db_path = 'sqlite://' + os.getenv('ANNOTATION_DB', '/annotations.db')
+
+db_path = 'postgresql+psycopg2://postgres:annie779572@localhost/annotations1'
 eng = create_engine(db_path)
+
+if not database_exists(eng.url):
+    create_database(eng.url)
+
+eng.connect().execute("commit")
 
 Base = declarative_base()
 
@@ -62,7 +68,7 @@ class Annotation(Base):
     presence_of_label = Column(Float)
     ip_address = Column(String)
     platform_specific_data = Column(String)
-    survey_id = Column(UUIDType, ForeignKey('Survey.id'))
+    survey_id = Column(String, ForeignKey('Survey.id'))
     recording_id = Column(Integer, ForeignKey("Recording.id"))
 
     recording = relationship("Recording", backref="annotations")
