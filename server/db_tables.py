@@ -15,10 +15,10 @@ except:
 
 eng = create_engine(db_path)
 
-if not database_exists(eng.url):
-    create_database(eng.url)
+# if not database_exists(eng.url):
+#     create_database(eng.url)
 
-eng.connect().execute("commit")
+# eng.connect().execute("commit")
 
 Base = declarative_base()
 
