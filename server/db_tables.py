@@ -5,8 +5,10 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
 from sqlalchemy_utils import UUIDType, database_exists, create_database
-import uuid
 
+
+
+print(os.environ['DATABASE_URL'])
 
 db_path = 'postgresql+psycopg2://postgres:annie779572@localhost/annotations1'
 eng = create_engine(db_path)
@@ -27,7 +29,6 @@ class Survey(Base):
     approved = Column(Boolean, default=False)
     annotations = relationship("Annotation", backref='Survey')
     task_type = Column(SmallInteger)
-
 
 
 
