@@ -3,7 +3,7 @@ import random
 import uuid
 
 from flask import *
-from db_tables import ses, Recording, Annotation, Survey
+from server.db_tables import ses, Recording, Annotation, Survey
 
 
 try:
