@@ -67,7 +67,7 @@
                               <v-divider></v-divider>
                               <v-card-actions>
                                 <v-tooltip bottom class='v-input'>
-                                  <span>I am {{ item.confidence }}% certain that there is {{item.classification ? "" : "not"}} a {{item.label}} present in the recording.</span>
+                                  <span>I am {{ item.confidence }}% confident in my answer.</span>
                                   <v-slider thumb-label :step='10'
                                   slot='activator'
                                   :color='item.bet_step? "" : "grey"'
