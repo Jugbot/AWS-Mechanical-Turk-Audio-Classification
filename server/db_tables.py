@@ -34,8 +34,18 @@ class Annotation(Base):
     id : int
     class_label : str
         The class label of the sound event (e.g. siren_wailing), in the case of binary classification, it will always be the same label.
-   survey_id : int
-        The task used to create the annotation.
+    question_1 : int
+        The answer to the first question, if task type is 2. It takes values 0 for choosing the lottery and 1 for choosing their answer.
+    question_2 : int
+        The answer to the second question, if task type is 2. It takes values 0 for choosing the lottery and 1 for choosing their answer.
+    question_3 : int
+        The answer to the third question, if task type is 2. It takes values 0 for choosing the lottery and 1 for choosing their answer.
+    question_4 : int
+        The answer to the fourth question, if task type is 2. It takes values 0 for choosing the lottery and 1 for choosing their answer.
+    question_5 : int
+        The answer to the fifth question, if task type is 2. It takes values 0 for choosing the lottery and 1 for choosing their answer.
+    question_6 : int
+        The answer to the question for task type is 1. Takes values from 0 to 100
     recording_id : int
         Reference to the recording which was annotated.
     user_id : int
@@ -46,12 +56,18 @@ class Annotation(Base):
 
     id = Column(Integer, primary_key=True)
     class_label = Column(String)
-    bet = Column(Float)
+    question_1 = Column(Integer)
+    question_2 = Column(Integer)
+    question_3 = Column(Integer)
+    question_4 = Column(Integer)
+    question_5 = Column(Integer)
+    question_6 = Column(Integer)
     presence_of_label = Column(String)
     user_id = Column(String, ForeignKey('Survey.id'))
     recording_id = Column(Integer, ForeignKey("Recording.id"))
+    #task_id = Column(String, ForeignKey("Survey.id"))
 
-    recording = relationship("Recording", backref="annotations")
+    #recording = relationship("Recording", backref="annotations")
 
     def __repr__(self):
         return "<Annotation(id='{}', label='{}')>".format(self.id,
