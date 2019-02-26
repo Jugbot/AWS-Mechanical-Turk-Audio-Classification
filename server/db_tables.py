@@ -81,6 +81,7 @@ class Recording(Base):
     id = Column(Integer, primary_key=True)
     file_name = Column(String, unique=True)
     id_hash = Column(String)
+    jackhammer_presence = Column(SmallInteger)
     recording_group_id = Column(Integer, ForeignKey("RecordingGroup.id"))
 
 
