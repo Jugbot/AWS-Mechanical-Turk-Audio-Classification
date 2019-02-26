@@ -93,25 +93,19 @@
                               </v-card-title>
                               <v-divider></v-divider>
                               <v-card-actions>
-                                <template v-if='!item.bet_step || item.confidence < 100'>
-                                  <v-spacer></v-spacer>
-                                  <v-btn color="primary"
-                                  :disabled='item.bet_step'
-                                  @click='item.bet_step=true'>
-                                    <flash v-model='animate'>{{item.confidence}}¢</flash>
-                                  </v-btn>
-                                </template>
                                 <v-spacer></v-spacer>
-                                <template v-if='!item.bet_step || item.confidence == 100'>
-                                  <v-btn color="primary"
-                                  :disabled='item.bet_step'
-                                  @click='item.confidence += 10;
-                                  item.bet_step=(item.confidence == 100);
-                                  animate = true'>
-                                    keep playing
-                                  </v-btn>
-                                  <v-spacer></v-spacer>
-                                </template>
+                                <v-btn color="primary"
+                                :disabled='item.bet_step'
+                                @click='addChoice(item, false)'>
+                                  <flash v-model='animate'>{{item.confidence}}¢</flash>
+                                </v-btn>
+                                <v-spacer></v-spacer>
+                                <v-btn color="primary"
+                                :disabled='item.bet_step'
+                                @click='addChoice(item, true)'>
+                                  <span>keep playing</span>
+                                </v-btn>
+                                <v-spacer></v-spacer>
                               </v-card-actions>
                             </v-card>
                           </v-flex>
@@ -206,18 +200,26 @@ export default {
             'class_step': false,
             'bet_step': false,
             'confidence': 50,
-            'classification': null,},
+            'classification': null,
+            'choices': [],},
         {"file": "soundscape_train_bimodal0.wav", "label": "jackhammer",
             'audio_step': false,
             'class_step': false,
             'bet_step': false,
             'confidence': 50,
-            'classification': null,}
+            'classification': null,
+            'choices': [],}
       ],
       animate: false
     }
   },
   methods: {
+    addChoice(item, choice) {
+      item.choices.push(choice)
+      item.confidence += 10
+      item.bet_step=(item.confidence == 100)
+      this.animate = true
+    },
     submit() {
       let data = {
         'id': this.id,
@@ -241,6 +243,7 @@ export default {
           'bet_step': false,
           'confidence': 50,
           'classification': null,
+          'choices': [],
       })
     }
     this.items = args['items']

@@ -4,12 +4,14 @@ from sqlalchemy import *
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
+from sqlalchemy.dialects import postgresql
 
 db_path = ''
 try:
     db_path = os.environ['DATABASE_URL']
 except:
-    db_path = 'postgresql+psycopg2://postgres:annie779572@sound-annotation.herokuapp.com//annotations1'
+    f = open('secrets', 'r')
+    db_path = f.read()
 
 eng = create_engine(db_path)
 Base = declarative_base()
@@ -56,12 +58,8 @@ class Annotation(Base):
 
     id = Column(Integer, primary_key=True)
     class_label = Column(String)
-    question_1 = Column(Integer)
-    question_2 = Column(Integer)
-    question_3 = Column(Integer)
-    question_4 = Column(Integer)
-    question_5 = Column(Integer)
-    question_6 = Column(Integer)
+    confidence = Column(Integer)
+    choices = Column(postgresql.ARRAY(Integer))
     presence_of_label = Column(String)
     user_id = Column(String, ForeignKey('Survey.id'))
     recording_id = Column(Integer, ForeignKey("Recording.id"))

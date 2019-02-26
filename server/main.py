@@ -17,8 +17,9 @@ def hello_world():
     random.seed(id)
     task_type = random.randrange(1, 3)
     result = [r for [r,] in ses.query(Recording.file_name).all()]
-    print(result)
+    print(ses.query(Recording).all())
     files = random.sample(result, len(result))
+    print(files)
     labels = ["jackhammer"] * len(files)
     items = []
     for file, label in zip(files, labels):
@@ -46,8 +47,13 @@ def results():
     survey = ses.query(Survey).filter(Survey.id == data['id']).one()
 
     for item in data['items']:
-        rec = ses.query(Recording).filter(Recording.file_name==item["file"]).one()
-        survey.annotations.append(Annotation(recording=rec, class_label=item['label'], bet=item['confidence']))
+        rec_id = ses.query(Recording.id).filter(Recording.file_name==item["file"]).one()
+        ann = Annotation(recording_id=rec_id, class_label=item['label'], presence_of_label=item['classification'])
+        if (survey.task_type == 1):
+            ann.confidence = item['confidence']
+        else:
+            ann.choices = map(int, item['choices'])
+        survey.annotations.append(ann)
     ses.commit()
     return "success"
 
