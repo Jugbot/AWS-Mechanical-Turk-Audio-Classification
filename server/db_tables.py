@@ -61,10 +61,9 @@ class Annotation(Base):
     confidence = Column(Integer)
     choices = Column(postgresql.ARRAY(Integer))
     presence_of_label = Column(String)
-    user_id = Column(String, ForeignKey('Survey.id'))
+    survey_id = Column(String, ForeignKey('Survey.id'))
     recording_id = Column(Integer, ForeignKey("Recording.id"))
-    #task_id = Column(String, ForeignKey("Survey.id"))
-    #recording = relationship("Recording", backref="annotations")
+    recording = relationship("Recording", backref="annotations")
 
     # bonus calculations
     lotto_choice = Column(Integer)
@@ -82,7 +81,8 @@ class Recording(Base):
     id = Column(Integer, primary_key=True)
     file_name = Column(String, unique=True)
     id_hash = Column(String)
-    jackhammer_presence = Column(SmallInteger)
+    label = Column(String)
+    presence = Column(SmallInteger)
     recording_group_id = Column(Integer, ForeignKey("RecordingGroup.id"))
 
 
