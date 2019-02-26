@@ -64,8 +64,11 @@ class Annotation(Base):
     user_id = Column(String, ForeignKey('Survey.id'))
     recording_id = Column(Integer, ForeignKey("Recording.id"))
     #task_id = Column(String, ForeignKey("Survey.id"))
-
     #recording = relationship("Recording", backref="annotations")
+
+    # bonus calculations
+    lotto_choice = Column(Integer)
+    won = Column(Integer)
 
     def __repr__(self):
         return "<Annotation(id='{}', label='{}')>".format(self.id,
