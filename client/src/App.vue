@@ -57,8 +57,9 @@
                             </v-card-actions>
                           </v-card>
                         </v-flex>
-                        <!-- Bet -->
+                        <!-- Confidence & Lottery -->
                         <template v-if='task_type==1'>
+                          <!-- Type 1: Confidence -->
                           <v-flex v-show='item.class_step'>
                             <v-card>
                               <v-card-title>
@@ -73,9 +74,8 @@
                                   :color='item.bet_step? "" : "grey"'
                                   v-model="item.confidence"
                                   @change='item.bet_step=true'>
-                                    <span slot='append'>
-                                      {{ item.confidence }}%
-                                    </span>
+                                    <span slot='prepend'>0%</span>
+                                    <span slot='append'>100%</span>
                                   </v-slider>
                                 </v-tooltip>
                               </v-card-actions>
@@ -83,6 +83,7 @@
                           </v-flex>
                         </template>
                         <template v-if='task_type==2'>
+                          <!-- Type 2: Lottery -->
                           <v-flex v-show='item.class_step'>
                             <v-card>
                               <v-card-title>
@@ -188,7 +189,7 @@ export default {
       instructions_dialog: true,
       submit_dialog: false,
       args: null,
-      task_type: 2,
+      task_type: 1,
       step: 1,
       random: {
         m_w: 123456789,
