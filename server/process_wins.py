@@ -1,27 +1,43 @@
 import random
-from db_tables import ses, Recording, Annotation, Survey, RecordingGroup
+from server.db_tables import ses, Recording, Annotation, Survey, RecordingGroup
 
 
 if __name__ == "__main__":
-	annotations = ses.query(Annotation).filter(Annotation.confidence == None, Annotation.won == None).all()
+	annotations = ses.query(Annotation).filter(Annotation.won == None).all()
 	for ann in annotations:
 		randchoice = random.randint(0, 4)
 		ann.lotto_choice = randchoice
-		didwin = None
+		did_win = None
 		if ann.choices[randchoice]: # your answer
-			didwin = int(ann.recording.presence == ann.presence_of_label)
+			did_win = int(ann.recording.presence == ann.presence_of_label)
 		else:
 			chance = (randchoice + 5)/10
-			didwin = int(random.random() < chance)
-		ann.won = didwin
-		ses.commit()
+			did_win = int(random.random() < chance)
+		ann.won = did_win
+	ses.commit()
 
-	annotations = ses.query(Annotation).filter(Annotation.choices == None, Annotation.won == None).all()
-	for ann in annotations:
-		true_label = ses.query(Recording).filter(ann.recording_id == Recording.id)
-		if true_label.presence == True and ann.presence_of_label == 1:
-			didwin = 1
-		else:
-			didwin = 0
-		ann.won = didwin
-		ses.commit()
+
+def bonus_type_two(ann: Annotation):
+	randchoice = random.randint(0, 4)
+	ann.lotto_choice = randchoice
+	did_win = None
+	spin_result = None
+	response = {}
+	is_your_answer = ann.choices[randchoice]
+	if is_your_answer:
+		did_win = int(ann.recording.presence == ann.presence_of_label)
+	else:
+		spin_result = random.random()
+		percent = (randchoice + 5) * 10
+		did_win = int(spin_result < percent / 100)
+		response['chance'] = percent
+		response['spin'] = spin_result
+	ann.won = did_win
+	response['type'] = is_your_answer
+	response['won'] = did_win
+	return response
+
+
+def bonus_type_one(ann: Annotation):
+	ann.won = int(ann.recording.presence == ann.presence_of_label)
+	return {'won': ann.won, 'type': 1}

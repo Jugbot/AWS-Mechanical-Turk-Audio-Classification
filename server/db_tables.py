@@ -23,7 +23,8 @@ class Survey(Base):
 
     id = Column(String, primary_key=True)
     approved = Column(Boolean, default=False)
-    annotations = relationship("Annotation", backref='Survey')
+    annotations = relationship("Annotation", back_populates='survey')
+    recording_group_id = Column(Integer, ForeignKey("RecordingGroup.id"))
     task_type = Column(SmallInteger)
 
 
@@ -61,17 +62,27 @@ class Annotation(Base):
     confidence = Column(Integer)
     choices = Column(postgresql.ARRAY(Integer))
     presence_of_label = Column(String)
-    survey_id = Column(String, ForeignKey('Survey.id'))
-    recording_id = Column(Integer, ForeignKey("Recording.id"))
-    recording = relationship("Recording", backref="annotations")
-
     # bonus calculations
     lotto_choice = Column(Integer)
-    won = Column(Integer)
+    won = Column(SmallInteger)
+    """ relationships """
+    survey_id = Column(String, ForeignKey("Survey.id"))
+    survey = relationship("Survey", back_populates='annotations')
+    recording_id = Column(Integer, ForeignKey("Recording.id"))
+    recording = relationship("Recording", uselist=False)
 
     def __repr__(self):
         return "<Annotation(id='{}', label='{}')>".format(self.id,
                                                           self.class_label,)
+
+
+class RecordingGroup(Base):
+
+    __tablename__ = "RecordingGroup"
+
+    id = Column(Integer, primary_key=True)
+    """ relationships """
+    recordings = relationship("Recording", back_populates="group")
 
 
 class Recording(Base):
@@ -82,15 +93,10 @@ class Recording(Base):
     file_name = Column(String, unique=True)
     id_hash = Column(String)
     label = Column(String)
-    presence = Column(SmallInteger)
-    recording_group_id = Column(Integer, ForeignKey("RecordingGroup.id"))
-
-
-class RecordingGroup(Base):
-
-    __tablename__ = "RecordingGroup"
-
-    id = Column(Integer, primary_key=True)
+    presence = Column(SmallInteger, nullable=False)
+    """ relationships """
+    group_id = Column(Integer, ForeignKey("RecordingGroup.id"))
+    group = relationship("RecordingGroup", back_populates="recordings")
 
 
 Base.metadata.bind = eng
@@ -98,8 +104,10 @@ Session = sessionmaker(bind=eng)
 ses = Session()
 
 if __name__ == "__main__":
-    print("recreating database...")
-    Base.metadata.drop_all()
+    print("Wipe & reset database?")
+    if input("Y/n: ") == "Y":
+        print("recreating database...")
+        Base.metadata.drop_all()
 
 Base.metadata.create_all()
 

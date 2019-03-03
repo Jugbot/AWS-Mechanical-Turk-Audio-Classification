@@ -30,7 +30,7 @@
               <!-- Current Task -->
               <v-window v-model='step'>
                 <v-window-item v-for='item, index in items'
-                :key='item.label+item.file'
+                :key='item.file'
                 :value='index+1'>
                   <v-card-text>
                     <v-container grid-list-lg>
@@ -118,34 +118,70 @@
               </v-window>
               <!-- Navigation -->
               <v-card-actions>
-                <v-btn
+                <!-- <v-btn
                   :disabled="step === 1"
                   flat
                   @click="step--">
                   Back
-                </v-btn>
+                </v-btn> -->
                 <v-spacer></v-spacer>
                 {{step}}/{{items.length}}
                 <v-spacer></v-spacer>
-                <v-btn v-if="step !== items.length"
-                  color="primary"
-                  depressed
+                <v-btn depressed
+                  :color="step !== items.length ? 'primary' : 'success'"
                   :disabled='!items[step-1].bet_step'
-                  @click="step++">
-                  Next
-                </v-btn>
-                <v-btn v-else
-                  color="success"
-                  depressed
-                  :disabled='!items[step-1].bet_step'
-                  @click="submit()">
-                  Submit
+                  @click="submitOne(items[step-1])">
+                  {{ step !== items.length ? 'Next' : 'Finish'}}
                 </v-btn>
               </v-card-actions>
+              <!-- Round Submit Results -->
+              <v-dialog persistent
+                v-model="round_dialog"
+                width="500">
+                <v-card>
+                  <v-card-title class="headline">Round Results</v-card-title>
+                  <template v-if="round_response.pending">
+                    <v-card-text class='text-sm-center'>
+                      <v-progress-circular
+                        color="primary"
+                        indeterminate
+                        :size="64">
+                      </v-progress-circular>
+                    </v-card-text>
+                  </template>
+                  <template v-else>
+                    <v-card-text v-if='round_response.type === 0'>
+                      <spinner :chance='round_response.chance' :result='round_response.spin'
+                      class='elevation-10'/>
+                    </v-card-text>
+                    <v-card-text v-if='round_response.type === 1'
+                    class='text-sm-center'>
+                      <span v-if='round_response.won'>
+                        <h1 class='green--text'>Answer is correct</h1>
+                        <h3>You won a dollar!</h3>
+                      </span>
+                      <span v-else>
+                        <h1 class='red--text'>Answer is incorrect</h1>
+                        <h3>No dollar won :(</h3>
+                      </span>
+                    </v-card-text>
+                    <v-card-actions>
+                      <v-spacer></v-spacer>
+                      <v-btn color="primary"
+                        depressed
+                        @click="round_dialog=false;
+                        if(step === items.length)submit_dialog=true;
+                        else step++;">
+                        Next
+                      </v-btn>
+                    </v-card-actions>
+                  </template>
+                </v-card>
+              </v-dialog>
             </v-card>
           </v-form>
-          <!-- Submit Message -->
-          <v-dialog
+          <!-- Final Submit Message -->
+          <v-dialog persistent
             v-model="submit_dialog"
             width="500">
             <v-card>
@@ -156,6 +192,18 @@
                 outline solo readonly
                 :value='id'>
                 </v-text-field>
+              </v-card-text>
+            </v-card>
+          </v-dialog>
+          <!-- Error Message -->
+          <v-dialog
+            v-model="error_dialog"
+            width="500">
+            <v-card color='error'>
+              <v-card-title class="headline">Fatal Error</v-card-title>
+              <v-card-text>
+                <p>There was an error submitting information to the server:</p>
+                <code>{{error_message}}</code>
               </v-card-text>
             </v-card>
           </v-dialog>
@@ -174,12 +222,14 @@
 <script>
 import VuetifyAudio from 'vuetify-audio'
 import TextHighlight from './components/TextHighlight'
+import Spinner from './components/Spinner'
 
 export default {
   name: 'App',
   components: {
     'v-audio': VuetifyAudio,
     'flash': TextHighlight,
+    'spinner': Spinner,
   },
   data () {
     return {
@@ -188,13 +238,18 @@ export default {
       read_only: false,
       instructions_dialog: true,
       submit_dialog: false,
-      args: null,
+      error_dialog: false,
+      error_message: "Cause unknown.",
+      round_dialog: false,
+      round_response: {
+        type: 0,
+        won: 1,
+        spin: 0.574,
+        chance: 70,
+        pending: false,
+      },
       task_type: 1,
       step: 1,
-      random: {
-        m_w: 123456789,
-        m_z: 987654321
-      },
       items: [
         {"file": "soundscape_train_bimodal02.wav", "label": "jackhammer",
             'audio_step': false,
@@ -211,7 +266,7 @@ export default {
             'classification': null,
             'choices': [],}
       ],
-      animate: false
+      animate: false,
     }
   },
   methods: {
@@ -221,14 +276,30 @@ export default {
       item.bet_step=(item.confidence == 100)
       this.animate = true
     },
-    submit() {
+    submitAll() {
       let data = {
         'id': this.id,
         'items': this.items,
       }
-      axios.post("/post", data)
+      axios.post("/post/all", data)
 
       this.submit_dialog = true
+    },
+    submitOne(item) {
+      let data = {
+        'id': this.id,
+        'item': item,
+      }
+
+      this.round_response.pending = true
+      this.round_dialog = true
+      axios.post("/post/one", data).then(response => {
+        for (let key in response.data)
+          if (response.data.hasOwnProperty(key))
+            this.round_response[key] = response.data[key]
+
+        this.round_response.pending = false
+      })
     },
   },
   created() {

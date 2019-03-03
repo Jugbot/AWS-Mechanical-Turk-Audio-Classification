@@ -4,6 +4,25 @@
   </div>
 </template>
 
+<script>
+export default {
+  name: "text-highlight",
+  props: {
+    value: Boolean,
+  },
+  watch: {
+    value(newval, oldval) {
+      if (newval) {
+        setTimeout(() => {
+          this.$emit('input', false)
+        }, 1000)
+
+      }
+    }
+  }
+}
+</script>
+
 <style lang="css" scoped>
 .highlight {
   display:inline-block;
@@ -55,22 +74,3 @@
   }
 }
 </style>
-
-<script>
-export default {
-  name: "text-highlight",
-  props: {
-    value: Boolean,
-  },
-  watch: {
-    value(newval, oldval) {
-      if (newval) {
-        setTimeout(() => {
-          this.$emit('input', false)
-        }, 1000)
-
-      }
-    }
-  }
-}
-</script>
