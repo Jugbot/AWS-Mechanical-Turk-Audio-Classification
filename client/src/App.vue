@@ -60,7 +60,7 @@
                                   <span>I am {{ item.confidence }}% confident in my answer.</span>
                                   <v-slider thumb-label :step='10'
                                   slot='activator'
-                                  :color='item.bet_step? "" : "grey"'
+                                  :color='item.bet_step ? "" : "grey"'
                                   v-model="item.confidence"
                                   @change='item.bet_step=true'>
                                     <span slot='prepend'>0%</span>
@@ -88,13 +88,13 @@
                                 <v-btn color="primary"
                                 :disabled='item.bet_step'
                                 @click='addChoice(item, false)'>
-                                  <flash v-model='animate'>{{item.confidence}}¢</flash>
+                                  <span><flash v-model='animate'>{{item.confidence}}%</flash> chance lottery</span>
                                 </v-btn>
                                 <v-spacer></v-spacer>
                                 <v-btn color="primary"
                                 :disabled='item.bet_step'
                                 @click='addChoice(item, true)'>
-                                  <span>keep playing</span>
+                                  <span>Correctly answering the question</span>
                                 </v-btn>
                                 <v-spacer></v-spacer>
                               </v-card-actions>
