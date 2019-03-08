@@ -78,8 +78,8 @@
                               <v-card-title>
                                 <span>
                                   <b>You have the chance to win a dollar in one of the following ways (choose one):</b> <br>
-                                  1) by correctly answering the question, or <br>
-                                  2) by lottery (<flash v-model='animate'>{{item.confidence}}%</flash> chance of winning).
+                                  1) by lottery (<flash v-model='animate'>{{item.confidence}}%</flash> chance of winning), or<br>
+                                  2) by correctly answering the question
                                 </span>
                               </v-card-title>
                               <v-divider></v-divider>
