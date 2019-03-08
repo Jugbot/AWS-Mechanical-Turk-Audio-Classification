@@ -6,7 +6,7 @@
           <!-- Instructions -->
           <v-dialog
             v-model="instructions_dialog"
-            width="500">
+            width="600">
             <v-card>
               <v-card-title class="headline">Instructions</v-card-title>
               <v-card-text>
@@ -87,10 +87,11 @@
                           <v-flex v-show='item.class_step'>
                             <v-card>
                               <v-card-title>
-                                <div>
-                                If you had the opportunity to choose, would you take <flash v-model='animate'>{{item.confidence}}¢</flash> now or would you keep playing?
-                                Knowing that you can keep a dollar if your answer is correct or lose it all if not.
-                                </div>
+                                <span>
+                                  <b>You have the chance to win a dollar in one of the following ways (choose one):</b> <br>
+                                  1) by correctly answering the question, or <br>
+                                  2) by lottery (<flash v-model='animate'>{{item.confidence}}%</flash> chance of winning).
+                                </span>
                               </v-card-title>
                               <v-divider></v-divider>
                               <v-card-actions>
@@ -248,7 +249,7 @@ export default {
         chance: 70,
         pending: false,
       },
-      task_type: 1,
+      task_type: 2,
       step: 1,
       items: [
         {"file": "soundscape_train_bimodal02.wav", "label": "jackhammer",
