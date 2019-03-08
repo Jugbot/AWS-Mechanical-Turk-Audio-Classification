@@ -2,13 +2,12 @@
   <svg viewBox="0 0 32 32" :style="{'background': secondary}">
     <circle r="16" cx="16" cy="16" class='pie' :style="{'stroke-dasharray': chance +' 100', 'stroke': primary, 'fill': secondary}"/>
     <circle r='4' cx="16" cy="16" class='pin'/>
-    <rect x="16" y="16" width="4" height="4" :transform="'rotate('+(result*360-45)+')'"/>
+    <rect x="16" y="16" width="4" height="4" :style="{'transform': 'rotate('+(current_spin*360-45)+'deg)'}"/>
   </svg>
 </template>
 
 <script>
 export default {
-  //:transform="'rotate('+(result*360-45)+', 16, 16)'"
   name: 'spinner',
   props: {
     chance: {
@@ -19,6 +18,9 @@ export default {
       type: Number,
       required: true,
     },
+    activated: {
+      type: Boolean,
+    },
     primary: {
       type: String,
       default: '#2196F3',
@@ -27,15 +29,22 @@ export default {
       type: String,
       default: '#ECEFF1',
     },
+  },
+  data() {
+    return {
+      current_spin: -8,
+    }
+  },
+  watch: {
+    activated() {
+      this.current_spin = this.result;
+      console.log('hello thaar')
+    }
   }
 }
 </script>
 
 <style lang="css" scoped>
-@keyframes spin {
-  from { transform: rotate(-3600deg); }
-}
-
 svg {
   width: 100%;
   transform: rotate(-90deg);
@@ -49,7 +58,9 @@ circle.pin {
 }
 rect {
   transform-origin: 50% 50%;
-  animation: spin 4s cubic-bezier(0.22, 0.61, 0.36, 1);
+  /* transform: rotate(-3645deg); */
+  transition: transform 4s cubic-bezier(0.22, 0.61, 0.36, 1);
+  /* animation: spin 4s cubic-bezier(0.22, 0.61, 0.36, 1); */
   fill: black;
 }
 </style>

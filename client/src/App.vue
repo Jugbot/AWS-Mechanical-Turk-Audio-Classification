@@ -3,23 +3,8 @@
     <v-container>
       <v-layout justify-center align-center fill-height>
         <v-flex>
-          <!-- Instructions -->
-          <v-dialog
-            v-model="instructions_dialog"
-            width="600">
-            <v-card>
-              <v-card-title class="headline">Instructions</v-card-title>
-              <v-card-text>
-                <p>Listen to short audio clips and determine if a sound is present.</p>
-                <p>You will be asked to give a confidence on your answer.</p>
-                <p>Your answer may determine bonus payout.</p>
-              </v-card-text>
-            </v-card>
-          </v-dialog>
-          <!-- Assignments -->
           <v-form>
             <v-card color='deep-purple lighten-5' v-if='items.length'>
-              <!-- Price -->
               <v-card-title primary-title>
                 <v-layout justify-center>
                   <h3 class="headline">
@@ -27,7 +12,8 @@
                   </h3>
                 </v-layout>
               </v-card-title>
-              <!-- Current Task -->
+              <!-- Tasks -->
+              <!--       -->
               <v-window v-model='step'>
                 <v-window-item v-for='item, index in items'
                 :key='item.file'
@@ -36,10 +22,12 @@
                     <v-container grid-list-lg>
                       <v-layout column>
                         <!-- Audio -->
+                        <!--       -->
                         <v-flex>
                           <v-audio :file='"assets/audio/" + item.file' :ended='() => {item.audio_step=true}'></v-audio>
                         </v-flex>
                         <!-- Classification -->
+                        <!--                -->
                         <v-flex>
                           <v-card>
                             <v-card-title>
@@ -58,6 +46,7 @@
                           </v-card>
                         </v-flex>
                         <!-- Confidence & Lottery -->
+                        <!--                      -->
                         <template v-if='task_type==1'>
                           <!-- Type 1: Confidence -->
                           <v-flex v-show='item.class_step'>
@@ -118,13 +107,8 @@
                 </v-window-item>
               </v-window>
               <!-- Navigation -->
+              <!--            -->
               <v-card-actions>
-                <!-- <v-btn
-                  :disabled="step === 1"
-                  flat
-                  @click="step--">
-                  Back
-                </v-btn> -->
                 <v-spacer></v-spacer>
                 {{step}}/{{items.length}}
                 <v-spacer></v-spacer>
@@ -136,6 +120,7 @@
                 </v-btn>
               </v-card-actions>
               <!-- Round Submit Results -->
+              <!--                      -->
               <v-dialog persistent
                 v-model="round_dialog"
                 width="500">
@@ -151,20 +136,27 @@
                     </v-card-text>
                   </template>
                   <template v-else>
-                    <v-card-text v-if='round_response.type === 0'>
-                      <spinner :chance='round_response.chance' :result='round_response.spin'
-                      class='elevation-10'/>
-                    </v-card-text>
-                    <v-card-text v-if='round_response.type === 1'
-                    class='text-sm-center'>
-                      <span v-if='round_response.won'>
-                        <h1 class='green--text'>Answer is correct</h1>
-                        <h3>You won a dollar!</h3>
-                      </span>
-                      <span v-else>
-                        <h1 class='red--text'>Answer is incorrect</h1>
-                        <h3>No dollar won :(</h3>
-                      </span>
+                    <v-card-text>
+                      <template v-if='task_type == 2'>
+                        <span>Choosing from one of your responses, </span>
+                        <span v-if='round_response.type == 0'>a {{ round_response.chance }} chance lottery will be done. </span>
+                        <span v-else>your answer will be tested. </span>
+                      </template>
+                      <template v-if='round_response.type == 0'>
+                        <spinner :chance='round_response.chance' :result='round_response.spin' :activated='round_response.spinner_activate'
+                        class='elevation-10'/>
+                      </template>
+                      <template v-if='round_response.type == 1'
+                      class='text-sm-center'>
+                        <span v-if='round_response.won'>
+                          <h1 class='green--text'>Answer is correct</h1>
+                          <h3>You won a dollar!</h3>
+                        </span>
+                        <span v-else>
+                          <h1 class='red--text'>Answer is incorrect</h1>
+                          <h3>No dollar won :(</h3>
+                        </span>
+                      </template>
                     </v-card-text>
                     <v-card-actions>
                       <v-spacer></v-spacer>
@@ -181,7 +173,22 @@
               </v-dialog>
             </v-card>
           </v-form>
+          <!-- Instructions Message -->
+          <!--                      -->
+          <v-dialog
+            v-model="instructions_dialog"
+            width="600">
+            <v-card>
+              <v-card-title class="headline">Instructions</v-card-title>
+              <v-card-text>
+                <p>Listen to short audio clips and determine if a sound is present.</p>
+                <p>You will be asked to give a confidence on your answer.</p>
+                <p>Your answer may determine bonus payout.</p>
+              </v-card-text>
+            </v-card>
+          </v-dialog>
           <!-- Final Submit Message -->
+          <!--                      -->
           <v-dialog persistent
             v-model="submit_dialog"
             width="500">
@@ -197,6 +204,7 @@
             </v-card>
           </v-dialog>
           <!-- Error Message -->
+          <!--               -->
           <v-dialog
             v-model="error_dialog"
             width="500">
@@ -243,6 +251,7 @@ export default {
       error_message: "Cause unknown.",
       round_dialog: false,
       round_response: {
+        spinner_activate: false,
         type: 0,
         won: 1,
         spin: 0.574,
