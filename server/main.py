@@ -67,18 +67,18 @@ def result():
     
     if survey.task_type == 1:
         ann.confidence = item['confidence']
-        response = jsonify(bonus_type_one(ann))
+        response = bonus_type_one(ann)
     elif survey.task_type == 2:
         ann.choices = [int(c) for c in item['choices']]
-        response = jsonify(bonus_type_two(ann))
+        response = bonus_type_two(ann)
     else:
         ses.rollback()
         app.logger.info("Incorrect task type (%s)", survey.task_type)
-        return response
+        return jsonify(response)
 
     survey.annotations.append(ann)
     ses.commit()
-    return response
+    return jsonify(response)
 
 
 if __name__ == "__main__":

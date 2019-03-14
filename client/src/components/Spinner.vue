@@ -18,7 +18,7 @@ export default {
       type: Number,
       required: true,
     },
-    activated: {
+    activate: {
       type: Boolean,
     },
     primary: {
@@ -36,7 +36,7 @@ export default {
     }
   },
   watch: {
-    activated() {
+    activate() {
       this.current_spin = this.result
       setTimeout(() => {
         this.$emit('complete');

@@ -148,7 +148,7 @@
                         <v-flex grow xs10 offset-xs1>
                           <spinner :chance='round_response.chance'
                           :result='round_response.spin'
-                          :activated='round_response.spinner_activate'
+                          :activate='round_response.spinner_activate'
                           @complete='round_response.complete = true'
                           class='elevation-10'/>
                         </v-flex>
@@ -223,6 +223,10 @@
               <v-card-text>
                 <p>There was an error submitting information to the server:</p>
                 <code>{{error_message}}</code>
+                <p>
+                  Please refresh the browser. If the issue persists
+                  contact the owner for assistance.
+                </p>
               </v-card-text>
             </v-card>
           </v-dialog>
@@ -291,20 +295,15 @@ export default {
     }
   },
   methods: {
+    handleError(error) {
+      this.error_message = error;
+      this.error_dialog = true;
+    },
     addChoice(item, choice) {
       item.choices.push(choice)
       item.confidence += 10
       item.bet_step=(item.confidence == 100)
       this.animate = true
-    },
-    submitAll() {
-      let data = {
-        'id': this.id,
-        'items': this.items,
-      }
-      axios.post("/post/all", data)
-
-      this.submit_dialog = true
     },
     submitOne(item) {
       let data = {
@@ -318,14 +317,20 @@ export default {
         for (let key in response.data)
           if (response.data.hasOwnProperty(key))
             this.round_response[key] = response.data[key]
-
+        console.log(this.round_response)
         this.round_response.pending = false
+        setTimeout(() => {
+          this.round_response.spinner_activate = true
+        }, 500);
+      }).catch(error => {
+        this.handleError(error)
       })
     },
   },
   created() {
     let args = window.surveydata
     this.task_type = parseInt(args['task_type'], 10)
+    console.log("task: " + this.task_type)
     this.id = args['id']
 
     // add defaults

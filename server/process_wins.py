@@ -1,6 +1,7 @@
 import random
 from server.db_tables import ses, Recording, Annotation, Survey, RecordingGroup
 
+TYPE_YOUR_ANSWER = 1
 
 if __name__ == "__main__":
 	annotations = ses.query(Annotation).filter(Annotation.won == None).all()
@@ -23,8 +24,8 @@ def bonus_type_two(ann: Annotation):
 	did_win = None
 	spin_result = None
 	response = {}
-	is_your_answer = ann.choices[randchoice]
-	if is_your_answer:
+	type_choice= ann.choices[randchoice]
+	if type_choice == TYPE_YOUR_ANSWER:
 		did_win = int(ann.recording.presence == ann.presence_of_label)
 	else:
 		spin_result = random.random()
@@ -33,11 +34,11 @@ def bonus_type_two(ann: Annotation):
 		response['chance'] = percent
 		response['spin'] = spin_result
 	ann.won = did_win
-	response['type'] = is_your_answer
+	response['type'] = type_choice
 	response['won'] = did_win
 	return response
 
 
 def bonus_type_one(ann: Annotation):
 	ann.won = int(ann.recording.presence == ann.presence_of_label)
-	return {'won': ann.won, 'type': 1}
+	return {'won': ann.won, 'type': TYPE_YOUR_ANSWER}
