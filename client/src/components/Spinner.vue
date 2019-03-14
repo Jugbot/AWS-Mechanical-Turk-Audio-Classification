@@ -37,8 +37,10 @@ export default {
   },
   watch: {
     activated() {
-      this.current_spin = this.result;
-      console.log('hello thaar')
+      this.current_spin = this.result
+      setTimeout(() => {
+        this.$emit('complete');
+      }, 4* 1000)
     }
   }
 }
@@ -46,7 +48,7 @@ export default {
 
 <style lang="css" scoped>
 svg {
-  width: 100%;
+  /* width: 100%; */
   transform: rotate(-90deg);
   border-radius: 50%;
 }
@@ -54,13 +56,13 @@ circle.pie {
   stroke-width: 32;
 }
 circle.pin {
-  fill: black;
+  fill: #263238;
 }
 rect {
   transform-origin: 50% 50%;
   /* transform: rotate(-3645deg); */
   transition: transform 4s cubic-bezier(0.22, 0.61, 0.36, 1);
   /* animation: spin 4s cubic-bezier(0.22, 0.61, 0.36, 1); */
-  fill: black;
+  fill: #263238;
 }
 </style>

@@ -136,28 +136,38 @@
                     </v-card-text>
                   </template>
                   <template v-else>
-                    <v-card-text>
-                      <template v-if='task_type == 2'>
-                        <span>Choosing from one of your responses, </span>
-                        <span v-if='round_response.type == 0'>a {{ round_response.chance }} chance lottery will be done. </span>
-                        <span v-else>your answer will be tested. </span>
-                      </template>
-                      <template v-if='round_response.type == 0'>
-                        <spinner :chance='round_response.chance' :result='round_response.spin' :activated='round_response.spinner_activate'
-                        class='elevation-10'/>
-                      </template>
-                      <template v-if='round_response.type == 1'
-                      class='text-sm-center'>
-                        <span v-if='round_response.won'>
-                          <h1 class='green--text'>Answer is correct</h1>
-                          <h3>You won a dollar!</h3>
-                        </span>
-                        <span v-else>
-                          <h1 class='red--text'>Answer is incorrect</h1>
-                          <h3>No dollar won :(</h3>
-                        </span>
-                      </template>
+                    <v-card-text v-if='task_type == 2'
+                    class="subheading">
+                      <span>Based on one of your responses, you chose to </span>
+                      <span v-if='round_response.type == 0'>draw a {{ round_response.chance }}% chance lottery. </span>
+                      <span v-else>test your answer. </span>
                     </v-card-text>
+                    <v-divider></v-divider>
+                    <v-card-text v-if='round_response.type == 0'>
+                      <v-layout>
+                        <v-flex grow xs10 offset-xs1>
+                          <spinner :chance='round_response.chance'
+                          :result='round_response.spin'
+                          :activated='round_response.spinner_activate'
+                          @complete='round_response.complete = true'
+                          class='elevation-10'/>
+                        </v-flex>
+                      </v-layout>
+                    </v-card-text>
+                    <v-card-text :style="{visibility: (round_response.complete || round_response.type == 1) ? 'visible' : 'hidden'}"
+                    class='text-sm-center'>
+                      <span v-if='round_response.won'>
+                        <h1 class='green--text'>You won a dollar!</h1>
+                        <h3 v-if='round_response.type == 1'>Answer is correct</h3>
+                        <h3 v-else>You won the lottery</h3>
+                      </span>
+                      <span v-else>
+                        <h1 class='red--text'>No dollar won :(</h1>
+                        <h3 v-if='round_response.type == 1'>Answer is incorrect</h3>
+                        <h3 v-else>You lost the lottery</h3>
+                      </span>
+                    </v-card-text>
+                    <v-divider></v-divider>
                     <v-card-actions>
                       <v-spacer></v-spacer>
                       <v-btn color="primary"
@@ -257,6 +267,7 @@ export default {
         spin: 0.574,
         chance: 70,
         pending: false,
+        complete: false,
       },
       task_type: 2,
       step: 1,
