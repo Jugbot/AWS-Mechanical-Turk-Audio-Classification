@@ -1,10 +1,11 @@
-<template>
+<template lang="html">
   <v-app>
     <v-container>
       <v-layout justify-center align-center fill-height>
-        <v-flex>
-          <v-form>
+          <v-flex>
             <v-card color='deep-purple lighten-5' v-if='items.length'>
+              <v-btn flat icon color="grey" @click='instructions_dialog=true'
+              style='position:absolute;right:0;top:0;z-index:100;'>?</v-btn>
               <v-card-title primary-title>
                 <v-layout justify-center>
                   <h3 class="headline">
@@ -83,20 +84,17 @@
                                 </span>
                               </v-card-title>
                               <v-divider></v-divider>
-                              <v-card-actions>
-                                <v-spacer></v-spacer>
-                                <v-btn color="primary"
-                                :disabled='item.bet_step'
-                                @click='addChoice(item, false)'>
-                                  <span><flash v-model='animate'>{{item.confidence}}%</flash> chance lottery</span>
-                                </v-btn>
-                                <v-spacer></v-spacer>
-                                <v-btn color="primary"
-                                :disabled='item.bet_step'
-                                @click='addChoice(item, true)'>
-                                  <span>Correctly answering the question</span>
-                                </v-btn>
-                                <v-spacer></v-spacer>
+                              <v-card-actions class='layout justify-space-around row wrap'>
+                                  <v-btn color="primary"
+                                  :disabled='item.bet_step'
+                                  @click='addChoice(item, false)'>
+                                    <span><flash v-model='animate'>{{item.confidence}}%</flash> chance lottery</span>
+                                  </v-btn>
+                                  <v-btn color="primary"
+                                  :disabled='item.bet_step'
+                                  @click='addChoice(item, true)'>
+                                    <span>Correctly answering the question</span>
+                                  </v-btn>
                               </v-card-actions>
                             </v-card>
                           </v-flex>
@@ -108,16 +106,15 @@
               </v-window>
               <!-- Navigation -->
               <!--            -->
-              <v-card-actions>
+              <v-card-actions class="center-text-xs">
                 <v-spacer></v-spacer>
-                {{step}}/{{items.length}}
-                <v-spacer></v-spacer>
-                <v-btn depressed
+                <v-btn depressed block
                   :color="step !== items.length ? 'primary' : 'success'"
                   :disabled='!items[step-1].bet_step'
                   @click="submitOne(items[step-1])">
                   {{ step !== items.length ? 'Next' : 'Finish'}}
                 </v-btn>
+                <v-spacer></v-spacer>
               </v-card-actions>
               <!-- Round Submit Results -->
               <!--                      -->
@@ -182,63 +179,42 @@
                 </v-card>
               </v-dialog>
             </v-card>
-          </v-form>
+            <v-flex xs12 justify-center>
+              <v-card flat color='transparent'>
+                <v-card-text class="text-xs-center">
+                  <span class="grey--text">{{step}}/{{items.length}}</span>
+                </v-card-text>
+              </v-card>
+            </v-flex>
+          </v-flex>
           <!-- Instructions Message -->
           <!--                      -->
-          <v-dialog
-            v-model="instructions_dialog"
-            width="600">
-            <v-card>
-              <v-card-title class="headline">Instructions</v-card-title>
-              <v-card-text>
-                <p>Listen to short audio clips and determine if a sound is present.</p>
-                <p>You will be asked to give a confidence on your answer.</p>
-                <p>Your answer may determine bonus payout.</p>
-              </v-card-text>
-            </v-card>
-          </v-dialog>
+          <instructions-dialog
+          v-model='instructions_dialog'
+          :consent_form='instructions_consent'
+          :instructions='(task_type == 1) ? instructions_type1 : instructions_type2'>
+          </instructions-dialog>
           <!-- Final Submit Message -->
           <!--                      -->
-          <v-dialog persistent
-            v-model="submit_dialog"
-            width="500">
-            <v-card>
-              <v-card-title class="headline">Survey Code</v-card-title>
-              <v-card-text>
-                <p>Copy the code below to the MTurk assignment to get approved.</p>
-                <v-text-field
-                outline solo readonly
-                :value='id'>
-                </v-text-field>
-              </v-card-text>
-            </v-card>
-          </v-dialog>
+          <submit-dialog
+          v-model='submit_dialog'
+          :uuid='id'/>
           <!-- Error Message -->
           <!--               -->
-          <v-dialog
-            v-model="error_dialog"
-            width="500">
-            <v-card color='error'>
-              <v-card-title class="headline">Fatal Error</v-card-title>
-              <v-card-text>
-                <p>There was an error submitting information to the server:</p>
-                <code>{{error_message}}</code>
-                <p>
-                  Please refresh the browser. If the issue persists
-                  contact the owner for assistance.
-                </p>
-              </v-card-text>
-            </v-card>
-          </v-dialog>
-        </v-flex>
+          <error-dialog
+          v-model='error_dialog'
+          :message='error_message'/>
       </v-layout>
     </v-container>
   </v-app>
 </template>
 
-<style>
+<style lang="css">
 .v-tooltip>span {
   width: 100%;
+}
+iframe {
+  border: none;
 }
 </style>
 
@@ -246,6 +222,12 @@
 import VuetifyAudio from 'vuetify-audio'
 import TextHighlight from './components/TextHighlight'
 import Spinner from './components/Spinner'
+import InstructionsDialog from './components/InstructionsDialog'
+import ErrorDialog from './components/ErrorDialog'
+import SubmitDialog from './components/SubmitDialog'
+import consentForm from './consent_form.js'
+import type1instr from './components/instructions/type1.js'
+import type2instr from './components/instructions/type2.js'
 
 export default {
   name: 'App',
@@ -253,17 +235,23 @@ export default {
     'v-audio': VuetifyAudio,
     'flash': TextHighlight,
     'spinner': Spinner,
+    'instructions-dialog': InstructionsDialog,
+    'error-dialog': ErrorDialog,
+    'submit-dialog': SubmitDialog
   },
   data () {
     return {
       id: "05cdbc17-fc15-4e48-a29f-756029933bc5",
       no_data: false,
       read_only: false,
-      instructions_dialog: true,
       submit_dialog: false,
+      round_dialog: false,
+      instructions_dialog: true,
+      instructions_consent: consentForm,
+      instructions_type1: type1instr,
+      instructions_type2: type2instr,
       error_dialog: false,
       error_message: "Cause unknown.",
-      round_dialog: false,
       round_response: {
         spinner_activate: false,
         type: 0,
@@ -273,7 +261,7 @@ export default {
         pending: false,
         complete: false,
       },
-      task_type: 2,
+      task_type: 1,
       step: 1,
       items: [
         {"file": "soundscape_train_bimodal02.wav", "label": "jackhammer",
@@ -296,8 +284,9 @@ export default {
   },
   methods: {
     handleError(error) {
-      this.error_message = error;
+      this.error_message = error.response;
       this.error_dialog = true;
+      this.submit_dialog = this.round_dialog = false;
     },
     addChoice(item, choice) {
       item.choices.push(choice)
