@@ -1,5 +1,5 @@
 export default [`
-  <p>In this task we want you to help us identify if there is a jackhammer present in audio recordings. You will be presented with 15 sound files for which you should to answer two questions:</p>
+  <p>In this task we want you to help us identify if there is a jackhammer present in audio recordings. You will be presented with 15 sound files for which you should answer two questions:</p>
   <ol>
     <li>Is there a jackhammer present in the recording?</li>
     <li>State your confidence as a percent value.</li>

@@ -1,5 +1,5 @@
 export default [`
-  <p>In this task we want you to help us identify if there is a jackhammer present in audio recordings. You will be presented with 15 sound files for which you should to answer two questions:</p>
+  <p>In this task we want you to help us identify if there is a jackhammer present in audio recordings. You will be presented with 15 sound files for which you should answer two questions:</p>
   <ol>
     <li>Is there a jackhammer present in the recording?</li>
     <li>You have the chance to win a dollar in one of the following ways (choose one): 1) by correctly answering the question, or 2) by lottery (X% chance of winning).</li>
@@ -10,14 +10,14 @@ export default [`
 
   `<p>Question #2 will be asked 5 times for each recording, progressively varying the chances of winning the lottery from 50% to 90%. Each of these options will happen only once. After the fifth round has been played, the round for payment will be chosen at random. </p>`,
 
-  `<p>You must answer these questions based on the confidence of your answer. If you are sure it is right, go with your answer. Otherwise, take your chance with a lottery. </p>
+  `<p>You must answer these questions based on the confidence of your answer.</p>
   <p>For example you choose:</p>
   <div class="v-card v-sheet theme--light"><div class="v-card__actions layout justify-space-around row wrap"><button type="button" class="theme--light v-btn v-btn--disabled  v-btn--flat"><div class="v-btn__content">50% chance lottery</span></div></button><button type="button" class="theme--light v-btn v-btn--disabled v-btn--outline"><div class="v-btn__content"><span>Correctly answering the question</span></div></button></div></div>`,
 
   `<p>The chance for a win in a lottery now has risen by 10%. Would we take the better lottery option or stick with our answer?</p>
   <div class="v-card v-sheet theme--light"><div class="v-card__actions layout justify-space-around row wrap"><button type="button" class="theme--light v-btn v-btn--disabled  v-btn--flat"><div class="v-btn__content">60% chance lottery</span></div></button><button type="button" class="theme--light v-btn v-btn--disabled v-btn--outline"><div class="v-btn__content"><span>Correctly answering the question</span></div></button></div></div>`,
 
-  `<p>Now the lottery has got so good that we would rather take our chances with the lottery for the remaining rounds.</p>
+  `<p>Now the odds have gotten to the point where we would rather take our chances with the lottery for the remaining rounds.</p>
   <div style="margin-top:16px;" class="v-card v-sheet theme--light"><div class="v-card__actions layout justify-space-around row wrap"><button type="button" class="theme--light v-btn v-btn--disabled v-btn--outline"><div class="v-btn__content">70% chance lottery</span></div></button><button type="button" class="theme--light v-btn v-btn--disabled v-btn--flat"><div class="v-btn__content"><span>Correctly answering the question</span></div></button></div></div>
   <div style="margin-top:16px;" class="v-card v-sheet theme--light"><div class="v-card__actions layout justify-space-around row wrap"><button type="button" class="theme--light v-btn v-btn--disabled v-btn--outline"><div class="v-btn__content">80% chance lottery</span></div></button><button type="button" class="theme--light v-btn v-btn--disabled v-btn--flat"><div class="v-btn__content"><span>Correctly answering the question</span></div></button></div></div>
   <div style="margin-top:16px;" class="v-card v-sheet theme--light"><div class="v-card__actions layout justify-space-around row wrap"><button type="button" class="theme--light v-btn v-btn--disabled v-btn--outline"><div class="v-btn__content">90% chance lottery</span></div></button><button type="button" class="theme--light v-btn v-btn--disabled v-btn--flat"><div class="v-btn__content"><span>Correctly answering the question</span></div></button></div></div>`,
