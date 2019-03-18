@@ -2,7 +2,7 @@ import random
 import uuid
 
 from flask import *
-from server.db_tables import ses, Recording, Annotation, Survey
+from server.db_tables import ses, Recording, Annotation, Survey, RecordingGroup
 from server.process_wins import bonus_type_one, bonus_type_two
 
 app = Flask(__name__,
@@ -11,18 +11,17 @@ app = Flask(__name__,
 
 
 @app.route('/')
-def hello_world():
+def home():
     uid = uuid.uuid4()
     random.seed(uid)
     task_type = random.randrange(1, 3)
-    recordings = [r for [r, ] in ses.query(Recording.file_name).all()]
-    batch = random.sample(recordings, len(recordings))
-    labels = ["jackhammer"] * len(batch)
+    recordings = ses.query(RecordingGroup).all()
+    group = random.choice(recordings)
     items = []
-    for file, label in zip(batch, labels):
+    for audio in group.recordings:
         items.append({
-            'file': file,
-            'label': label
+            'file': audio.file_name,
+            'label': audio.label
         })
     preemptive = Survey(id=str(uid), task_type=task_type)
     ses.add(preemptive)
@@ -30,6 +29,7 @@ def hello_world():
 
     data = {
         'id': uid,
+        'group': group.folder,
         'task_type': task_type,
         'items': items,
     }

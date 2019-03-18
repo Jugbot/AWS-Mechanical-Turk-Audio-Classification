@@ -2,12 +2,13 @@
   <v-dialog persistent
     v-model="active"
     width="500">
-    <v-card>
+    <v-card dark color="blue">
       <v-card-title class="headline">Survey Code</v-card-title>
       <v-card-text>
         <p>Copy the code below to the MTurk assignment to get approved.</p>
-        <v-text-field
-        outline solo readonly
+        <v-text-field light
+        class="centered"
+        solo readonly
         :value='uuid'>
         </v-text-field>
       </v-card-text>
@@ -32,15 +33,18 @@ export default {
     }
   },
   watch: {
-    active_parent(newval, oldval) {
+    active_parent(newval) {
       this.active = newval
     },
-    active(newval, oldval) {
+    active(newval) {
       this.$emit('active_parent_change', newval)
     }
   }
 }
 </script>
 
-<style lang="css" scoped>
+<style lang="css">
+.v-text-field.centered input {
+  text-align: center !important;
+}
 </style>

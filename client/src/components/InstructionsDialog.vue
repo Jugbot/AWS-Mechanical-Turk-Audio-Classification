@@ -77,15 +77,15 @@ export default {
     }
   },
   watch: {
-    active_parent(newval, oldval) {
+    active_parent(newval) {
       this.active = newval
     },
-    active(newval, oldval) {
+    active(newval) {
       this.$emit('active_parent_change', newval)
     }
   }
 }
 </script>
 
-<style lang="css" scoped>
+<style lang="css">
 </style>

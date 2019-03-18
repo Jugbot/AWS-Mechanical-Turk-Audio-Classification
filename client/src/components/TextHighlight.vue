@@ -11,7 +11,7 @@ export default {
     value: Boolean,
   },
   watch: {
-    value(newval, oldval) {
+    value(newval) {
       if (newval) {
         setTimeout(() => {
           this.$emit('input', false)

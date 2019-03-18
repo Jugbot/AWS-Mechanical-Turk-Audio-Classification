@@ -25,7 +25,7 @@
                         <!-- Audio -->
                         <!--       -->
                         <v-flex>
-                          <v-audio :file='"assets/audio/" + item.file' :ended='() => {item.audio_step=true}'></v-audio>
+                          <v-audio :file='"assets/audio/" + group + "/" + item.file' :ended='() => {item.audio_step=true}'></v-audio>
                         </v-flex>
                         <!-- Classification -->
                         <!--                -->
@@ -263,15 +263,9 @@ export default {
       },
       task_type: 1,
       step: 1,
+      group: '.',
       items: [
-        {"file": "soundscape_train_bimodal02.wav", "label": "jackhammer",
-            'audio_step': false,
-            'class_step': false,
-            'bet_step': false,
-            'confidence': 50,
-            'classification': null,
-            'choices': [],},
-        {"file": "soundscape_train_bimodal0.wav", "label": "jackhammer",
+        {"file": "demo.wav", "label": "test",
             'audio_step': false,
             'class_step': false,
             'bet_step': false,
@@ -321,6 +315,7 @@ export default {
     this.task_type = parseInt(args['task_type'], 10)
     console.log("task: " + this.task_type)
     this.id = args['id']
+    this.group = args['group']
 
     // add defaults
     for (let i = 0; i < args['items'].length; i++) {

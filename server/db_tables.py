@@ -81,6 +81,7 @@ class RecordingGroup(Base):
     __tablename__ = "RecordingGroup"
 
     id = Column(Integer, primary_key=True)
+    folder = Column(String, unique=True)
     """ relationships """
     recordings = relationship("Recording", back_populates="group")
 
