@@ -18,40 +18,40 @@
               </v-card-text>
             </v-window-item>
           </v-window>
-          <v-card-actions class="justify-center">
-            <v-item-group
-              v-model="step_instr"
-              class="text-xs-center"
-              mandatory>
-              <v-item
-                v-for="n in instructions.length"
-                :key="n">
-                <v-btn
-                  slot-scope='{active: btn_active, toggle}'
-                  icon
-                  :input-value="btn_active"
-                  @click="toggle">
-                  {{n}}
-                </v-btn>
-              </v-item>
-            </v-item-group>
-          </v-card-actions>
         </v-window-item>
       </v-window>
-      <v-card-actions>
+      <v-card-actions v-if='step==0'>
         <v-spacer></v-spacer>
-        <v-btn v-if='step == 0'
+        <v-btn
         color="primary"
         depressed
         @click="step++">
         Agree &amp; Continue
         </v-btn>
-        <v-btn v-else-if='step == 1'
-        color="primary"
-        depressed
-        @click="$emit('active_parent_change', false)">
-        Continue
-        </v-btn>
+      </v-card-actions>
+      <v-card-actions v-else
+      class="justify-center">
+        <v-item-group
+          v-model="step_instr"
+          class="text-xs-center"
+          mandatory>
+          <v-item
+            v-for="n in (instructions.length+1)"
+            :key="n">
+            <v-btn v-if='n<=instructions.length'
+              slot-scope='{active: btn_active, toggle}' icon
+              :disabled='n > step_authority'
+              :input-value="btn_active"
+              @click="toggle();step_authority = Math.max(step_authority, n+1);">
+              {{n}}
+            </v-btn>
+            <v-btn v-else icon
+              :disabled='n > step_authority'
+              @click="active=false">
+              &gt;
+            </v-btn>
+          </v-item>
+        </v-item-group>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -74,6 +74,7 @@ export default {
       active: this.active_parent,
       step: 0,
       step_instr: 0,
+      step_authority: 2,
     }
   },
   watch: {

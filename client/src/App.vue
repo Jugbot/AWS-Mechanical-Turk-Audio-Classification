@@ -4,8 +4,16 @@
       <v-layout justify-center align-center fill-height>
           <v-flex>
             <v-card color='deep-purple lighten-5' v-if='items.length'>
-              <v-btn flat icon color="grey" @click='instructions_dialog=true'
-              style='position:absolute;right:0;top:0;z-index:100;'>?</v-btn>
+              <!-- Help -->
+              <v-tooltip left v-model='instructions_tooltip'>
+                <template v-slot:activator="{ on }">
+                  <v-btn v-on='on' flat icon color="grey" large
+                  @click='instructions_dialog=true'
+                  style='position:absolute;right:0;top:0;z-index:100;'>?</v-btn>
+                </template>
+                <span>Instructions</span>
+              </v-tooltip>
+              <!--  -->
               <v-card-title primary-title>
                 <v-layout justify-center>
                   <h3 class="headline">
@@ -192,7 +200,8 @@
           <instructions-dialog
           v-model='instructions_dialog'
           :consent_form='instructions_consent'
-          :instructions='(task_type == 1) ? instructions_type1 : instructions_type2'>
+          :instructions='(task_type == 1) ? instructions_type1 : instructions_type2'
+          @active_parent_change='showTooltip()'>
           </instructions-dialog>
           <!-- Final Submit Message -->
           <!--                      -->
@@ -250,6 +259,7 @@ export default {
       instructions_consent: consentForm,
       instructions_type1: type1instr,
       instructions_type2: type2instr,
+      instructions_tooltip: false,
       error_dialog: false,
       error_message: "Cause unknown.",
       round_response: {
@@ -277,6 +287,12 @@ export default {
     }
   },
   methods: {
+    showTooltip() {
+      this.instructions_tooltip = true;
+      setTimeout(() => {
+        this.instructions_tooltip = false;
+      }, 3000);
+    },
     handleError(error) {
       this.error_message = error.response;
       this.error_dialog = true;
