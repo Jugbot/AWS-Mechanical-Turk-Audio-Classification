@@ -63,7 +63,7 @@ def result():
     item = data['item']
     rec = ses.query(Recording).filter(Recording.file_name == item["file"]).one()
     ann = Annotation(recording=rec, class_label=item['label'], presence_of_label=item['classification'])
-    response = "fail"
+    response = ""
     
     if survey.task_type == 1:
         ann.confidence = item['confidence']

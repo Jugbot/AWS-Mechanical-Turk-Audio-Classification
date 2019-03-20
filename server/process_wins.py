@@ -24,7 +24,7 @@ def bonus_type_two(ann: Annotation):
 	did_win = None
 	spin_result = None
 	response = {}
-	type_choice= ann.choices[randchoice]
+	type_choice = ann.choices[randchoice]
 	if type_choice == TYPE_YOUR_ANSWER:
 		did_win = int(ann.recording.presence == ann.presence_of_label)
 	else:
@@ -35,6 +35,7 @@ def bonus_type_two(ann: Annotation):
 		response['spin'] = spin_result
 	ann.won = did_win
 	response['type'] = type_choice
+	response['chose'] = randchoice
 	response['won'] = did_win
 	return response
 
