@@ -1,5 +1,5 @@
 export default [`
-  <p>In this task we want you to help us identify if there is a jackhammer present in audio recordings. You will be presented with 15 sound files for which you should answer two questions:</p>
+  <p>In this task we want you to help us identify if there is a jackhammer present in audio recordings. You will be presented with 20 sound files for which you should answer two questions:</p>
   <ol>
     <li>Is there a jackhammer present in the recording?</li>
     <li>State your confidence as a percent value.</li>
@@ -13,4 +13,4 @@ export default [`
   <div class="v-card v-sheet theme--light"><div class="v-card__actions"><span class="v-tooltip v-input v-tooltip--bottom"><span><div class="v-input v-input--slider v-input--slider--thumb-label v-input--is-label-active v-input--is-dirty theme--light"><div class="v-input__prepend-outer"><span>0%</span></div><div class="v-input__control"><div class="v-input__slot"><div class="v-slider"><input role="slider" value="90" readonly="readonly" aria-readonly="false" aria-valuemin="0" aria-valuemax="100" aria-valuenow="90"><div class="v-slider__track__container"><div class="v-slider__track" style="left: 0px; right: auto; width: 100%;"></div><div class="v-slider__track-fill grey" style="left: 0px; right: auto; width: 90%;"></div></div><div class="v-slider__thumb-container v-slider__thumb-container--show-label grey--text" style="left: 90%;"><div class="v-slider__thumb grey"></div><div class="v-slider__thumb-label__container"><div class="v-slider__thumb-label grey" style="height: 32px; width: 32px;"><span>90</span></div></div></div></div></div><div class="v-messages theme--light"><div class="v-messages__wrapper"></div></div></div><div class="v-input__append-outer"><span>100%</span></div></div></span></span></div></div>`,
 
   `<p>At the end of each question you may win a dollar based on whether or not your answer is correct.</p>
-  <p>You will play for the chance of winning up to $15 in bonus, $1 per recording.</p>`]
+  <p>You will play for the chance of winning up to $20 in bonus, $1 per recording.</p>`]

@@ -1,5 +1,5 @@
 export default [`
-  <p>In this task we want you to help us identify if there is a jackhammer present in audio recordings. You will be presented with 15 sound files for which you should answer two questions:</p>
+  <p>In this task we want you to help us identify if there is a jackhammer present in audio recordings. You will be presented with 20 sound files for which you should answer two questions:</p>
   <ol>
     <li>Is there a jackhammer present in the recording?</li>
     <li>You have the chance to win a dollar in one of the following ways (choose one): 1) by correctly answering the question, or 2) by lottery (X% chance of winning).</li>
@@ -24,4 +24,4 @@ export default [`
 
   `<p>The round for payment will be selected at random from rounds 1-5, let&rsquo;s say round 2 was selected (the one where your answer was chosen). If your answer was correct, you would have won a dollar, if you answer was incorrect, you would not have won.</p>
   <p>If on the other hand, round 4 was selected, there was an 80% chance of winning a dollar and 20% chance of getting nothing. If we run the lottery and you win, you get one dollar.</p>
-  <p>You will play for the chance of winning up to $15 in bonus, $1 per recording.</p>`]
+  <p>You will play for the chance of winning up to $20 in bonus, $1 per recording.</p>`]

@@ -272,7 +272,7 @@ export default {
         pending: false,
         complete: false,
       },
-      task_type: 1,
+      task_type: 2,
       step: 1,
       group: '.',
       items: [
@@ -310,7 +310,7 @@ export default {
         'id': this.id,
         'item': item,
       }
-
+      this.round_response.complete = false
       this.round_response.pending = true
       this.round_dialog = true
       axios.post("/post/one", data).then(response => {
@@ -320,7 +320,7 @@ export default {
         console.log(this.round_response)
         this.round_response.pending = false
         setTimeout(() => {
-          this.round_response.spinner_activate = true
+          this.round_response.spinner_activate = !this.round_response.spinner_activate
         }, 500);
       }).catch(error => {
         this.handleError(error)
