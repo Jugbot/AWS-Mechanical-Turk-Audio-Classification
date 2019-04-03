@@ -23,8 +23,10 @@ class Survey(Base):
 
     id = Column(String, primary_key=True)
     approved = Column(Boolean, default=False)
+    completed = Column(Boolean, default=False)
     annotations = relationship("Annotation", back_populates='survey')
     recording_group_id = Column(Integer, ForeignKey("RecordingGroup.id"))
+    recording_group = relationship("RecordingGroup")
     task_type = Column(SmallInteger)
 
 
@@ -82,6 +84,8 @@ class RecordingGroup(Base):
 
     id = Column(Integer, primary_key=True)
     folder = Column(String, unique=True)
+    completions_type1 = Column(Integer, default=0)
+    completions_type2 = Column(Integer, default=0)
     """ relationships """
     recordings = relationship("Recording", back_populates="group")
 

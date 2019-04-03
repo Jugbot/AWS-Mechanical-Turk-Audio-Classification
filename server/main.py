@@ -9,21 +9,23 @@ app = Flask(__name__,
             static_folder="../docs/assets",
             template_folder="../docs")
 
+BATCH_SIZE = 10
 
 @app.route('/')
 def home():
     uid = uuid.uuid4()
     random.seed(uid)
-    task_type = random.randrange(1, 3)
-    recordings = ses.query(RecordingGroup).all()
+    recordings = ses.query(RecordingGroup).filter((RecordingGroup.completions_type2 < BATCH_SIZE) |
+                                                  (RecordingGroup.completions_type1 < BATCH_SIZE)).all()
     group = random.choice(recordings)
+    task_type = 1 if (group.completions_type1 < BATCH_SIZE) else 2
     items = []
     for audio in group.recordings:
         items.append({
             'file': audio.file_name,
             'label': audio.label
         })
-    preemptive = Survey(id=str(uid), task_type=task_type)
+    preemptive = Survey(id=str(uid), task_type=task_type, recording_group_id=group.id)
     ses.add(preemptive)
     ses.commit()
 
@@ -60,6 +62,8 @@ def results():
 def result():
     data = request.get_json()
     survey = ses.query(Survey).filter(Survey.id == data['id']).one()
+    if survey.completed:
+        return jsonify("This survey is already completed!")
     item = data['item']
     rec = ses.query(Recording).filter(Recording.file_name == item["file"]).one()
     ann = Annotation(recording=rec, class_label=item['label'], presence_of_label=item['classification'])
@@ -77,6 +81,13 @@ def result():
         return jsonify(response)
 
     survey.annotations.append(ann)
+    # group = ses.query(RecordingGroup).filter(RecordingGroup.id == Survey.recording_group_id).one()
+    if len(survey.annotations) == len(survey.recording_group.recordings):
+        survey.completed = True
+        if survey.task_type == 1:
+            survey.recording_group.completions_type1 += 1
+        elif survey.task_type == 2:
+            survey.recording_group.completions_type2 += 1
     ses.commit()
     return jsonify(response)
 
