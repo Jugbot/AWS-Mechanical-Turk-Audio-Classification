@@ -228,7 +228,7 @@ iframe {
 </style>
 
 <script>
-import VuetifyAudio from 'vuetify-audio'
+import VuetifyAudio from './components/VuetifyAudio'
 import TextHighlight from './components/TextHighlight'
 import Spinner from './components/Spinner'
 import InstructionsDialog from './components/InstructionsDialog'
