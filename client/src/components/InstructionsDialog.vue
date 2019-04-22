@@ -18,7 +18,8 @@
               </v-card-text>
             </v-window-item>
           </v-window> -->
-          <v-card-text v-for='instruction in instructions' v-html='instruction'>
+          <v-card-text class='subheading' 
+          v-for='instruction in instructions' v-html='instruction'>
           </v-card-text>
           <v-card-actions>
             <v-btn color="light-green" block large

@@ -272,7 +272,7 @@ export default {
         pending: false,
         complete: false,
       },
-      task_type: 2,
+      task_type: 1,
       step: 1,
       group: '.',
       items: [
