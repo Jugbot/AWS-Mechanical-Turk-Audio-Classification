@@ -11,6 +11,7 @@ app = Flask(__name__,
 
 BATCH_SIZE = 10
 
+
 @app.route('/')
 def home():
     uid = uuid.uuid4()
