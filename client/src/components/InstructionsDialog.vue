@@ -12,12 +12,20 @@
           </iframe>
         </v-window-item>
         <v-window-item :value='1'>
-          <v-window v-model='step_instr'>
+          <!-- <v-window v-model='step_instr'>
             <v-window-item v-for='instruction in instructions'>
               <v-card-text v-html='instruction'>
               </v-card-text>
             </v-window-item>
-          </v-window>
+          </v-window> -->
+          <v-card-text v-for='instruction in instructions' v-html='instruction'>
+          </v-card-text>
+          <v-card-actions>
+            <v-btn color="light-green" block large
+            @click='active=false'>
+              Begin Practice Round
+            </v-btn>
+          </v-card-actions>
         </v-window-item>
       </v-window>
       <v-card-actions v-if='step==0'>
@@ -29,7 +37,7 @@
         Agree &amp; Continue
         </v-btn>
       </v-card-actions>
-      <v-card-actions v-else
+      <!-- <v-card-actions v-else
       class="justify-center">
         <v-item-group
           v-model="step_instr"
@@ -52,7 +60,7 @@
             </v-btn>
           </v-item>
         </v-item-group>
-      </v-card-actions>
+      </v-card-actions> -->
     </v-card>
   </v-dialog>
 </template>
