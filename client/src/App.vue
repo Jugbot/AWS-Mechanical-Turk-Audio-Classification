@@ -45,7 +45,6 @@
                           <v-divider></v-divider>
                           <v-card-actions v-show='item.audio_step'>
                             <v-radio-group row
-                            :disabled='item.class_step'
                             v-model='item.classification'
                             @change='item.class_step=true'>
                               <v-radio label="Yes" :value="true"></v-radio>
@@ -66,7 +65,7 @@
                             <v-divider></v-divider>
                             <v-card-actions>
                               <v-tooltip bottom class='v-input'>
-                                <span>I am {{ item.confidence }}% confident in my answer.</span>
+                                <span>I am {{ item.confidence }}% confident in my answer that there is/is not a {{ item.label }} present in the recording.</span>
                                 <v-slider thumb-label :step='10'
                                 slot='activator'
                                 :color='item.bet_step ? "" : "grey"'
@@ -120,7 +119,7 @@
                 :color="step !== items.length ? 'primary' : 'success'"
                 :disabled='!items[step-1].bet_step'
                 @click="submitOne(items[step-1])">
-                {{ step !== items.length ? 'Next' : 'Finish'}}
+                {{ step !== items.length ? 'Next Recording' : 'Finish'}}
               </v-btn>
               <v-spacer></v-spacer>
             </v-card-actions>
@@ -207,6 +206,7 @@
         <!--                      -->
         <submit-dialog
         v-model='submit_dialog'
+        :reward='total_wins'
         :uuid='id'/>
         <!-- Error Message -->
         <!--               -->
@@ -219,12 +219,12 @@
 </template>
 
 <style lang="css">
-.v-tooltip>span {
-  width: 100%;
-}
-iframe {
-  border: none;
-}
+  .v-tooltip>span {
+    width: 100%;
+  }
+  iframe {
+    border: none;
+  }
 </style>
 
 <script>
@@ -272,6 +272,7 @@ export default {
         pending: false,
         complete: false,
       },
+      total_wins: 0,
       task_type: 1,
       step: 1,
       group: '.',
@@ -317,7 +318,8 @@ export default {
         for (let key in response.data)
           if (response.data.hasOwnProperty(key))
             this.round_response[key] = response.data[key]
-        console.log(this.round_response)
+        if (this.round_response.won)
+          this.total_wins++
         this.round_response.pending = false
         setTimeout(() => {
           this.round_response.spinner_activate = !this.round_response.spinner_activate

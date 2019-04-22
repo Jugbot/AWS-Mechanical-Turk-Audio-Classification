@@ -5,7 +5,8 @@
     <v-card dark color="blue">
       <v-card-title class="headline">Survey Code</v-card-title>
       <v-card-text>
-        <p>Copy the code below to the MTurk assignment to get approved.</p>
+        <p>Thank you for participating, your bonus is ${{ reward }}.00</p>
+        <p>Copy the code below to the MTurk assignment to get approved and paid.</p>
         <v-text-field light
         class="centered"
         solo readonly
@@ -26,6 +27,7 @@ export default {
   props: {
     active_parent: Boolean,
     uuid: String,
+    reward: Number,
   },
   data() {
     return {

@@ -16,10 +16,14 @@
                 <v-icon v-if="loaded === false">refresh</v-icon>
                 <v-icon v-else>get_app</v-icon>
             </v-btn>
-            <v-slider @click.native="setPosition()" v-model="percentage" dark></v-slider>
+            <!-- <v-btn outline round class="teal--text" @click.native='demo_audio="assets/audio/demo.wav";play()'>
+                <span>Sample</span>
+                <v-icon small>play_arrow</v-icon>
+            </v-btn> -->
+            <v-slider readonly thumb-color='transparent' track-color='grey lighten-3' v-model="percentage" dark></v-slider>
             <p>{{ currentTime }} / {{ duration }}</p>
         </v-card-text>
-        <audio id="player" ref="player" v-on:ended="ended" v-on:canplay="canPlay" :src="file"></audio>
+        <audio id="player" ref="player" v-on:ended="ended" v-on:canplay="canPlay" :src="demo_audio ? demo_audio : file"></audio>
     </v-card>
 </template>
 <script>
@@ -62,6 +66,7 @@
                 currentTime: '00:00:00',
                 audio: undefined,
                 totalDuration: 0,
+                demo_audio: null,
             }
         },
 
