@@ -15,8 +15,10 @@ BATCH_SIZE = 10
 def home():
     uid = uuid.uuid4()
     random.seed(uid)
-    recordings = ses.query(RecordingGroup).filter((RecordingGroup.completions_type2 < BATCH_SIZE) |
-                                                  (RecordingGroup.completions_type1 < BATCH_SIZE)).all()
+    recordings_type2 = ses.query(RecordingGroup).filter((RecordingGroup.completions_type2 < BATCH_SIZE)).all()
+    recordings_type1 = ses.query(RecordingGroup).filter((RecordingGroup.completions_type1 < BATCH_SIZE)).all()
+    recordings = recordings_type2 + recordings_type1
+    # recording groups with neither type batch satisfied are counted twice
     group = random.choice(recordings)
     task_type = 1 if (group.completions_type1 < BATCH_SIZE) else 2
     items = []

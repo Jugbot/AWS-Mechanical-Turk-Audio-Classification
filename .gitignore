@@ -22,6 +22,6 @@ __pycache__
 *.sln
 *.sw*
 
-venv
+venv/
 credentials
 secrets
