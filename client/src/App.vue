@@ -277,13 +277,16 @@ export default {
       step: 1,
       group: '.',
       items: [
-        {"file": "demo.wav", "label": "test",
-            'audio_step': false,
-            'class_step': false,
-            'bet_step': false,
-            'confidence': 50,
-            'classification': null,
-            'choices': [],}
+        // {
+        //   file: "demo.wav",
+        //   label: "test",
+        //   audio_step: false,
+        //   class_step: false,
+        //   bet_step: false,
+        //   confidence: 50,
+        //   classification: null,
+        //   choices: [],
+        // },
       ],
       animate: false,
     }
@@ -347,7 +350,10 @@ export default {
           'choices': [],
       })
     }
-    this.items = args['items']
+    console.log(this.items)
+    console.log(args.items)
+    this.items = this.items.concat(args.items)
+    console.log(this.items)
   }
 }
 </script>
