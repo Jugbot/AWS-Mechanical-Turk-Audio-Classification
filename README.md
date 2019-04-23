@@ -15,7 +15,7 @@ Two parameters must be passed in addition to the amazon parameters in Mechanical
 task_type = 1 || 2
 items = [
   {
-    'question': 'Thing that might be in the audio',
+    'label': 'Thing that might be in the audio',
     'file': 'The file located in train_audio.wav'
   }
 ]
