@@ -34,26 +34,24 @@
             </v-flex>
           </v-layout>
         </v-card-text>
-        <!-- <v-card-text :style="{visibility: (round_data.complete || round_data.type == 1) ? 'visible' : 'hidden'}"
+        <v-card-text v-show='round_data.complete && task_type==2'
         class='text-sm-center'>
           <span v-if='round_data.won'>
             <h1 class='green--text'>You won a dollar!</h1>
-            <h3 v-if='round_data.type == 1'>Answer is correct</h3>
-            <h3 v-else>You won the lottery</h3>
+            <h3>You won the lottery</h3>
           </span>
           <span v-else>
             <h1 class='red--text'>No dollar won :(</h1>
-            <h3 v-if='round_data.type == 1'>Answer is incorrect</h3>
-            <h3 v-else>You lost the lottery</h3>
+            <h3>You lost the lottery</h3>
           </span>
-        </v-card-text> -->
+        </v-card-text>
         <v-divider></v-divider>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn v-if='demo'
             color="primary"
             depressed outline
-            @click="$emit('repeat');round_dialog=false">
+            @click="$emit('repeat');active=false">
             Try another
           </v-btn>
           <v-btn color="primary"

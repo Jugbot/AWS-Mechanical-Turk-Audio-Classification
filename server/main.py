@@ -21,7 +21,13 @@ def home():
     recordings = recordings_type2 + recordings_type1
     # recording groups with neither type batch satisfied are counted twice
     group = random.choice(recordings)
-    task_type = 1 if (group.completions_type1 < BATCH_SIZE) else 2
+    task_type = 0
+    if group.completions_type2 < BATCH_SIZE and group.completions_type1 < BATCH_SIZE:
+        task_type = random.randint(1, 2)
+    elif group.completions_type1 < BATCH_SIZE:
+        task_type = 1
+    else:
+        task_type = 2
     items = []
     for audio in group.recordings:
         items.append({

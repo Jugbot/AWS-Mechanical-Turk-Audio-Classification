@@ -132,7 +132,7 @@
           <v-flex xs12 justify-center>
             <v-card flat color='transparent'>
               <v-card-text class="text-xs-center">
-                <span class="grey--text">{{step}}/{{items.length}}</span>
+                <span class="grey--text">{{is_practice ? '~' : step-1}}/{{items.length-1}}</span>
               </v-card-text>
             </v-card>
           </v-flex>
@@ -265,12 +265,10 @@ export default {
       }, 3000);
     },
     round_toggle() {
-      if (!this.round_dialog) {
-        if (this.items.length == this.step)
-          this.submit_dialog = true
-        else
-          this.step++
-      }
+      if (this.items.length == this.step)
+        this.submit_dialog = true
+      else
+        this.step++
     },
     handleError(error) {
       this.error_message = error.response;
@@ -291,8 +289,12 @@ export default {
       }
       this.round_response.complete = false
       this.round_response.pending = true
-      this.round_dialog = true
+      if (this.task_type==1)
+        this.step++
+      else
+        this.round_dialog = true
       this.$axios.post("/post/one", data).then(response => {
+        console.log(response)
         for (let key in response.data)
           if (response.data.hasOwnProperty(key))
             this.round_response[key] = response.data[key]
