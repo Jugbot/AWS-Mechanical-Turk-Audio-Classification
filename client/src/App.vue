@@ -33,7 +33,7 @@
                     <!-- Audio -->
                     <!--       -->
                     <v-flex>
-                      <v-audio :file='"assets/audio/" + (is_practice ? "." : group) + "/" + item.file'
+                      <v-audio :file='"assets/audio/" + (group ? (group + "/"):null) + item.file'
                       :ended='() => {item.audio_step=true}'>
                         <v-btn outline round class="teal--text"
                         @click='audiosample_dialog=true'>
@@ -236,7 +236,7 @@ export default {
       total_wins: 0,
       task_type: 1,
       step: 1,
-      group: '.',
+      group: null,
       items: [
         {
           file: "demo.wav",
@@ -312,7 +312,7 @@ export default {
       this.items[0] = this.items[1+Math.floor(Math.random()*(this.items.length-1))]
     }
   },
-  created() { 
+  created() {
     let args = window.surveydata
     if (!args) {
       console.error("No data recieved from server! Demo only. ")
