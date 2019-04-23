@@ -3,7 +3,7 @@
     <v-container>
       <v-layout justify-center align-center fill-height>
         <v-flex>
-          <v-card color='deep-purple lighten-5' v-if='items.length'>
+          <v-card :color='is_practice ? "yellow lighten-5" : "deep-purple lighten-5"' v-if='items.length'>
             <!-- Help -->
             <v-tooltip left v-model='instructions_tooltip'>
               <template v-slot:activator="{ on }">
@@ -15,113 +15,105 @@
             </v-tooltip>
             <!--  -->
             <v-card-title primary-title>
-              <v-layout justify-center>
+              <v-layout column align-center>
                 <h3 class="headline">
-                  Audio Classification
+                  Audio Classification {{is_practice ? " (Practice)":null}}
                 </h3>
+                <span class="subheading">Click Play to begin</span>
               </v-layout>
             </v-card-title>
             <!-- Tasks -->
             <!--       -->
             <v-window v-model='step'>
-              <v-window-item v-for='item, index in items'
+              <v-window-item v-for='(item, index) in items'
               :key='item.file'
               :value='index+1'>
-                <v-card-text>
-                  <v-container grid-list-lg>
-                    <v-layout column>
-                      <!-- Audio -->
-                      <!--       -->
-                      <v-flex>
-                        <v-audio :file='"assets/audio/" + group + "/" + item.file'
-                        :ended='() => {item.audio_step=true}'>
-                          <v-btn outline round class="teal--text"
-                          @click='audiosample_dialog=true'>
-                              <span>{{item.label}} only recording</span>
-                          </v-btn>
-                        </v-audio>
-                      </v-flex>
-                      <!-- Sample Dialog -->
-                      <!--               -->
-                      <v-dialog v-model="audiosample_dialog" max-width="500">
-                        <!-- Note the v-if is for stopping the sound when user exits -->
-                        <v-audio v-if="audiosample_dialog" minimal file='assets/audio/demo.wav'>
-                        </v-audio>
-                      </v-dialog>
-                      <!-- Classification -->
-                      <!--                -->
-                      <v-flex>
+                <v-container grid-list-lg>
+                  <v-layout column>
+                    <!-- Audio -->
+                    <!--       -->
+                    <v-flex>
+                      <v-audio :file='"assets/audio/" + (is_practice ? "." : group) + "/" + item.file'
+                      :ended='() => {item.audio_step=true}'>
+                        <v-btn outline round class="teal--text"
+                        @click='audiosample_dialog=true'>
+                            <span>{{item.label}} only recording</span>
+                        </v-btn>
+                      </v-audio>
+                    </v-flex>
+                    <!-- Classification -->
+                    <!--                -->
+                    <v-flex>
+                      <v-card>
+                        <v-card-title>
+                          <span>Is there a(n) {{item.label}} present in the recording?</span>
+                        </v-card-title>
+                        <v-divider></v-divider>
+                        <v-card-actions v-show='item.audio_step'>
+                          <v-radio-group row
+                          v-model='item.classification'
+                          @change='item.class_step=true'>
+                            <v-radio label="Yes" :value="true"></v-radio>
+                            <v-radio label="No" :value="false"></v-radio>
+                          </v-radio-group>
+                        </v-card-actions>
+                      </v-card>
+                    </v-flex>
+                    <!-- Confidence & Lottery -->
+                    <!--                      -->
+                    <template v-if='task_type==1'>
+                      <!-- Type 1: Confidence -->
+                      <v-flex v-show='item.class_step'>
                         <v-card>
                           <v-card-title>
-                            <span>Is there a(n) {{item.label}} present in the recording?</span>
+                            How confident are you with your answer?
                           </v-card-title>
                           <v-divider></v-divider>
-                          <v-card-actions v-show='item.audio_step'>
-                            <v-radio-group row
-                            v-model='item.classification'
-                            @change='item.class_step=true'>
-                              <v-radio label="Yes" :value="true"></v-radio>
-                              <v-radio label="No" :value="false"></v-radio>
-                            </v-radio-group>
+                          <v-card-actions>
+                            <v-tooltip bottom class='v-input'>
+                              <span>I am {{ item.confidence }}% confident in my answer that there is/is not a {{ item.label }} present in the recording.</span>
+                              <v-slider thumb-label :step='10'
+                              slot='activator'
+                              :color='item.bet_step ? "" : "grey"'
+                              v-model="item.confidence"
+                              @change='item.bet_step=true'>
+                                <span slot='prepend'>0%</span>
+                                <span slot='append'>100%</span>
+                              </v-slider>
+                            </v-tooltip>
                           </v-card-actions>
                         </v-card>
                       </v-flex>
-                      <!-- Confidence & Lottery -->
-                      <!--                      -->
-                      <template v-if='task_type==1'>
-                        <!-- Type 1: Confidence -->
-                        <v-flex v-show='item.class_step'>
-                          <v-card>
-                            <v-card-title>
-                              How confident are you with your answer?
-                            </v-card-title>
-                            <v-divider></v-divider>
-                            <v-card-actions>
-                              <v-tooltip bottom class='v-input'>
-                                <span>I am {{ item.confidence }}% confident in my answer that there is/is not a {{ item.label }} present in the recording.</span>
-                                <v-slider thumb-label :step='10'
-                                slot='activator'
-                                :color='item.bet_step ? "" : "grey"'
-                                v-model="item.confidence"
-                                @change='item.bet_step=true'>
-                                  <span slot='prepend'>0%</span>
-                                  <span slot='append'>100%</span>
-                                </v-slider>
-                              </v-tooltip>
-                            </v-card-actions>
-                          </v-card>
-                        </v-flex>
-                      </template>
-                      <template v-if='task_type==2'>
-                        <!-- Type 2: Lottery -->
-                        <v-flex v-show='item.class_step'>
-                          <v-card>
-                            <v-card-title>
-                              <span>
-                                <b>You have the chance to win a dollar in one of the following ways (choose one):</b> <br>
-                                1) by lottery (<flash v-model='animate'>{{item.confidence}}%</flash> chance of winning), or<br>
-                                2) by correctly answering the question
-                              </span>
-                            </v-card-title>
-                            <v-divider></v-divider>
-                            <v-card-actions class='layout justify-space-around row wrap'>
-                                <v-btn color="primary"
-                                :disabled='item.bet_step'
-                                @click='addChoice(item, false)'>
-                                  <span><flash v-model='animate'>{{item.confidence}}%</flash> chance lottery</span>
-                                </v-btn>
-                                <v-btn color="primary"
-                                :disabled='item.bet_step'
-                                @click='addChoice(item, true)'>
-                                  <span>Correctly answering the question</span>
-                                </v-btn>
-                            </v-card-actions>
-                          </v-card>
-                        </v-flex>
-                      </template>
-                    </v-layout>
-                  </v-container>
-                </v-card-text>
+                    </template>
+                    <template v-if='task_type==2'>
+                      <!-- Type 2: Lottery -->
+                      <v-flex v-show='item.class_step'>
+                        <v-card>
+                          <v-card-title>
+                            <span>
+                              <b>You have the chance to win a dollar in one of the following ways (choose one):</b> <br>
+                              1) by lottery (<flash v-model='animate'>{{item.confidence}}%</flash> chance of winning), or<br>
+                              2) by correctly answering the question
+                            </span>
+                          </v-card-title>
+                          <v-divider></v-divider>
+                          <v-card-actions class='layout justify-space-around row wrap'>
+                              <v-btn color="primary"
+                              :disabled='item.bet_step'
+                              @click='addChoice(item, false)'>
+                                <span><flash v-model='animate'>{{item.confidence}}%</flash> chance lottery</span>
+                              </v-btn>
+                              <v-btn color="primary"
+                              :disabled='item.bet_step'
+                              @click='addChoice(item, true)'>
+                                <span>Correctly answering the question</span>
+                              </v-btn>
+                          </v-card-actions>
+                        </v-card>
+                      </v-flex>
+                    </template>
+                  </v-layout>
+                </v-container>
               </v-window-item>
             </v-window>
             <!-- Navigation -->
@@ -150,8 +142,9 @@
         <round-dialog v-model='round_dialog'
         :round_data='round_response'
         :task_type='task_type'
-        :demo="step==1"
-        @active_parent_change='round_toggle()'>
+        :demo="is_practice"
+        @submit='round_toggle()'
+        @repeat='newPractice()'>
         </round-dialog>
         <!-- Instructions Message -->
         <!--                      -->
@@ -167,6 +160,13 @@
         v-model='submit_dialog'
         :reward='total_wins'
         :uuid='id'/>
+        <!-- Sample Dialog -->
+        <!--               -->
+        <v-dialog v-model="audiosample_dialog" max-width="500">
+          <!-- Note the v-if is for stopping the sound when user exits -->
+          <v-audio v-if="audiosample_dialog" minimal file='assets/audio/demo.wav'>
+          </v-audio>
+        </v-dialog>
         <!-- Error Message -->
         <!--               -->
         <error-dialog
@@ -210,8 +210,7 @@ export default {
   data () {
     return {
       id: "05cdbc17-fc15-4e48-a29f-756029933bc5",
-      no_data: false,
-      read_only: false,
+      practice: true,
       submit_dialog: false,
       round_dialog: false,
       audiosample_dialog: false,
@@ -253,6 +252,11 @@ export default {
       animate: false,
     }
   },
+  computed: {
+    is_practice() {
+      return this.step == 1;
+    }
+  },
   methods: {
     showTooltip() {
       this.instructions_tooltip = true;
@@ -282,12 +286,13 @@ export default {
     submitOne(item) {
       let data = {
         'id': this.id,
+        'practice': this.is_practice,
         'item': item,
       }
       this.round_response.complete = false
       this.round_response.pending = true
       this.round_dialog = true
-      axios.post("/post/one", data).then(response => {
+      this.$axios.post("/post/one", data).then(response => {
         for (let key in response.data)
           if (response.data.hasOwnProperty(key))
             this.round_response[key] = response.data[key]
@@ -301,8 +306,13 @@ export default {
         this.handleError(error)
       })
     },
+    newPractice() {
+      if (this.items.length == 0)
+        return
+      this.items[0] = this.items[1+Math.floor(Math.random()*(this.items.length-1))]
+    }
   },
-  created() {
+  created() { 
     let args = window.surveydata
     if (!args) {
       console.error("No data recieved from server! Demo only. ")
@@ -326,6 +336,7 @@ export default {
     }
 
     this.items = this.items.concat(args.items)
+    this.newPractice();
   }
 }
 </script>

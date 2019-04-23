@@ -116,7 +116,7 @@
                     throw new Error('Failed to load sound file')
                 }
             },
-            _handlePlayingUI: function (e) {
+            _handlePlayingUI: function () {
                 this.percentage = this.audio.currentTime / this.audio.duration * 100
                 this.currentTime = formatTime(this.audio.currentTime)
             },

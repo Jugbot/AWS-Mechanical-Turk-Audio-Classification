@@ -50,9 +50,15 @@
         <v-divider></v-divider>
         <v-card-actions>
           <v-spacer></v-spacer>
+          <v-btn v-if='demo'
+            color="primary"
+            depressed outline
+            @click="$emit('repeat');round_dialog=false">
+            Try another
+          </v-btn>
           <v-btn color="primary"
             depressed
-            @click="active=false">
+            @click="$emit('submit');active=false">
             Next
           </v-btn>
         </v-card-actions>

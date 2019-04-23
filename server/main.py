@@ -91,7 +91,10 @@ def result():
             survey.recording_group.completions_type1 += 1
         elif survey.task_type == 2:
             survey.recording_group.completions_type2 += 1
-    ses.commit()
+    if data['practice']:
+        ses.rollback()
+    else:
+        ses.commit()
     return jsonify(response)
 
 
