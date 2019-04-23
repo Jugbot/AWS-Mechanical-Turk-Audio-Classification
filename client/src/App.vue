@@ -33,8 +33,21 @@
                       <!-- Audio -->
                       <!--       -->
                       <v-flex>
-                        <v-audio :file='"assets/audio/" + group + "/" + item.file' :ended='() => {item.audio_step=true}'></v-audio>
+                        <v-audio :file='"assets/audio/" + group + "/" + item.file'
+                        :ended='() => {item.audio_step=true}'>
+                          <v-btn outline round class="teal--text"
+                          @click='audiosample_dialog=true'>
+                              <span>{{item.label}} only recording</span>
+                          </v-btn>
+                        </v-audio>
                       </v-flex>
+                      <!-- Sample Dialog -->
+                      <!--               -->
+                      <v-dialog v-model="audiosample_dialog" max-width="500">
+                        <!-- Note the v-if is for stopping the sound when user exits -->
+                        <v-audio v-if="audiosample_dialog" minimal file='assets/audio/demo.wav'>
+                        </v-audio>
+                      </v-dialog>
                       <!-- Classification -->
                       <!--                -->
                       <v-flex>
@@ -123,68 +136,6 @@
               </v-btn>
               <v-spacer></v-spacer>
             </v-card-actions>
-            <!-- Round Submit Results -->
-            <!--                      -->
-            <v-dialog persistent
-              v-model="round_dialog"
-              width="500">
-              <v-card>
-                <v-card-title class="headline">Round Results</v-card-title>
-                <template v-if="round_response.pending">
-                  <v-card-text class='text-sm-center'>
-                    <v-progress-circular
-                      color="primary"
-                      indeterminate
-                      :size="64">
-                    </v-progress-circular>
-                  </v-card-text>
-                </template>
-                <template v-else>
-                  <v-card-text v-if='task_type == 2'
-                  class="subheading">
-                    <span>From the 5 answers given, answer {{round_response.chose+1}} was selected. You have chosen to </span>
-                    <span v-if='round_response.type == 0'>draw a {{ round_response.chance }}% chance lottery. </span>
-                    <span v-else>test your answer. </span>
-                  </v-card-text>
-                  <v-divider></v-divider>
-                  <v-card-text v-if='round_response.type == 0'>
-                    <v-layout>
-                      <v-flex grow xs10 offset-xs1>
-                        <spinner :chance='round_response.chance'
-                        :result='round_response.spin'
-                        :activate='round_response.spinner_activate'
-                        @complete='round_response.complete = true'
-                        class='elevation-10'/>
-                      </v-flex>
-                    </v-layout>
-                  </v-card-text>
-                  <v-card-text :style="{visibility: (round_response.complete || round_response.type == 1) ? 'visible' : 'hidden'}"
-                  class='text-sm-center'>
-                    <span v-if='round_response.won'>
-                      <h1 class='green--text'>You won a dollar!</h1>
-                      <h3 v-if='round_response.type == 1'>Answer is correct</h3>
-                      <h3 v-else>You won the lottery</h3>
-                    </span>
-                    <span v-else>
-                      <h1 class='red--text'>No dollar won :(</h1>
-                      <h3 v-if='round_response.type == 1'>Answer is incorrect</h3>
-                      <h3 v-else>You lost the lottery</h3>
-                    </span>
-                  </v-card-text>
-                  <v-divider></v-divider>
-                  <v-card-actions>
-                    <v-spacer></v-spacer>
-                    <v-btn color="primary"
-                      depressed
-                      @click="round_dialog=false;
-                      if(step === items.length)submit_dialog=true;
-                      else step++;">
-                      Next
-                    </v-btn>
-                  </v-card-actions>
-                </template>
-              </v-card>
-            </v-dialog>
           </v-card>
           <v-flex xs12 justify-center>
             <v-card flat color='transparent'>
@@ -194,6 +145,14 @@
             </v-card>
           </v-flex>
         </v-flex>
+        <!-- Round Submit Message -->
+        <!--                      -->
+        <round-dialog v-model='round_dialog'
+        :round_data='round_response'
+        :task_type='task_type'
+        :demo="step==1"
+        @active_parent_change='round_toggle()'>
+        </round-dialog>
         <!-- Instructions Message -->
         <!--                      -->
         <instructions-dialog
@@ -230,10 +189,10 @@
 <script>
 import VuetifyAudio from './components/VuetifyAudio'
 import TextHighlight from './components/TextHighlight'
-import Spinner from './components/Spinner'
 import InstructionsDialog from './components/InstructionsDialog'
 import ErrorDialog from './components/ErrorDialog'
 import SubmitDialog from './components/SubmitDialog'
+import RoundDialog from './components/RoundDialog'
 import consentForm from './consent_form.js'
 import type1instr from './components/instructions/type1.js'
 import type2instr from './components/instructions/type2.js'
@@ -243,10 +202,10 @@ export default {
   components: {
     'v-audio': VuetifyAudio,
     'flash': TextHighlight,
-    'spinner': Spinner,
     'instructions-dialog': InstructionsDialog,
     'error-dialog': ErrorDialog,
-    'submit-dialog': SubmitDialog
+    'submit-dialog': SubmitDialog,
+    'round-dialog': RoundDialog
   },
   data () {
     return {
@@ -255,17 +214,20 @@ export default {
       read_only: false,
       submit_dialog: false,
       round_dialog: false,
+      audiosample_dialog: false,
       instructions_dialog: true,
       instructions_consent: consentForm,
       instructions_type1: type1instr,
       instructions_type2: type2instr,
       instructions_tooltip: false,
       error_dialog: false,
-      error_message: "Cause unknown.",
+      error_message: {
+        data: "Cause unknown."
+      },
       round_response: {
         spinner_activate: false,
         chose: 0,
-        type: 0,
+        type: 1,
         won: 1,
         spin: 0.574,
         chance: 70,
@@ -277,16 +239,16 @@ export default {
       step: 1,
       group: '.',
       items: [
-        // {
-        //   file: "demo.wav",
-        //   label: "test",
-        //   audio_step: false,
-        //   class_step: false,
-        //   bet_step: false,
-        //   confidence: 50,
-        //   classification: null,
-        //   choices: [],
-        // },
+        {
+          file: "demo.wav",
+          label: "jackhammer",
+          audio_step: false,
+          class_step: false,
+          bet_step: false,
+          confidence: 50,
+          classification: null,
+          choices: [],
+        },
       ],
       animate: false,
     }
@@ -297,6 +259,14 @@ export default {
       setTimeout(() => {
         this.instructions_tooltip = false;
       }, 3000);
+    },
+    round_toggle() {
+      if (!this.round_dialog) {
+        if (this.items.length == this.step)
+          this.submit_dialog = true
+        else
+          this.step++
+      }
     },
     handleError(error) {
       this.error_message = error.response;
@@ -334,6 +304,10 @@ export default {
   },
   created() {
     let args = window.surveydata
+    if (!args) {
+      console.error("No data recieved from server! Demo only. ")
+      return
+    }
     this.task_type = parseInt(args['task_type'], 10)
     console.log("task: " + this.task_type)
     this.id = args['id']
@@ -350,10 +324,8 @@ export default {
           'choices': [],
       })
     }
-    console.log(this.items)
-    console.log(args.items)
+
     this.items = this.items.concat(args.items)
-    console.log(this.items)
   }
 }
 </script>

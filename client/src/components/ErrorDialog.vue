@@ -29,7 +29,7 @@ export default {
   },
   props: {
     active_parent: Boolean,
-    message: String,
+    message: Object,
   },
   data() {
     return {

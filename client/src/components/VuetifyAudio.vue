@@ -1,30 +1,33 @@
 <template>
-    <v-card style="text-align: center">
-        <v-card-text>
-            <v-btn outline icon class="teal--text" @click.native="playing ? pause() : play()" :disabled="loaded === false">
-                <v-icon v-if="playing === false || paused === true">play_arrow</v-icon>
-                <v-icon v-else>pause</v-icon>
-            </v-btn>
+  <v-card style="text-align: center">
+    <v-card-text>
+      <v-layout row wrap align-baseline justify-center>
+        <div>
+          <v-btn outline icon class="teal--text" @click.native="playing ? pause() : play()" :disabled="loaded === false">
+              <v-icon v-if="playing === false || paused === true">play_arrow</v-icon>
+              <v-icon v-else>pause</v-icon>
+          </v-btn>
+          <template v-if='!minimal'>
             <v-btn outline icon class="teal--text" @click.native="stop()" :disabled="loaded === false">
                 <v-icon>stop</v-icon>
             </v-btn>
-            <v-btn outline icon class="teal--text" @click.native="mute()" :disabled="loaded === false">
+            <!-- <v-btn outline icon class="teal--text" @click.native="mute()" :disabled="loaded === false">
                 <v-icon v-if="isMuted === false">volume_up</v-icon>
                 <v-icon v-else>volume_off</v-icon>
-            </v-btn>
+            </v-btn> -->
             <v-btn outline icon class="teal--text" @click.native="loaded ? download() : reload()">
                 <v-icon v-if="loaded === false">refresh</v-icon>
                 <v-icon v-else>get_app</v-icon>
             </v-btn>
-            <!-- <v-btn outline round class="teal--text" @click.native='demo_audio="assets/audio/demo.wav";play()'>
-                <span>Sample</span>
-                <v-icon small>play_arrow</v-icon>
-            </v-btn> -->
-            <v-slider readonly thumb-color='transparent' track-color='grey lighten-3' v-model="percentage" dark></v-slider>
-            <p>{{ currentTime }} / {{ duration }}</p>
-        </v-card-text>
-        <audio id="player" ref="player" v-on:ended="ended" v-on:canplay="canPlay" :src="demo_audio ? demo_audio : file"></audio>
-    </v-card>
+            <slot></slot>
+          </template>
+        </div>
+        <v-slider :style="{'flex-basis': minimal ? 0 : '100%'}" readonly thumb-color='transparent' track-color='grey lighten-3' v-model="percentage" dark></v-slider>
+        <p class="mx-2">{{ currentTime }} / {{ duration }}</p>
+      </v-layout>
+    </v-card-text>
+    <audio id="player" ref="player" v-on:ended="ended" v-on:canplay="canPlay" :src="file"></audio>
+  </v-card>
 </template>
 <script>
     const formatTime = (secend) => {
@@ -39,6 +42,10 @@
                 default: null
             },
             autoPlay: {
+                type: Boolean,
+                default: false
+            },
+            minimal: {
                 type: Boolean,
                 default: false
             },
@@ -66,7 +73,6 @@
                 currentTime: '00:00:00',
                 audio: undefined,
                 totalDuration: 0,
-                demo_audio: null,
             }
         },
 
