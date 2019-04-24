@@ -33,7 +33,7 @@
                     <!-- Audio -->
                     <!--       -->
                     <v-flex>
-                      <v-audio :file='"assets/audio/" + (group ? (group + "/"):null) + item.file'
+                      <v-audio :file='"assets/audio/" + (group ? (group + "/"):"") + item.file'
                       :ended='() => {item.audio_step=true}'>
                         <v-btn outline round class="teal--text"
                         @click='audiosample_dialog=true'>
@@ -49,7 +49,7 @@
                           <span>Is there a(n) {{item.label}} present in the recording?</span>
                         </v-card-title>
                         <v-divider></v-divider>
-                        <v-card-actions v-show='item.audio_step'>
+                        <v-card-actions v-show='item.audio_step || debug'>
                           <v-radio-group row
                           v-model='item.classification'
                           @change='item.class_step=true'>
@@ -71,7 +71,7 @@
                           <v-divider></v-divider>
                           <v-card-actions>
                             <v-tooltip bottom class='v-input'>
-                              <span>I am {{ item.confidence }}% confident in my answer that there is/is not a {{ item.label }} present in the recording.</span>
+                              <span>I am {{ item.confidence }}% confident in my answer that there is {{ !item.classification ? "not" : ""}} a {{ item.label }} present in the recording.</span>
                               <v-slider thumb-label :step='10'
                               slot='activator'
                               :color='item.bet_step ? "" : "grey"'
@@ -250,6 +250,7 @@ export default {
         },
       ],
       animate: false,
+      debug: false,
     }
   },
   computed: {
@@ -289,7 +290,7 @@ export default {
       }
       this.round_response.complete = false
       this.round_response.pending = true
-      if (this.task_type==1)
+      if (this.task_type==1 && !this.is_practice)
         this.step++
       else
         this.round_dialog = true
@@ -318,6 +319,7 @@ export default {
     let args = window.surveydata
     if (!args) {
       console.error("No data recieved from server! Demo only. ")
+      this.task_type = Math.floor(Math.random() * Math.floor(2)) + 1
       return
     }
     this.task_type = parseInt(args['task_type'], 10)
