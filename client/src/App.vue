@@ -291,7 +291,7 @@ export default {
       this.round_response.complete = false
       this.round_response.pending = true
       if (this.task_type==1 && !this.is_practice)
-        this.step++
+        this.round_toggle()
       else
         this.round_dialog = true
       this.$axios.post("/post/one", data).then(response => {
@@ -319,7 +319,7 @@ export default {
     let args = window.surveydata
     if (!args) {
       console.error("No data recieved from server! Demo only. ")
-      this.task_type = Math.floor(Math.random() * Math.floor(2)) + 1
+      this.task_type = Math.floor(Math.random() * 2) + 1
       return
     }
     this.task_type = parseInt(args['task_type'], 10)
