@@ -27,7 +27,7 @@
             <v-window v-model='step'>
               <v-window-item v-for='(item, index) in items'
               :key='item.file'
-              :value='index+1'>
+              :value='index'>
                 <v-container grid-list-lg>
                   <v-layout column>
                     <!-- Audio -->
@@ -121,10 +121,10 @@
             <v-card-actions class="center-text-xs">
               <v-spacer></v-spacer>
               <v-btn depressed block
-                :color="step !== items.length ? 'primary' : 'success'"
-                :disabled='!items[step-1].bet_step'
-                @click="submitOne(items[step-1])">
-                {{ step !== items.length ? 'Next Recording' : 'Finish'}}
+                :color=" is_final ? 'primary' : 'success'"
+                :disabled='!items[step].bet_step'
+                @click="processRound(items[step])">
+                {{ is_final ? 'Next Recording' : 'Finish'}}
               </v-btn>
               <v-spacer></v-spacer>
             </v-card-actions>
@@ -132,7 +132,7 @@
           <v-flex xs12 justify-center>
             <v-card flat color='transparent'>
               <v-card-text class="text-xs-center">
-                <span class="grey--text">{{is_practice ? '~' : step-1}}/{{items.length-1}}</span>
+                <span class="grey--text">{{is_practice ? '~' : step}}/{{items.length-1}}</span>
               </v-card-text>
             </v-card>
           </v-flex>
@@ -140,8 +140,9 @@
         <!-- Round Submit Message -->
         <!--                      -->
         <round-dialog v-model='round_dialog'
-        :round_data='round_response'
+        :item='items[step]'
         :task_type='task_type'
+        :round='step'
         :demo="is_practice"
         @submit='round_toggle()'
         @repeat='newPractice()'>
@@ -154,16 +155,72 @@
         :instructions='(task_type == 1) ? instructions_type1 : instructions_type2'
         @active_parent_change='showTooltip()'>
         </instructions-dialog>
+        <!-- Process Message -->
+        <!--                      -->
+        <v-dialog persistent
+          v-model="submit_dialog"
+          width="500">
+          <v-card>
+            <v-card-title class="headline">Submit</v-card-title>
+            <v-window v-model='step'>
+              <v-window-item :value='0'>
+                <v-card-text>
+                  <p>Copy the code below to the MTurk assignment to get approved and paid.</p>
+                </v-card-text>
+              </v-window-item>
+              <v-window-item v-for='(item, index) in items.slice(1)'
+              :key='item.file'
+              :value='index + 1'>
+                <v-card-title>
+                  Round #{{ step-1 }}
+                </v-card-title>
+                <v-card-text v-if='task_type==1 || item.type == 1'>
+                  <span v-if='item.won'>
+                    <h3>Your answer was correct</h3>
+                    <h1 class='green--text'>You won a dollar!</h1>
+                  </span>
+                  <span v-else>
+                    <h3>Your answer was incorrect</h3>
+                    <h1 class='red--text'>No dollar won :(</h1>
+                  </span>
+                </v-card-text>
+                <v-card-text v-else>
+                  <h3>Click the timer below to run the lottery.</h3>
+                  <template v-if='"won" in item'>
+                    <span v-if='item.won'>
+                      <h3>You won the lottery</h3>
+                      <h1 class='green--text'>You won a dollar!</h1>
+                    </span>
+                    <span v-else>
+                      <h3>You lost the lottery</h3>
+                      <h1 class='red--text'>No dollar won :(</h1>
+                    </span>
+                  </template>
+                  <stopwatch v-else @hit='item.won=($event < item.chance)'></stopwatch>
+                </v-card-text>
+              </v-window-item>
+            </v-window>
+            <v-card-actions class="center-text-xs">
+              <v-spacer></v-spacer>
+              <v-btn depressed block
+                :color="!is_final ? 'primary' : 'success'"
+                :disabled='!("won" in items[step])'
+                @click="next()">
+                {{ !is_final ? 'Next' : 'Finish'}}
+              </v-btn>
+              <v-spacer></v-spacer>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
         <!-- Final Submit Message -->
         <!--                      -->
-        <submit-dialog
-        v-model='submit_dialog'
-        :reward='total_wins'
-        :uuid='id'/>
+        <code-dialog
+        v-model='code_dialog'
+        :uuid='id'
+        :reward='wins'/>
         <!-- Sample Dialog -->
         <!--               -->
         <v-dialog v-model="audiosample_dialog" max-width="500">
-          <!-- Note the v-if is for stopping the sound when user exits -->
           <v-audio v-if="audiosample_dialog" minimal file='assets/audio/demo.wav'>
           </v-audio>
         </v-dialog>
@@ -191,7 +248,8 @@ import VuetifyAudio from './components/VuetifyAudio'
 import TextHighlight from './components/TextHighlight'
 import InstructionsDialog from './components/InstructionsDialog'
 import ErrorDialog from './components/ErrorDialog'
-import SubmitDialog from './components/SubmitDialog'
+import Stopwatch from './components/Stopwatch.vue'
+import CodeDialog from './components/CodeDialog'
 import RoundDialog from './components/RoundDialog'
 import consentForm from './consent_form.js'
 import type1instr from './components/instructions/type1.js'
@@ -204,13 +262,15 @@ export default {
     'flash': TextHighlight,
     'instructions-dialog': InstructionsDialog,
     'error-dialog': ErrorDialog,
-    'submit-dialog': SubmitDialog,
+    'stopwatch': Stopwatch,
+    'code-dialog': CodeDialog,
     'round-dialog': RoundDialog
   },
   data () {
     return {
       id: "05cdbc17-fc15-4e48-a29f-756029933bc5",
       practice: true,
+      code_dialog: false,
       submit_dialog: false,
       round_dialog: false,
       audiosample_dialog: false,
@@ -224,18 +284,14 @@ export default {
         data: "Cause unknown."
       },
       round_response: {
-        spinner_activate: false,
         chose: 0,
         type: 1,
-        won: 1,
-        spin: 0.574,
         chance: 70,
         pending: false,
-        complete: false,
+        complete: true,
       },
-      total_wins: 0,
       task_type: 1,
-      step: 1,
+      step: 0,
       group: null,
       items: [
         {
@@ -249,13 +305,17 @@ export default {
           choices: [],
         },
       ],
+      wins: 0,
       animate: false,
       debug: false,
     }
   },
   computed: {
     is_practice() {
-      return this.step == 1;
+      return this.step == 0;
+    },
+    is_final() {
+      return this.step + 1 == this.items.length
     }
   },
   methods: {
@@ -266,7 +326,7 @@ export default {
       }, 3000);
     },
     round_toggle() {
-      if (this.items.length == this.step)
+      if (this.is_final)
         this.submit_dialog = true
       else
         this.step++
@@ -281,6 +341,41 @@ export default {
       item.confidence += 10
       item.bet_step=(item.confidence == 100)
       this.animate = true
+    },
+    processRound(item) {
+      if (this.task_type == 2) {
+        let r = Math.floor(Math.random() * 5)
+        item.chose = r
+        item.type = item.choices[r]
+        if (item.type == 0)
+          item.chance = (r + 5) * 10
+      }
+      if (this.task_type == 1 || item.type == 1) {
+        let data = {
+          'id': this.id,
+          'item': item,
+        }
+        this.$axios.post("/truth", data).then(response => {
+          console.log(response)
+          item.won = response.data
+          if (item.won) this.wins++
+        }).catch(error => {
+          this.handleError(error)
+        })
+      }
+      this.round_dialog = true
+    },
+    submitAll(items) {
+      let data = {
+        'id': this.id,
+        'items': items,
+      }
+      this.$axios.post("/post/all", data).then(response => {
+        console.log(response)
+        this.code_dialog = true
+      }).catch(error => {
+        this.handleError(error)
+      })
     },
     submitOne(item) {
       let data = {
@@ -299,12 +394,8 @@ export default {
         for (let key in response.data)
           if (response.data.hasOwnProperty(key))
             this.round_response[key] = response.data[key]
-        if (this.round_response.won)
-          this.total_wins++
+        item.id = response.data.id
         this.round_response.pending = false
-        setTimeout(() => {
-          this.round_response.spinner_activate = !this.round_response.spinner_activate
-        }, 500);
       }).catch(error => {
         this.handleError(error)
       })

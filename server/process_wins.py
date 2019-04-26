@@ -19,27 +19,17 @@ if __name__ == "__main__":
 
 
 def bonus_type_two(ann: Annotation):
-	randchoice = random.randint(0, 4)
-	ann.lotto_choice = randchoice
-	did_win = None
-	spin_result = None
+	rand_choice = random.randint(0, 4)
+	ann.lotto_choice = rand_choice
 	response = {}
-	type_choice = ann.choices[randchoice]
-	if type_choice == TYPE_YOUR_ANSWER:
-		did_win = int(ann.recording.presence == ann.presence_of_label)
-	else:
-		spin_result = random.random()
-		percent = (randchoice + 5) * 10
-		did_win = int(spin_result < percent / 100)
+	type_choice = ann.choices[rand_choice]
+	if type_choice != TYPE_YOUR_ANSWER:
+		percent = (rand_choice + 5) * 10
 		response['chance'] = percent
-		response['spin'] = spin_result
-	ann.won = did_win
 	response['type'] = type_choice
-	response['chose'] = randchoice
-	response['won'] = did_win
+	response['chose'] = rand_choice
 	return response
 
 
 def bonus_type_one(ann: Annotation):
-	ann.won = int(ann.recording.presence == ann.presence_of_label)
-	return {'won': ann.won, 'type': TYPE_YOUR_ANSWER}
+	return {'type': TYPE_YOUR_ANSWER}

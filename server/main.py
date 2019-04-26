@@ -21,7 +21,6 @@ def home():
     recordings = recordings_type2 + recordings_type1
     # recording groups with neither type batch satisfied are counted twice
     group = random.choice(recordings)
-    task_type = 0
     if group.completions_type2 < BATCH_SIZE and group.completions_type1 < BATCH_SIZE:
         task_type = random.randint(1, 2)
     elif group.completions_type1 < BATCH_SIZE:
@@ -29,7 +28,7 @@ def home():
     else:
         task_type = 2
     items = []
-    for audio in group.recordings:
+    for audio in group.recordings[:2]: #DEBUG
         items.append({
             'file': audio.file_name,
             'label': audio.label
@@ -46,6 +45,12 @@ def home():
     }
     return render_template("index.html", data=data)
 
+@app.route('/truth', methods=["POST"])
+def truth():
+    data = request.get_json()
+    survey = ses.query(Survey).filter(Survey.id == data['id']).one()
+    rec = ses.query(Recording).filter(Recording.file_name == data['item']['file']).one()
+    return jsonify(rec.presence)
 
 @app.route('/post/all', methods=["POST"])
 def results():
@@ -61,6 +66,9 @@ def results():
         elif survey.task_type == 2:
             ann.choices = [int(c) for c in item['choices']]
             bonus_type_two(ann)
+        else:
+            ses.rollback()
+            app.logger.info("Incorrect task type (%s)", survey.task_type)
         survey.annotations.append(ann)
 
     ses.commit()
@@ -90,6 +98,18 @@ def result():
         return jsonify(response)
 
     survey.annotations.append(ann)
+    if data['practice']:
+        ses.rollback()
+    else:
+        ses.commit()
+    response['id'] = ann.id
+    return jsonify(response)
+
+
+@app.route('/post/one/result', methods=["POST"])
+def process_result():
+    data = request.get_json()
+    survey = ses.query(Survey).filter(Survey.id == data['id']).one()
     # group = ses.query(RecordingGroup).filter(RecordingGroup.id == Survey.recording_group_id).one()
     if len(survey.annotations) == len(survey.recording_group.recordings):
         survey.completed = True
@@ -97,11 +117,6 @@ def result():
             survey.recording_group.completions_type1 += 1
         elif survey.task_type == 2:
             survey.recording_group.completions_type2 += 1
-    if data['practice']:
-        ses.rollback()
-    else:
-        ses.commit()
-    return jsonify(response)
 
 
 if __name__ == "__main__":
