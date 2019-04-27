@@ -59,13 +59,14 @@ def results():
 
     for item in data['items']:
         rec = ses.query(Recording).filter(Recording.file_name == item["file"]).one()
-        ann = Annotation(recording=rec, class_label=item['label'], presence_of_label=item['classification'])
+        ann = Annotation(recording=rec, class_label=item['label'], won=item["won"], presence_of_label=item['classification'])
         if survey.task_type == 1:
             ann.confidence = item['confidence']
-            bonus_type_one(ann)
+            # bonus_type_one(ann)
         elif survey.task_type == 2:
             ann.choices = [int(c) for c in item['choices']]
-            bonus_type_two(ann)
+            ann.lotto_choice = item['chose']
+            # bonus_type_two(ann)
         else:
             ses.rollback()
             app.logger.info("Incorrect task type (%s)", survey.task_type)
