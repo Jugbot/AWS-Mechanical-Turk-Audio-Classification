@@ -3,7 +3,7 @@
     <v-container>
       <v-layout justify-center align-center fill-height>
         <v-flex>
-          <v-card :color='is_practice ? "yellow lighten-5" : "deep-purple lighten-5"' v-if='items.length'>
+          <v-card :color='is_practice ? "yellow lighten-5" : "deep-purple lighten-5"'>
             <!-- Help -->
             <v-tooltip left v-model='instructions_tooltip'>
               <template v-slot:activator="{ on }">
@@ -25,9 +25,9 @@
             <!-- Tasks -->
             <!--       -->
             <v-window v-model='step'>
-              <v-window-item v-for='(item, index) in items'
-              :key='item.file'
-              :value='index'>
+              <v-window-item v-for='(item, index) in current_items'
+              :value='index'
+              :key='item.file'>
                 <v-container grid-list-lg>
                   <v-layout column>
                     <!-- Audio -->
@@ -61,7 +61,7 @@
                     </v-flex>
                     <!-- Confidence & Lottery -->
                     <!--                      -->
-                    <template v-if='task_type==1'>
+                    <template v-if='task_type===1'>
                       <!-- Type 1: Confidence -->
                       <v-flex v-show='item.class_step'>
                         <v-card>
@@ -85,7 +85,7 @@
                         </v-card>
                       </v-flex>
                     </template>
-                    <template v-if='task_type==2'>
+                    <template v-if='task_type===2'>
                       <!-- Type 2: Lottery -->
                       <v-flex v-show='item.class_step'>
                         <v-card>
@@ -121,10 +121,10 @@
             <v-card-actions class="center-text-xs">
               <v-spacer></v-spacer>
               <v-btn depressed block
-                :color=" is_final ? 'primary' : 'success'"
-                :disabled='!items[step].bet_step'
-                @click="processRound(items[step])">
-                {{ is_final ? 'Next Recording' : 'Finish'}}
+                :color=" !is_final ? 'primary' : 'success'"
+                :disabled='!current_items[step].bet_step'
+                @click="processRound(current_items[step])">
+                {{ !is_final ? 'Next Recording' : 'Finish'}}
               </v-btn>
               <v-spacer></v-spacer>
             </v-card-actions>
@@ -132,7 +132,7 @@
           <v-flex xs12 justify-center>
             <v-card flat color='transparent'>
               <v-card-text class="text-xs-center">
-                <span class="grey--text">{{is_practice ? '~' : step}}/{{items.length-1}}</span>
+                <span class="grey--text">{{is_practice ? '~' : current_round}}/{{items.length}}</span>
               </v-card-text>
             </v-card>
           </v-flex>
@@ -140,11 +140,11 @@
         <!-- Round Submit Message -->
         <!--                      -->
         <round-dialog v-model='round_dialog'
-        :item='items[step]'
+        :item='current_items[step]'
         :task_type='task_type'
-        :round='step'
+        :round='current_round'
         :demo="is_practice"
-        @submit='round_toggle()'
+        @submit='next_round()'
         @repeat='newPractice()'>
         </round-dialog>
         <!-- Instructions Message -->
@@ -160,21 +160,22 @@
         <v-dialog persistent
           v-model="submit_dialog"
           width="500">
-          <v-card>
-            <v-card-title class="headline">Submit</v-card-title>
-            <v-window v-model='step'>
-              <v-window-item :value='0'>
+          <v-card v-if='items.length'>
+            <v-card-title>
+              <span class="headline">Submit</span>&nbsp;
+              <span class="subheading">round #{{ submit_step + 1 }}</span>
+            </v-card-title>
+            <v-window v-model='submit_step'>
+              <v-window-item :value='-1'>
                 <v-card-text>
                   <p>Copy the code below to the MTurk assignment to get approved and paid.</p>
                 </v-card-text>
               </v-window-item>
-              <v-window-item v-for='(item, index) in items.slice(1)'
+              <v-window-item v-for='(item, index) in items'
               :key='item.file'
-              :value='index + 1'>
-                <v-card-title>
-                  Round #{{ step-1 }}
-                </v-card-title>
-                <v-card-text v-if='task_type==1 || item.type == 1'>
+              :value='index'>
+                <v-card-text v-if='task_type==1 || item.type == 1'
+                class='text-xs-center'>
                   <span v-if='item.won'>
                     <h3>Your answer was correct</h3>
                     <h1 class='green--text'>You won a dollar!</h1>
@@ -184,9 +185,11 @@
                     <h1 class='red--text'>No dollar won :(</h1>
                   </span>
                 </v-card-text>
-                <v-card-text v-else>
+                <v-card-text v-else
+                class='text-xs-center'>
                   <h3>Click the timer below to run the lottery.</h3>
-                  <template v-if='"won" in item'>
+                  <stopwatch @stop='setWon($event, item)'></stopwatch>
+                  <template v-if='item.won != -1'>
                     <span v-if='item.won'>
                       <h3>You won the lottery</h3>
                       <h1 class='green--text'>You won a dollar!</h1>
@@ -196,17 +199,16 @@
                       <h1 class='red--text'>No dollar won :(</h1>
                     </span>
                   </template>
-                  <stopwatch v-else @hit='item.won=($event < item.chance)'></stopwatch>
                 </v-card-text>
               </v-window-item>
             </v-window>
             <v-card-actions class="center-text-xs">
               <v-spacer></v-spacer>
               <v-btn depressed block
-                :color="!is_final ? 'primary' : 'success'"
-                :disabled='!("won" in items[step])'
-                @click="next()">
-                {{ !is_final ? 'Next' : 'Finish'}}
+                :color="!is_final_submit ? 'primary' : 'success'"
+                :disabled='submit_step >= 0 && items[submit_step].won == -1'
+                @click="next_submit()">
+                {{ !is_final_submit ? 'Next' : 'Finish'}}
               </v-btn>
               <v-spacer></v-spacer>
             </v-card-actions>
@@ -292,44 +294,71 @@ export default {
       },
       task_type: 1,
       step: 0,
+      submit_step: -1,
       group: null,
-      items: [
-        {
-          file: "demo.wav",
-          label: "jackhammer",
-          audio_step: false,
-          class_step: false,
-          bet_step: false,
-          confidence: 50,
-          classification: null,
-          choices: [],
-        },
-      ],
-      wins: 0,
+      practice_item: [{
+        file: "demo.wav",
+        label: "jackhammer",
+        audio_step: false,
+        class_step: false,
+        bet_step: false,
+        confidence: 50,
+        classification: null,
+        choices: [],
+      }],
+      items: [  ],
       animate: false,
       debug: false,
+      is_practice: true,
     }
   },
   computed: {
-    is_practice() {
-      return this.step == 0;
-    },
     is_final() {
-      return this.step + 1 == this.items.length
+      return this.current_round == this.items.length
+    },
+    current_items() {
+      return (this.is_practice ? this.practice_item : this.items)
+    },
+    current_round() {
+      return this.step + 1
+    },
+    is_final_submit() {
+      return this.current_submit_round == this.items.length
+    },
+    current_submit_round() {
+      return this.submit_step + 1
+    },
+    wins() {
+      return this.items.filter((obj) => obj.won === 1).length
     }
   },
   methods: {
+    next_submit() {
+      if (this.is_final_submit) {
+        this.submit_dialog = false
+        this.submitAll()
+      } else {
+        this.submit_step++
+      }
+    },
+    setWon(e, item) {
+      if (item.won === -1)
+        item.won = (e < item.chance)
+    },
     showTooltip() {
       this.instructions_tooltip = true;
       setTimeout(() => {
         this.instructions_tooltip = false;
       }, 3000);
     },
-    round_toggle() {
-      if (this.is_final)
+    next_round() {
+      if (this.is_practice)
+        this.is_practice = false
+      else if (this.is_final)
         this.submit_dialog = true
       else
         this.step++
+
     },
     handleError(error) {
       this.error_message = error.response;
@@ -356,46 +385,21 @@ export default {
           'item': item,
         }
         this.$axios.post("/truth", data).then(response => {
-          console.log(response)
           item.won = response.data
-          if (item.won) this.wins++
+          if (item.won && !this.is_practice) this.wins++
         }).catch(error => {
           this.handleError(error)
         })
       }
       this.round_dialog = true
     },
-    submitAll(items) {
+    submitAll() {
       let data = {
         'id': this.id,
-        'items': items,
+        'items': this.items,
       }
       this.$axios.post("/post/all", data).then(response => {
-        console.log(response)
         this.code_dialog = true
-      }).catch(error => {
-        this.handleError(error)
-      })
-    },
-    submitOne(item) {
-      let data = {
-        'id': this.id,
-        'practice': this.is_practice,
-        'item': item,
-      }
-      this.round_response.complete = false
-      this.round_response.pending = true
-      if (this.task_type==1 && !this.is_practice)
-        this.round_toggle()
-      else
-        this.round_dialog = true
-      this.$axios.post("/post/one", data).then(response => {
-        console.log(response)
-        for (let key in response.data)
-          if (response.data.hasOwnProperty(key))
-            this.round_response[key] = response.data[key]
-        item.id = response.data.id
-        this.round_response.pending = false
       }).catch(error => {
         this.handleError(error)
       })
@@ -403,7 +407,7 @@ export default {
     newPractice() {
       if (this.items.length == 0)
         return
-      this.items[0] = this.items[1+Math.floor(Math.random()*(this.items.length-1))]
+      this.practice_item = [Object.assign({},this.items[Math.floor(Math.random()*this.items.length)])]
     }
   },
   created() {
@@ -427,10 +431,11 @@ export default {
           'confidence': 50,
           'classification': null,
           'choices': [],
+          'won': -1
       })
     }
 
-    this.items = this.items.concat(args.items)
+    this.items = args.items
     this.newPractice();
   }
 }
