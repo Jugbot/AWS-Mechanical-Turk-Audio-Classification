@@ -26,8 +26,7 @@
             <!--       -->
             <v-window v-model='step'>
               <v-window-item v-for='(item, index) in current_items'
-              :value='index'
-              :key='item.file+item.practice_key'>
+              :key='index' lazy>
                 <v-container grid-list-lg>
                   <v-layout column>
                     <!-- Audio -->
@@ -162,7 +161,7 @@
           width="500">
           <v-card v-if='items.length'>
             <v-card-title>
-              <span class="headline">Submit</span>&nbsp;
+              <span class="headline">Submit</span><br>
               <span class="subheading">round #{{ submit_step + 1 }}</span>
             </v-card-title>
             <v-window v-model='submit_step'>
