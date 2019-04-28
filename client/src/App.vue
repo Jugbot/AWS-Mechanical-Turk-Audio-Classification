@@ -27,7 +27,7 @@
             <v-window v-model='step'>
               <v-window-item v-for='(item, index) in current_items'
               :value='index'
-              :key='item.file'>
+              :key='item.file+item.practice_key'>
                 <v-container grid-list-lg>
                   <v-layout column>
                     <!-- Audio -->
@@ -168,7 +168,7 @@
             <v-window v-model='submit_step'>
               <v-window-item :value='-1'>
                 <v-card-text>
-                  <p>Copy the code below to the MTurk assignment to get approved and paid.</p>
+                  <p>(instructions go here)</p>
                 </v-card-text>
               </v-window-item>
               <v-window-item v-for='(item, index) in items'
@@ -305,6 +305,7 @@ export default {
         confidence: 50,
         classification: null,
         choices: [],
+        practicekey: ''
       }],
       items: [  ],
       animate: false,
@@ -398,7 +399,7 @@ export default {
         'id': this.id,
         'items': this.items,
       }
-      this.$axios.post("/post/all", data).then(response => {
+      this.$axios.post("/post/all", data).then(() => {
         this.code_dialog = true
       }).catch(error => {
         this.handleError(error)
@@ -408,6 +409,7 @@ export default {
       if (this.items.length == 0)
         return
       this.practice_item = [Object.assign({},this.items[Math.floor(Math.random()*this.items.length)])]
+      this.practice_item[0].practice_key = "practice"
     }
   },
   created() {
@@ -431,7 +433,8 @@ export default {
           'confidence': 50,
           'classification': null,
           'choices': [],
-          'won': -1
+          'won': -1,
+          'practicekey': ''
       })
     }
 

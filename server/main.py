@@ -28,7 +28,7 @@ def home():
     else:
         task_type = 2
     items = []
-    for audio in group.recordings: #DEBUG
+    for audio in group.recordings:
         items.append({
             'file': audio.file_name,
             'label': audio.label
@@ -59,7 +59,7 @@ def results():
 
     for item in data['items']:
         rec = ses.query(Recording).filter(Recording.file_name == item["file"]).one()
-        ann = Annotation(recording=rec, class_label=item['label'], won=item["won"], presence_of_label=item['classification'])
+        ann = Annotation(recording=rec, class_label=item['label'], won=int(item["won"]), presence_of_label=item['classification'])
         if survey.task_type == 1:
             ann.confidence = item['confidence']
             # bonus_type_one(ann)
