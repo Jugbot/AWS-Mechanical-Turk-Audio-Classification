@@ -198,7 +198,7 @@
                 class='text-xs-center'>
                   <h1>Lottery</h1>
                   <h3>In round {{ submit_step + 1 }} a(n) <b>{{item.chance}}</b>% lottery was selected. To determine if you win the bonus, we will let you stop the clock below. </h3>
-                  <span>The last two digits must be less than <b>{{item.chance}}</b> for you to win.</span>
+                  <p>The last two digits must be less than <b>{{item.chance}}</b> for you to win.</p>
                   <stopwatch @stop='setWon($event, item)'></stopwatch>
                   <template v-if='item.won != -1'>
                     <span v-if='item.won'>
@@ -421,6 +421,7 @@ export default {
         return
       this.practice_item = [Object.assign({},this.items[Math.floor(Math.random()*this.items.length)])]
       this.practice_item[0].practice_key = "practice"
+      this.practice_item[0].choices = []
     }
   },
   created() {

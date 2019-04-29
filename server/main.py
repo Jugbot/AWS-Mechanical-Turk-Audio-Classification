@@ -28,7 +28,7 @@ def home():
     else:
         task_type = 2
     items = []
-    for audio in group.recordings:
+    for audio in group.recordings[:2]:
         items.append({
             'file': audio.file_name,
             'label': audio.label
@@ -45,12 +45,13 @@ def home():
     }
     return render_template("index.html", data=data)
 
+
 @app.route('/truth', methods=["POST"])
 def truth():
     data = request.get_json()
-    survey = ses.query(Survey).filter(Survey.id == data['id']).one()
     rec = ses.query(Recording).filter(Recording.file_name == data['item']['file']).one()
     return jsonify(rec.presence)
+
 
 @app.route('/post/all', methods=["POST"])
 def results():
@@ -59,7 +60,8 @@ def results():
 
     for item in data['items']:
         rec = ses.query(Recording).filter(Recording.file_name == item["file"]).one()
-        ann = Annotation(recording=rec, class_label=item['label'], won=int(item["won"]), presence_of_label=item['classification'])
+        ann = Annotation(recording=rec, class_label=item['label'], won=int(item["won"]),
+                         presence_of_label=item['classification'])
         if survey.task_type == 1:
             ann.confidence = item['confidence']
             # bonus_type_one(ann)
@@ -86,10 +88,10 @@ def result():
     rec = ses.query(Recording).filter(Recording.file_name == item["file"]).one()
     ann = Annotation(recording=rec, class_label=item['label'], presence_of_label=item['classification'])
     response = ""
-    
+
     if survey.task_type == 1:
         ann.confidence = item['confidence']
-        response = bonus_type_one(ann)
+        response = bonus_type_one()
     elif survey.task_type == 2:
         ann.choices = [int(c) for c in item['choices']]
         response = bonus_type_two(ann)
