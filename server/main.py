@@ -28,7 +28,7 @@ def home():
     else:
         task_type = 2
     items = []
-    for audio in group.recordings[:2]:
+    for audio in group.recordings:
         items.append({
             'file': audio.file_name,
             'label': audio.label
