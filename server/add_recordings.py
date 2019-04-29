@@ -1,7 +1,7 @@
 import os
 import pickle
 
-from server.db_tables import ses, Recording, Annotation, Survey, RecordingGroup
+from server.db_tables import ses, Recording, RecordingGroup
 from server.main import app
 
 if __name__ == "__main__":
@@ -10,7 +10,7 @@ if __name__ == "__main__":
 	config_path = os.path.join(root, 'test_selected_all.pickle')
 	with open(config_path, 'rb') as file:
 		filedata = pickle.load(file)
-		config = {t[1]:t[2] for t in filedata}
+		config = {t[1]: t[2] for t in filedata}
 	print("creating entries from", root)
 	folders = next(os.walk(root))[DIRS]
 	for folder in folders:

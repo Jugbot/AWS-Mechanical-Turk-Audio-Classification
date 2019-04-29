@@ -7,6 +7,7 @@ from sqlalchemy.orm import relationship, sessionmaker
 from sqlalchemy.dialects import postgresql
 
 db_path = ''
+# noinspection PyBroadException
 try:
     db_path = os.environ['DATABASE_URL']
 except:
