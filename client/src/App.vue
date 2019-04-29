@@ -167,10 +167,16 @@
             <v-window v-model='submit_step'>
               <v-window-item :value='-1'>
                 <v-card-text>
-                  <p>This is your computer clock, presenting the time down to the millisecond (1/1000th of a second).</p>
-                  <stopwatch></stopwatch>
-                  <p>If the last two digits of the stopped clock are strictly less than the lottery winning chances you win the $1 bonus, and if they are more, then you win nothing.</p>
-                  <p>Now, try to stop the clock showing the current time to millisecond precision. Because of the human reaction time, It is not possible for you to control these last two digits of the millisecond clock. The purpose of this is to generate a random number, and match your probability of winning to the selected round chances. </p>
+                  <template v-if='task_type==2'>
+                    <p>This is your computer clock, presenting the time down to the millisecond (1/1000th of a second).</p>
+                    <stopwatch></stopwatch>
+                    <p>If the last two digits of the stopped clock are strictly less than the lottery winning chances you win the $1 bonus, and if they are more, then you win nothing.</p>
+                    <p>Now, try to stop the clock showing the current time to millisecond precision. Because of the human reaction time, It is not possible for you to control these last two digits of the millisecond clock. The purpose of this is to generate a random number, and match your probability of winning to the selected round chances. </p>
+                    <p>For qustions in which you chose to test your answer, your win will depend on if your answer was correct.</p>
+                  </template>
+                  <template v-else>
+                    <p>Now your answers will be tested. Whether you win or not depends on if your answer is correct for that round.</p>
+                  </template>
                 </v-card-text>
               </v-window-item>
               <v-window-item v-for='(item, index) in items'
@@ -178,6 +184,7 @@
               :value='index'>
                 <v-card-text v-if='task_type==1 || item.type == 1'
                 class='text-xs-center'>
+                  <h1>Answer Test</h1>
                   <span v-if='item.won'>
                     <h3>Your answer was correct</h3>
                     <h1 class='green--text'>You won a dollar!</h1>
@@ -189,7 +196,9 @@
                 </v-card-text>
                 <v-card-text v-else
                 class='text-xs-center'>
+                  <h1>Lottery</h1>
                   <h3>To determine if you win the bonus, we will let you stop the clock below. </h3>
+                  <span>The last two digits must be less than <b>{{item.chance}}</b> for you to win.</span>
                   <stopwatch @stop='setWon($event, item)'></stopwatch>
                   <template v-if='item.won != -1'>
                     <span v-if='item.won'>
