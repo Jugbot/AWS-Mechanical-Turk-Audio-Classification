@@ -167,7 +167,10 @@
             <v-window v-model='submit_step'>
               <v-window-item :value='-1'>
                 <v-card-text>
-                  <p>(instructions go here)</p>
+                  <p>This is your computer clock, presenting the time down to the millisecond (1/1000th of a second).</p>
+                  <stopwatch></stopwatch>
+                  <p>If the last two digits of the stopped clock are strictly less than the lottery winning chances you win the $1 bonus, and if they are more, then you win nothing.</p>
+                  <p>Now, try to stop the clock showing the current time to millisecond precision. Because of the human reaction time, It is not possible for you to control these last two digits of the millisecond clock. The purpose of this is to generate a random number, and match your probability of winning to the selected round chances. </p>
                 </v-card-text>
               </v-window-item>
               <v-window-item v-for='(item, index) in items'
@@ -186,7 +189,7 @@
                 </v-card-text>
                 <v-card-text v-else
                 class='text-xs-center'>
-                  <h3>Click the timer below to run the lottery.</h3>
+                  <h3>To determine if you win the bonus, we will let you stop the clock below. </h3>
                   <stopwatch @stop='setWon($event, item)'></stopwatch>
                   <template v-if='item.won != -1'>
                     <span v-if='item.won'>
