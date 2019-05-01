@@ -74,6 +74,13 @@ def results():
             app.logger.info("Incorrect task type (%s)", survey.task_type)
         survey.annotations.append(ann)
 
+    if len(survey.annotations) == len(survey.recording_group.recordings):
+        survey.completed = True
+        if survey.task_type == 1:
+            survey.recording_group.completions_type1 += 1
+        elif survey.task_type == 2:
+            survey.recording_group.completions_type2 += 1
+
     ses.commit()
     return "success"
 
