@@ -341,7 +341,7 @@ export default {
       return this.submit_step + 1
     },
     wins() {
-      return this.items.filter((obj) => obj.won === 1).length
+      return this.items.filter((obj) => obj.won).length
     }
   },
   methods: {
@@ -398,7 +398,6 @@ export default {
         }
         this.$axios.post("/truth", data).then(response => {
           item.won = response.data
-          if (item.won && !this.is_practice) this.wins++
         }).catch(error => {
           this.handleError(error)
         })
