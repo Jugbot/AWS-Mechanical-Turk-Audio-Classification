@@ -25,6 +25,7 @@ class Survey(Base):
     id = Column(String, primary_key=True)
     approved = Column(Boolean, default=False)
     completed = Column(Boolean, default=False)
+    wins = Column(Integer)
     annotations = relationship("Annotation", back_populates='survey')
     recording_group_id = Column(Integer, ForeignKey("RecordingGroup.id"))
     recording_group = relationship("RecordingGroup")

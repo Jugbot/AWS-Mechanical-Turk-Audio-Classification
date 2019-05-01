@@ -73,6 +73,7 @@ def results():
             ses.rollback()
             app.logger.info("Incorrect task type (%s)", survey.task_type)
         survey.annotations.append(ann)
+    survey.wins = data["wins"]
 
     if len(survey.annotations) == len(survey.recording_group.recordings):
         survey.completed = True

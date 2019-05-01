@@ -407,6 +407,7 @@ export default {
     submitAll() {
       let data = {
         'id': this.id,
+        'wins': this.wins,
         'items': this.items,
       }
       this.$axios.post("/post/all", data).then(() => {
