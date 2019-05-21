@@ -10,12 +10,12 @@
         <v-card-text class="subheading">
           <p>You just completed round {{round}}. </p>
           <template v-if="task_type==2">
-            <span>From the 5 answers given, answer {{ item.chose + 1 }} was selected. </span>
+            <span>You made 5 different choices between playing the lottery or your choice to the question about the presence of a {{item.label}}. From the 5 answers you selected in this round, we will randomly select one to be tested for payment. In this round, answer {{ item.chose + 1 }} was randomly selected. </span>
             <span v-if='item.type == 0'>You will draw a {{ item.chance }}% chance lottery after round 20. </span>
-            <span v-else>Your answer will be tested after round 20</span>
+            <span v-else>Your choice to the question about the presence of a {{item.label}} will be tested after round 20.</span>
           </template>
           <template v-if="task_type==1">
-            <span>Your answer will be tested after round 20</span>
+            <span>Your choice to the question about the presence of a {{item.label}} will be tested after round 20.</span>
           </template>
         </v-card-text>
         <v-divider></v-divider>
