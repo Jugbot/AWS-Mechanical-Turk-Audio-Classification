@@ -30,8 +30,9 @@ def home():
     items = []
     for audio in group.recordings:
         items.append({
-            'file': audio.file_name,
-            'label': audio.label
+            'file': group.folder + '/' + audio.file_name,
+            'truth': audio.presence,
+            # 'label': audio.label
         })
     preemptive = Survey(id=str(uid), task_type=task_type, recording_group_id=group.id)
     ses.add(preemptive)
@@ -39,7 +40,6 @@ def home():
 
     data = {
         'id': uid,
-        'group': group.folder,
         'task_type': task_type,
         'items': items,
     }

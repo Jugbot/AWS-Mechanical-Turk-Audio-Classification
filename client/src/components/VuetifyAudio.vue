@@ -26,7 +26,7 @@
         <p class="mx-2">{{ currentTime }} / {{ duration }}</p>
       </v-layout>
     </v-card-text>
-    <audio id="player" ref="player" v-on:ended="ended" v-on:canplay="canPlay" :src="file"></audio>
+    <audio id="player" ref="player" @ended="$emit('ended')" v-on:canplay="canPlay" :src="file"></audio>
   </v-card>
 </template>
 <script>
@@ -48,10 +48,6 @@
             minimal: {
                 type: Boolean,
                 default: false
-            },
-            ended: {
-                type: Function,
-                default: () => {},
             },
             canPlay: {
                 type: Function,
