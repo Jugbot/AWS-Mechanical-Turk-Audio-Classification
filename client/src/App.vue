@@ -171,10 +171,10 @@
                     <p>If the last two digits of the stopped clock are strictly less than the lottery winning chances you win the $1 bonus, and if they are more, then you win nothing.</p>
                     <p>Now, try to stop the clock showing the current time to millisecond precision. Because of the human reaction time, it is not possible for you to control these last two digits of the millisecond clock. The purpose of this is to generate a random number, and match your probability of winning to the selected round chances. </p>
                     <stopwatch></stopwatch>
-                    <p>For questions in which you selected to test your choice to the question about the presence of a {{item.label}}, your win will depend on if your choice was correct.</p>
+                    <p>For questions in which you selected to test your choice to the question about the presence of a jackhammer, your win will depend on if your choice was correct.</p>
                   </template>
                   <template v-else>
-                    <p>Now your answers will be tested. Whether you win or not depends on if your answer to the question about the presence of a {{item.label}} is correct for that round.</p>
+                    <p>Now your answers will be tested. Whether you win or not depends on if your answer to the question about the presence of a jackhammer is correct for that round.</p>
                   </template>
                 </v-card-text>
               </v-window-item>
