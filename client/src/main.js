@@ -12,8 +12,8 @@ window.vue = new Vue({
 
   methods: {
     debug() {
-      this.$children[0].$data.debug = !this.$children[0].$data.debug
-      return "Debug mode " + (this.$children[0].$data.debug ? "enabled. " : "disabled. ")
+      this.$store.commit('toggleDebug')
+      return "Debug mode " + (this.$store.state.debug ? "enabled. " : "disabled. ")
     }
   }
 }).$mount('#app')

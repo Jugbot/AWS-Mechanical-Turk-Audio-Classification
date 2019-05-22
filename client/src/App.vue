@@ -1,23 +1,41 @@
 <template lang="html">
   <v-app>
     <v-container>
-      <v-layout justify-center align-center fill-height>
+      <v-layout
+        justify-center
+        align-center
+        fill-height
+      >
         <v-flex>
-          <v-card :color='is_practice ? "yellow lighten-5" : "deep-purple lighten-5"'>
+          <v-card :color="is_practice ? 'yellow lighten-5' : 'deep-purple lighten-5'">
             <!-- Help -->
-            <v-tooltip left v-model='instructions_tooltip'>
+            <v-tooltip
+              left
+              v-model="instructions_tooltip"
+            >
               <template v-slot:activator="{ on }">
-                <v-btn v-on='on' flat icon color="grey" large
-                @click='instructions_dialog=true'
-                style='position:absolute;right:0;top:0;z-index:100;'>?</v-btn>
+                <v-btn
+                  v-on="on"
+                  flat
+                  icon
+                  color="grey"
+                  large
+                  @click="instructions_dialog=true"
+                  style="position:absolute;right:0;top:0;z-index:100;"
+                >
+                  ?
+                </v-btn>
               </template>
               <span>Instructions</span>
             </v-tooltip>
             <!--  -->
             <v-card-title primary-title>
-              <v-layout column align-center>
+              <v-layout
+                column
+                align-center
+              >
                 <h3 class="headline">
-                  Audio Classification {{is_practice ? " (Practice)":null}}
+                  Audio Classification {{ is_practice ? " (Practice)":null }}
                 </h3>
                 <span class="subheading">Click Play to begin</span>
               </v-layout>
@@ -25,66 +43,91 @@
             <!-- Tasks -->
             <!--       -->
             <survey-list
-            @sample='audiosample_dialog=true'
-            :debug='debug'>
-            </survey-list>
+              @sample="audiosample_dialog=true"
+              :debug="debug"
+            />
             <!-- Navigation -->
             <!--            -->
             <v-card-actions class="center-text-xs">
-              <v-spacer></v-spacer>
-              <v-btn depressed block
+              <v-spacer />
+              <v-btn
+                depressed
+                block
                 :color=" !is_last_item ? 'primary' : 'success'"
-                :disabled='!bet_step'
-                @click="processRound(current_item)"><!-- TODO -->
-                {{ !is_last_item ? 'Next Recording' : 'Finish'}}
+                :disabled="!bet_step"
+                @click="processRound(current_item)"
+              >
+                <!-- TODO -->
+                {{ !is_last_item ? 'Next Recording' : 'Finish' }}
               </v-btn>
-              <v-spacer></v-spacer>
+              <v-spacer />
             </v-card-actions>
           </v-card>
-          <v-flex xs12 justify-center>
-            <v-card flat color='transparent'>
+          <v-flex
+            xs12
+            justify-center
+          >
+            <v-card
+              flat
+              color="transparent"
+            >
               <v-card-text class="text-xs-center">
-                <span v-if='!is_practice' class="grey--text">{{round_number}}/{{items.length}}</span>
+                <span
+                  v-if="!is_practice"
+                  class="grey--text"
+                >
+                  {{ round_number }}/{{ max_round_number }}
+                </span>
               </v-card-text>
             </v-card>
           </v-flex>
         </v-flex>
         <!-- Round Submit Message -->
         <!--                      -->
-        <!-- <round-dialog v-model='round_dialog'
-        @submit='next_round()'
-        @repeat='newPractice()'>
-        </round-dialog> -->
+        <round-dialog
+          v-model="round_dialog"
+          @start="endPractice()"
+          @next="nextRound()"
+        />
         <!-- Instructions Message -->
         <!--                      -->
         <instructions-dialog
-        v-model='instructions_dialog'
-        :consent_form='instructions_consent'
-        :instructions='is_type1 ? instructions_type1 : instructions_type2'
-        @active_parent_change='showTooltip()'>
-        </instructions-dialog>
+          v-model="instructions_dialog"
+          :consent_form="instructions_consent"
+          :instructions="is_type1 ? instructions_type1 : instructions_type2"
+          @active_parent_change="showTooltip()"
+        />
         <!-- Process Message -->
         <!--                 -->
-        <!-- <submit-dialog
-        v-model='submit_dialog'>
-        </submit-dialog> -->
+        <submit-dialog
+          v-model="submit_dialog"
+          @submit="submitAll()"
+        />
         <!-- Final Submit Message -->
         <!--                      -->
         <code-dialog
-        v-model='code_dialog'
-        :uuid='id'
-        :reward='wins'/>
+          v-model="code_dialog"
+          :uuid="id"
+          :reward="wins"
+        />
         <!-- Sample Dialog -->
         <!--               -->
-        <v-dialog v-model="audiosample_dialog" max-width="500">
-          <v-audio v-if="audiosample_dialog" minimal file='assets/audio/demo.wav'>
-          </v-audio>
+        <v-dialog
+          v-model="audiosample_dialog"
+          max-width="500"
+        >
+          <v-audio
+            v-if="audiosample_dialog"
+            minimal
+            file="assets/audio/demo.wav"
+          />
         </v-dialog>
         <!-- Error Message -->
         <!--               -->
         <error-dialog
-        v-model='error_dialog'
-        :message='error_message'/>
+          v-model="error_dialog"
+          :message="error_message"
+        />
       </v-layout>
     </v-container>
   </v-app>
@@ -140,32 +183,28 @@ export default {
         data: "Cause unknown."
       },
       // END
-      submit_step: -1,
       animate: false,
     }
   },
   computed: {
-    ...mapState(['debug', 'bet_step', 'audio_step', 'is_practice', 'id']),
-    ...mapGetters(['is_type1', 'is_type2', 'wins', 'round_number', 'is_last_item', 'current_item']),
-    is_final_submit() {
-      return this.submit_step + 1 == this.items.length
-    },
-    submit_round_number() {
-      return this.submit_step + 1
-    },
+    ...mapState(['debug', 'bet_step', 'is_practice', 'id', 'items']),
+    ...mapGetters(['is_type1', 'is_type2', 'wins', 'round_number', 'is_last_item', 'current_item', 'max_round_number']),
   },
   methods: {
-    next_submit() {
-      if (this.is_final_submit) {
-        this.submit_dialog = false
-        this.submitAll()
-      } else {
-        this.submit_step++
+    ...mapMutations(['setItem', 'nextItem', 'endPractice']),
+    processRound() {
+      if (this.is_type2) {
+        let r = Math.floor(Math.random() * 5)
+        this.setItem({
+          chose: r,
+          type: this.current_item.choices[r],
+          chance: (r + 5) * 10
+        })
       }
-    },
-    processLottery(e, item) {
-      if (item.won === -1)
-        item.won = (e < item.chance)
+      if (this.is_type1 || this.current_item.type == 1) {
+        this.setItem({won: this.current_item.truth == this.current_item.classification})
+      }
+      this.round_dialog = true
     },
     showTooltip() {
       this.instructions_tooltip = true;
@@ -173,14 +212,11 @@ export default {
         this.instructions_tooltip = false;
       }, 3000);
     },
-    next_round() {
-      if (this.is_practice)
-        this.is_practice = false
-      else if (this.is_last_item)
+    nextRound() {
+      if (this.is_last_item && !this.is_practice)
         this.submit_dialog = true
       else
-        this.step++
-
+        this.nextItem();
     },
     handleError(error) {
       this.error_message = error.response;
@@ -199,13 +235,6 @@ export default {
         this.handleError(error)
       })
     },
-    // newPractice() {
-    //   if (this.items.length == 0)
-    //     return
-    //   this.practice_item = [Object.assign({},this.items[Math.floor(Math.random()*this.items.length)])]
-    //   this.practice_item[0].practice_key = "practice"
-    //   this.practice_item[0].choices = []
-    // }
   },
   created() {
 

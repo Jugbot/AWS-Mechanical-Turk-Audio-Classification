@@ -1,17 +1,26 @@
 <template lang="html">
-  <v-dialog persistent
+  <v-dialog
+    persistent
     v-model="active"
-    width="500">
-    <v-card dark color="blue">
-      <v-card-title class="headline">Survey Code</v-card-title>
+    width="500"
+  >
+    <v-card
+      dark
+      color="blue"
+    >
+      <v-card-title class="headline">
+        Survey Code
+      </v-card-title>
       <v-card-text>
         <p>Thank you for participating, your bonus is ${{ reward }}.00</p>
         <p>Copy the code below to the MTurk assignment to get approved and paid.</p>
-        <v-text-field light
-        class="centered"
-        solo readonly
-        :value='uuid'>
-        </v-text-field>
+        <v-text-field
+          light
+          class="centered"
+          solo
+          readonly
+          :value="uuid"
+        />
       </v-card-text>
     </v-card>
   </v-dialog>
@@ -19,15 +28,21 @@
 
 <script>
 export default {
-  name: 'submit-dialog',
+  name: 'SubmitDialog',
   model: {
     prop: 'active_parent',
     event: 'active_parent_change',
   },
   props: {
     active_parent: Boolean,
-    uuid: String,
-    reward: Number,
+    uuid: {
+      type: String,
+      default: ""
+    },
+    reward: {
+      type: Number,
+      default: 0
+    },
   },
   data() {
     return {

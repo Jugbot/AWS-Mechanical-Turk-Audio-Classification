@@ -3,31 +3,41 @@ import Vuex from 'vuex'
 
 Vue.use(Vuex)
 
+
 function addAttributes(item) {
   return Object.assign(item, {
-      'confidence': 50,
-      'classification': null,
-      'choices': [],
-      'won': -1,
+      confidence: 50,
+      classification: null,
+      choices: [],
+      won: -1,
+      chose: 0,
+      type: 1,
+      chance: 0,
   })
 }
+
+function makeItems(arr) {
+  let arr2 = []
+  for (let obj of arr) {
+    arr2.push(addAttributes(obj))
+  }
+  return arr2
+}
+
 
 let args = window.surveydata
 if (!args) {
   console.error("No data recieved from server! Demo only. ")
   args = {}
-} else {
-  for (let i = 0; i < args['items'].length; i++) {
-    args['items'][i] = addAttributes(args['items'][i])
-  }
+  var demo = true
 }
 
 args["practice_items"] = []
 for (let i = 0; i < 20; i++) {
-  args["practice_items"].push(addAttributes({
+  args["practice_items"].push({
     file: 'practice/' + (i < 10 ? 'positive/' : 'negative/') + i % 10 + '.wav',
-    truth: (i < 10)
-  }))
+    truth: (i < 10),
+  })
 }
 
 export default new Vuex.Store({
@@ -35,20 +45,20 @@ export default new Vuex.Store({
     id: args['id'] || "tH1s-i5-A-s4mpL3-c0D3",
     survey_type: parseInt(args['task_type'], 10) || Math.floor(Math.random() * 2) + 1,
     debug: false,
-    items: args["practice_items"] || [],
+    items: makeItems(args["practice_items"]),
     is_practice: true,
     step: 0,
     audio_step: false,
     class_step: false,
     bet_step: false,
 
-    round_response: {
-      chose: 0,
-      type: 1,
-      chance: 0,
-      pending: false,
-      complete: true,
-    },
+    // round_response: {
+    //   chose: 0,
+    //   type: 1,
+    //   chance: 0,
+    //   pending: false,
+    //   complete: true,
+    // },
   },
   getters: {
     is_type1(state) {
@@ -61,33 +71,51 @@ export default new Vuex.Store({
       return state.items.filter((obj) => obj.won).length
     },
     round_number(state) {
-      return state.is_practice ? '~' : state.step + 1
+      return state.is_practice ? '(practice)' : state.step + 1
+    },
+    max_round_number(state) {
+      return state.is_practice ? '~' : state.items.length
     },
     is_last_item(state) {
       return state.step + 1 == state.items.length
     },
     current_item(state) {
       return state.items[state.step]
-    }
+    },
   },
   mutations: {
-    setWon(state, didwin) {
-      state.items[state].won = didwin
+    toggleDebug(state) {
+      state.debug = !state.debug
     },
-    setCurrentItem(state, data) {
-      for (key : state.items[state.step])
-      state.items[state.step] = Object.assign(state.items[state.step], data)
+    setItem(state, data, index = state.step) {
+      for (let key in data) {
+        if (state.items[index].hasOwnProperty(key))
+          state.items[index][key] = data[key]
+        else
+          console.error("Invalid key: " + key)
+      }
     },
     endPractice(state) {
-      state.items = args["items"]
+      if (demo)
+        state.items = makeItems(args["practice_items"])
+      else
+        state.items = makeItems(args["items"])
       state.step = 0
-      state.practice = false
+      state.is_practice = false
+      state.audio_step = false
+      state.class_step = false
+      state.bet_step = false
     },
     nextItem(state) {
-      state.step++
-      state.audio_step= false;
-      state.class_step = false;
-      state.bet_step = false;
+      if (state.step + 1 == state.items.length) {
+        state.step = 0
+        state.items = makeItems(args["practice_items"])
+      }
+      else
+        state.step++
+      state.audio_step = false
+      state.class_step = false
+      state.bet_step = false
     },
     audioComplete(state) {
       state.audio_step = true
@@ -98,20 +126,5 @@ export default new Vuex.Store({
     betComplete(state) {
       state.bet_step = true
     }
-  },
-  actions: {
-    // processRound({ commit, state, getters }, index) {
-    //   if (getters.is_type2) {
-    //     let r = Math.floor(Math.random() * 5)
-    //     item.chose = r
-    //     item.type = item.choices[r]
-    //     if (item.type == 0)
-    //       item.chance = (r + 5) * 10
-    //   }
-    //   if (getters.is_type1 || item.type == 1) {
-    //     commit('setWon', index, item.truth == item.classification)
-    //   }
-    //   this.round_dialog = true
-    // },
   }
 })

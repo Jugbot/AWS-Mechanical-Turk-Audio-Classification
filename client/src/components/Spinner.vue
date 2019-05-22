@@ -1,14 +1,34 @@
 <template lang="html">
-  <svg viewBox="0 0 32 32" :style="{'background': secondary}">
-    <circle r="16" cx="16" cy="16" class='pie' :style="{'stroke-dasharray': chance +' 100', 'stroke': primary, 'fill': secondary}"/>
-    <circle r='4' cx="16" cy="16" class='pin'/>
-    <rect x="16" y="16" width="4" height="4" :style="{'transform': 'rotate('+(current_spin*360-45)+'deg)'}"/>
+  <svg
+    viewBox="0 0 32 32"
+    :style="{'background': secondary}"
+  >
+    <circle
+      r="16"
+      cx="16"
+      cy="16"
+      class="pie"
+      :style="{'stroke-dasharray': chance +' 100', 'stroke': primary, 'fill': secondary}"
+    />
+    <circle
+      r="4"
+      cx="16"
+      cy="16"
+      class="pin"
+    />
+    <rect
+      x="16"
+      y="16"
+      width="4"
+      height="4"
+      :style="{'transform': 'rotate('+(current_spin*360-45)+'deg)'}"
+    />
   </svg>
 </template>
 
 <script>
 export default {
-  name: 'spinner',
+  name: 'Spinner',
   props: {
     chance: {
       type: Number,

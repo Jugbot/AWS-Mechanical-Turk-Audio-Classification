@@ -18,9 +18,9 @@ def home():
     random.seed(uid)
     recordings_type2 = ses.query(RecordingGroup).filter((RecordingGroup.completions_type2 < BATCH_SIZE)).all()
     recordings_type1 = ses.query(RecordingGroup).filter((RecordingGroup.completions_type1 < BATCH_SIZE)).all()
-    recordings = recordings_type2 + recordings_type1
+    groups = recordings_type2 + recordings_type1
     # recording groups with neither type batch satisfied are counted twice
-    group = random.choice(recordings)
+    group = random.choice(groups)
     if group.completions_type2 < BATCH_SIZE and group.completions_type1 < BATCH_SIZE:
         task_type = random.randint(1, 2)
     elif group.completions_type1 < BATCH_SIZE:
@@ -28,7 +28,12 @@ def home():
     else:
         task_type = 2
     items = []
-    for audio in group.recordings:
+    if app.debug:
+        print("sending small debug batch")
+        recordings = group.recordings[:2]
+    else:
+        recordings = group.recordings
+    for audio in recordings:
         items.append({
             'file': group.folder + '/' + audio.file_name,
             'truth': audio.presence,
@@ -59,8 +64,8 @@ def results():
     survey = ses.query(Survey).filter(Survey.id == data['id']).one()
 
     for item in data['items']:
-        rec = ses.query(Recording).filter(Recording.file_name == item["file"]).one()
-        ann = Annotation(recording=rec, class_label=item['label'], won=int(item["won"]),
+        rec = ses.query(Recording).filter(Recording.file_name == item["file"].split('/')[-1]).one()
+        ann = Annotation(recording=rec, class_label='jackhammer', won=int(item["won"]),
                          presence_of_label=item['classification'])
         if survey.task_type == 1:
             ann.confidence = item['confidence']
@@ -131,4 +136,4 @@ def process_result():
 
 
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True, use_debugger=False, use_reloader=False, passthrough_errors=True)

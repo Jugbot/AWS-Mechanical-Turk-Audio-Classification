@@ -1,12 +1,15 @@
 <template lang="html">
-  <div class="highlight" :class="{'flash-animation': value}">
-    <slot></slot>
+  <div
+    class="highlight"
+    :class="{'flash-animation': value}"
+  >
+    <slot />
   </div>
 </template>
 
 <script>
 export default {
-  name: "text-highlight",
+  name: "TextHighlight",
   props: {
     value: Boolean,
   },

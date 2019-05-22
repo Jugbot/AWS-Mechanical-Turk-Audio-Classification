@@ -1,5 +1,11 @@
 <template lang="html">
-  <v-btn outline small @click='stop()'>{{date | time}}</v-btn>
+  <v-btn
+    outline
+    small
+    @click="stop()"
+  >
+    {{ date | time }}
+  </v-btn>
 </template>
 
 <script>
