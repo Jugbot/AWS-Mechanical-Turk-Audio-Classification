@@ -23,7 +23,7 @@
         />
         <v-data-table
           light
-          class='elevation-2'
+          class="elevation-2"
           :items="tableItems"
           :headers="tableHeaders"
           disable-initial-sort
