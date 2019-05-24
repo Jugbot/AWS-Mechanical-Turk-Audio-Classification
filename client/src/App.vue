@@ -144,6 +144,9 @@
   iframe {
     border: none;
   }
+  .smalltext {
+    font-size: 9px;
+  }
 </style>
 
 <script>

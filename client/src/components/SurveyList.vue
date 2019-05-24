@@ -123,7 +123,7 @@
                     :disabled="bet_step"
                     @click="addChoice(true)"
                   >
-                    <span>My answer to the question about the presence of a jackhammer</span>
+                    <span class="smalltext">My answer to the question about the presence of a jackhammer</span>
                   </v-btn>
                 </v-card-actions>
               </v-card>
