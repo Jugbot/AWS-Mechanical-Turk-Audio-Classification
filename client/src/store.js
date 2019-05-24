@@ -4,6 +4,17 @@ import Vuex from 'vuex'
 Vue.use(Vuex)
 
 
+Math.seed = 8;
+Math.seededRandom = function(max, min) {
+    max = max || 1;
+    min = min || 0;
+
+    Math.seed = (Math.seed * 9301 + 49297) % 233280;
+    var rnd = Math.seed / 233280;
+
+    return min + rnd * (max - min);
+}
+
 function addAttributes(item) {
   return Object.assign(item, {
       confidence: 50,
@@ -24,7 +35,6 @@ function makeItems(arr) {
   return arr2
 }
 
-
 let args = window.surveydata
 if (!args) {
   console.error("No data recieved from server! Demo only. ")
@@ -32,15 +42,25 @@ if (!args) {
   var demo = true
 }
 
-args["practice_items"] = []
-for (let i = 0; i < 20; i++) {
-  args["practice_items"].push({
+let practice_items = []
+let i
+for (i = 0; i < 20; i++) {
+  practice_items.push({
     file: 'practice/' + (i < 10 ? 'positive/' : 'negative/') + i % 10 + '.wav',
     truth: (i < 10),
   })
 }
 
+args["practice_items"] = new Array(practice_items.length)
+while (i-->0) {
+  let randSpot = Math.floor(Math.seededRandom(0,practice_items.length))
+  while (args["practice_items"][randSpot] != undefined)
+    randSpot = (randSpot+1) % practice_items.length
+  args["practice_items"][randSpot] = practice_items[i]
+}
+
 export default new Vuex.Store({
+  strict: true,
   state: {
     id: args['id'] || "tH1s-i5-A-s4mpL3-c0D3",
     survey_type: parseInt(args['task_type'], 10) || Math.floor(Math.random() * 2) + 1,
@@ -51,14 +71,6 @@ export default new Vuex.Store({
     audio_step: false,
     class_step: false,
     bet_step: false,
-
-    // round_response: {
-    //   chose: 0,
-    //   type: 1,
-    //   chance: 0,
-    //   pending: false,
-    //   complete: true,
-    // },
   },
   getters: {
     is_type1(state) {
@@ -87,7 +99,14 @@ export default new Vuex.Store({
     toggleDebug(state) {
       state.debug = !state.debug
     },
-    setItem(state, data, index = state.step) {
+    setItem(state, data) {
+      let index
+      if ('index' in data) {
+        index = data.index
+        delete data.index
+      } else {
+        index = state.step
+      }
       for (let key in data) {
         if (state.items[index].hasOwnProperty(key))
           state.items[index][key] = data[key]
@@ -97,7 +116,7 @@ export default new Vuex.Store({
     },
     endPractice(state) {
       if (demo)
-        state.items = makeItems(args["practice_items"])
+        state.items = makeItems(args["practice_items"].slice(0,2))
       else
         state.items = makeItems(args["items"])
       state.step = 0

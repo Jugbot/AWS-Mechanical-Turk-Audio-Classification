@@ -30,7 +30,7 @@ export default {
     this.interval = setInterval(this.update, 10)
   },
   destroyed() {
-    this.stop()
+    clearInterval(this.interval)
   },
   filters: {
     time(val) {

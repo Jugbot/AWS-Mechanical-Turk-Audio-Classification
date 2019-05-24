@@ -79,6 +79,22 @@
                     </v-slider>
                   </v-tooltip>
                 </v-card-actions>
+                <v-card-actions>
+                  <v-layout
+                    row
+                    wrap
+                  >
+                    <v-flex xs6>
+                      not at all confident
+                    </v-flex>
+                    <v-flex
+                      xs6
+                      text-xs-right
+                    >
+                      certain, completely confident
+                    </v-flex>
+                  </v-layout>
+                </v-card-actions>
               </v-card>
             </v-flex>
           </template>

@@ -21,14 +21,30 @@
           readonly
           :value="uuid"
         />
+        <v-data-table
+          light
+          class='elevation-2'
+          :items="tableItems"
+          :headers="tableHeaders"
+          disable-initial-sort
+          hide-actions
+        >
+          <template #items="props">
+            <td>{{ props.item.round }}</td>
+            <td>{{ props.item.type }}</td>
+            <td>{{ props.item.won }}</td>
+          </template>
+        </v-data-table>
       </v-card-text>
     </v-card>
   </v-dialog>
 </template>
 
 <script>
+import {mapState} from 'vuex'
+
 export default {
-  name: 'SubmitDialog',
+  name: 'CodeDialog',
   model: {
     prop: 'active_parent',
     event: 'active_parent_change',
@@ -47,6 +63,26 @@ export default {
   data() {
     return {
       active: this.active_parent,
+    }
+  },
+  computed: {
+    ...mapState(['items']),
+    // ...mapGetters(['is_type1', 'is_type2']),
+    tableItems() {
+      return this.items.map((o, i) => {
+        return {
+          round: i+1,
+          won: (o.won ? 'YES' : 'NO'),
+          type: (o.type==0 ? 'Lottery' : 'Answer' )
+        }
+      })
+    },
+    tableHeaders() {
+      return [
+        {text: 'Round', value:'round', sortable: false},
+        {text: 'Type', value:'type', sortable: false},
+        {text: 'Won', value:'won', sortable: false}
+      ]
     }
   },
   watch: {

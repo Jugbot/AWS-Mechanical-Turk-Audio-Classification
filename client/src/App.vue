@@ -55,7 +55,7 @@
                 block
                 :color=" !is_last_item ? 'primary' : 'success'"
                 :disabled="!bet_step"
-                @click="processRound(current_item)"
+                @click="processRound()"
               >
                 <!-- TODO -->
                 {{ !is_last_item ? 'Next Recording' : 'Finish' }}
@@ -116,11 +116,15 @@
           v-model="audiosample_dialog"
           max-width="500"
         >
-          <v-audio
-            v-if="audiosample_dialog"
-            minimal
-            file="assets/audio/demo.wav"
-          />
+          <template v-if="audiosample_dialog">
+            <v-audio
+              v-for="eg in examples"
+              :key="eg"
+              class="v-sheet--tile elevation-0"
+              minimal
+              :file="'assets/audio/jackhammer_only/'+eg"
+            />
+          </template>
         </v-dialog>
         <!-- Error Message -->
         <!--               -->
@@ -168,7 +172,6 @@ export default {
   },
   data () {
     return {
-      // DIALOGS
       code_dialog: false,
       submit_dialog: false,
       round_dialog: false,
@@ -182,8 +185,8 @@ export default {
       error_message: {
         data: "Cause unknown."
       },
-      // END
       animate: false,
+      examples: ["1.wav", "2.wav", "3.wav"],
     }
   },
   computed: {

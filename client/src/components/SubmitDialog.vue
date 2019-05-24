@@ -8,7 +8,10 @@
       <v-card-title>
         <span class="heading">Round #{{ submit_round_number }}</span>
       </v-card-title>
-      <v-window v-model="submit_step">
+      <v-window
+        v-model="submit_step"
+        lazy
+      >
         <v-window-item :value="-1">
           <v-card-text>
             <template v-if="is_type2">
@@ -115,7 +118,7 @@ export default {
     },
     processLottery(e) {
       if (this.current_item.won === -1)
-        this.setItem({won: e < this.current_item.chance}, this.submit_step)
+        this.setItem({won: e < this.current_item.chance, index: this.submit_step})
     },
   },
   computed: {
