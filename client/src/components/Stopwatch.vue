@@ -1,5 +1,11 @@
 <template lang="html">
-  <v-btn outline small @click='stop()'>{{date | time}}</v-btn>
+  <v-btn
+    outline
+    small
+    @click="stop()"
+  >
+    {{ date | time }}
+  </v-btn>
 </template>
 
 <script>
@@ -24,7 +30,7 @@ export default {
     this.interval = setInterval(this.update, 10)
   },
   destroyed() {
-    this.stop()
+    clearInterval(this.interval)
   },
   filters: {
     time(val) {
