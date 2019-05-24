@@ -12,12 +12,12 @@
         <v-card-text class="subheading">
           <p>You just completed round {{ round_number }}. </p>
           <template v-if="is_type2">
-            <span>From the 5 answers given, answer {{ current_item.chose + 1 }} was selected. </span>
-            <span v-if="current_item.type == 0">You will draw a {{ current_item.chance }}% chance lottery after round 20. </span>
-            <span v-else>Your answer will be tested after round 20</span>
+            <span>You made 5 different choices between playing the lottery or your choice to the question about the presence of a jackhammer. From the 5 answers you selected in this round, we will randomly select one to be tested for payment. In this round, answer {{ current_item.chose + 1 }} was randomly selected. </span>
+            <span v-if="current_item.type == 0">You will draw a {{ current_item.chance }}% chance lottery after round {{max_round_number}}. </span>
+            <span v-else>Your choice in the question about the presence of a jackhammer will be tested after round {{max_round_number}}.</span>
           </template>
           <template v-if="is_type1">
-            <span>Your answer will be tested after round 20</span>
+            <span>Your choice on the question about the presence of a jackhammer will be tested after round {{max_round_number}}.</span>
           </template>
         </v-card-text>
         <v-divider />
@@ -63,7 +63,7 @@ export default {
   },
   computed: {
     ...mapState(['is_practice']),
-    ...mapGetters(['is_type1', 'is_type2', 'round_number', 'is_last_item', 'current_item']),
+    ...mapGetters(['is_type1', 'is_type2', 'round_number', 'max_round_number', 'is_last_item', 'current_item']),
   },
   watch: {
     active_parent(newval) {

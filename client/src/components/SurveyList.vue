@@ -20,7 +20,7 @@
                 class="teal--text"
                 @click="$emit('sample')"
               >
-                <span>Jackhammer only recording</span>
+                <span>What does a jackhammer sound like?</span>
               </v-btn>
             </v-audio>
           </v-flex>
@@ -106,7 +106,7 @@
                   <span>
                     <b>You have the chance to win a dollar in one of the following ways (choose one):</b> <br>
                     1) by lottery (<flash v-model="animate">{{ item.confidence }}%</flash> chance of winning), or<br>
-                    2) by correctly answering the question
+                    2) if my answer to the question about the presence of a jackhammer is correct
                   </span>
                 </v-card-title>
                 <v-divider />
@@ -123,7 +123,7 @@
                     :disabled="bet_step"
                     @click="addChoice(true)"
                   >
-                    <span>Correctly answering the question</span>
+                    <span>My answer to the question about the presence of a jackhammer</span>
                   </v-btn>
                 </v-card-actions>
               </v-card>

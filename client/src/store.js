@@ -86,7 +86,7 @@ export default new Vuex.Store({
       return state.is_practice ? '(practice)' : state.step + 1
     },
     max_round_number(state) {
-      return state.is_practice ? '~' : state.items.length
+      return state.is_practice ? '(not in practice)' : state.items.length
     },
     is_last_item(state) {
       return state.step + 1 == state.items.length

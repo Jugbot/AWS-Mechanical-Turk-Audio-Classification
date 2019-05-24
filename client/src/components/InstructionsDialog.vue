@@ -19,12 +19,6 @@ active_parent<template lang="html">
           />
         </v-window-item>
         <v-window-item :value="1">
-          <!-- <v-window v-model='step_instr'>
-            <v-window-item v-for='instruction in instructions'>
-              <v-card-text v-html='instruction'>
-              </v-card-text>
-            </v-window-item>
-          </v-window> -->
           <v-card-text
             class="subheading"
             v-for="instruction in instructions"

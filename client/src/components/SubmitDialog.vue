@@ -15,14 +15,17 @@
         <v-window-item :value="-1">
           <v-card-text>
             <template v-if="is_type2">
+              <h1>Payment instructions</h1>
+              <h3>For questions where the lottery was selected:</h3>
               <p>This is your computer clock, presenting the time down to the millisecond (1/1000th of a second).</p>
               <p>If the last two digits of the stopped clock are strictly less than the lottery winning chances you win the $1 bonus, and if they are more, then you win nothing.</p>
-              <p>Now, try to stop the clock showing the current time to millisecond precision. Because of the human reaction time, it is not possible for you to control these last two digits of the millisecond clock. The purpose of this is to generate a random number, and match your probability of winning to the selected round chances. </p>
-              <stopwatch />
-              <p>For questions in which you chose to test your answer, your win will depending on if your answer was correct.</p>
+              <p>Now, try to stop the clock showing the current time to millisecond precision by clicking on it. Because of the human reaction time, it is not possible for you to control these last two digits of the millisecond clock. The purpose of this is to generate a random number, and match your probability of winning to the selected round chances. </p>
+              <stopwatch/>
+              <h3>For questions in which you selected to test your choice to the question about the presence of a jackhammer:</h3>
+              <p>Your win will depend on if your choice was correct.</p>
             </template>
             <template v-else>
-              <p>Now your answers will be tested. Whether you win or not depends on if your answer is correct for that round.</p>
+              <p>Now your answers will be tested. Whether you win or not depends on if your answer to the question about the presence of a jackhammer is correct for that round.</p>
             </template>
           </v-card-text>
         </v-window-item>
@@ -36,7 +39,7 @@
             class="text-xs-center"
           >
             <h1>Answer Test</h1>
-            <h3>In round {{ submit_round_number }} your answer was selected for testing.</h3>
+            <h3>In round {{ submit_round_number }} your choice to the question about the presence of a jackhammer was selected for testing.</h3>
             <span v-if="item.won">
               <h3>Your answer was correct</h3>
               <h1 class="green--text">You won a dollar!</h1>
