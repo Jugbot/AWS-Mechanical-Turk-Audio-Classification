@@ -90,6 +90,16 @@ def results():
     ses.commit()
     return "success"
 
+@app.route('/post/feedback', methods=["POST"])
+def feedback():
+    data = request.get_json()
+    survey = ses.query(Survey).filter(Survey.id == data['id']).one()
+
+    survey.feedback = data['feedback']
+
+    ses.commit()
+    return "success"
+
 
 @app.route('/post/one', methods=["POST"])
 def result():

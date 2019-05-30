@@ -30,6 +30,7 @@ class Survey(Base):
     recording_group_id = Column(Integer, ForeignKey("RecordingGroup.id"))
     recording_group = relationship("RecordingGroup")
     task_type = Column(SmallInteger)
+    feedback = Column(String)
 
 
 class Annotation(Base):

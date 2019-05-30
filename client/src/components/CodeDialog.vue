@@ -36,6 +36,13 @@
           </template>
         </v-data-table>
       </v-card-text>
+      <v-card-actions>
+        <v-textarea v-model='feedback' label='optional feedback'></v-textarea>
+        <v-btn block @submit='submitFeedback()' :loading='feedback_pending' :color="feedback_success ? 'success' : 'primary'">
+          <span v-if='feedback_success'>Feedback Recieved</span>
+          <span v-else>Submit Feedback</span>
+        </v-btn>
+      </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
@@ -63,10 +70,13 @@ export default {
   data() {
     return {
       active: this.active_parent,
+      feedback: String,
+      feedback_pending: Boolean,
+      feedback_success: Boolean
     }
   },
   computed: {
-    ...mapState(['items']),
+    ...mapState(['items', 'id']),
     // ...mapGetters(['is_type1', 'is_type2']),
     tableItems() {
       return this.items.map((o, i) => {
@@ -91,6 +101,21 @@ export default {
     },
     active(newval) {
       this.$emit('active_parent_change', newval)
+    }
+  },
+  methods: {
+    submitFeedback() {
+      let data = {
+        'id': this.id,
+        'feedback': this.feedback
+      }
+      this.feedback_pending = true
+      this.$axios.post("/post/feedback", data).then(() => {
+        this.feedback_pending = false
+        this.feedback_success = true
+      }).catch(error => {
+        this.handleError(error)
+      })
     }
   }
 }
