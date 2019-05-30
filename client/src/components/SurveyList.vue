@@ -57,7 +57,7 @@
             <v-flex v-show="class_step">
               <v-card>
                 <v-card-title>
-                  How confident are you with your answer?
+                  How confident are you that there is {{ !item.classification ? "not" : "" }} a jackhammer present in the recording?
                 </v-card-title>
                 <v-divider />
                 <v-card-actions>
