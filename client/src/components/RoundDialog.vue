@@ -24,7 +24,7 @@
         <v-card-actions>
           <v-spacer />
           <v-btn
-            v-if="is_practice"
+            v-if="is_practice && practices_performed >= 2"
             color="primary"
             depressed
             outline
@@ -62,7 +62,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['is_practice']),
+    ...mapState(['is_practice', 'practices_performed']),
     ...mapGetters(['is_type1', 'is_type2', 'round_number', 'max_round_number', 'is_last_item', 'current_item']),
   },
   watch: {

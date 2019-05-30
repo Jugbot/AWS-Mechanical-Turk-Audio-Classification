@@ -14,6 +14,8 @@ if __name__ == "__main__":
 	print("creating entries from", root)
 	folders = next(os.walk(root))[DIRS]
 	for folder in folders:
+		if folder == 'jackhammer_only' or folder == 'practice':
+			continue
 		print('---', folder)
 		rg = RecordingGroup(folder=folder)
 		ses.add(rg)

@@ -90,6 +90,7 @@ def results():
     ses.commit()
     return "success"
 
+
 @app.route('/post/feedback', methods=["POST"])
 def feedback():
     data = request.get_json()

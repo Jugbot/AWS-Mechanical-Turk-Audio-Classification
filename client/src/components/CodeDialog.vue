@@ -36,13 +36,22 @@
           </template>
         </v-data-table>
       </v-card-text>
-      <v-card-actions>
-        <v-textarea v-model='feedback' label='optional feedback'></v-textarea>
-        <v-btn block @submit='submitFeedback()' :loading='feedback_pending' :color="feedback_success ? 'success' : 'primary'">
-          <span v-if='feedback_success'>Feedback Recieved</span>
+      <v-divider/>
+      <v-card-text class="accent">
+        <v-textarea
+          v-model="feedback"
+          label="optional feedback"
+        />
+        <v-btn
+          block
+          @click="submitFeedback()"
+          :loading="feedback_pending"
+          :color="feedback_success ? 'success' : 'primary'"
+        >
+          <span v-if="feedback_success">Feedback Recieved</span>
           <span v-else>Submit Feedback</span>
         </v-btn>
-      </v-card-actions>
+      </v-card-text>
     </v-card>
   </v-dialog>
 </template>
@@ -70,9 +79,9 @@ export default {
   data() {
     return {
       active: this.active_parent,
-      feedback: String,
-      feedback_pending: Boolean,
-      feedback_success: Boolean
+      feedback: '',
+      feedback_pending: false,
+      feedback_success: false
     }
   },
   computed: {
@@ -111,10 +120,9 @@ export default {
       }
       this.feedback_pending = true
       this.$axios.post("/post/feedback", data).then(() => {
-        this.feedback_pending = false
         this.feedback_success = true
-      }).catch(error => {
-        this.handleError(error)
+      }).then(() => {
+        this.feedback_pending = false
       })
     }
   }

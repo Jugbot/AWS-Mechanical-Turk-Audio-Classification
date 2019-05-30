@@ -67,6 +67,7 @@ export default new Vuex.Store({
     debug: false,
     items: makeItems(args["practice_items"]),
     is_practice: true,
+    practices_performed: 1,
     step: 0,
     audio_step: false,
     class_step: false,
@@ -132,6 +133,7 @@ export default new Vuex.Store({
       }
       else
         state.step++
+      state.practices_performed++
       state.audio_step = false
       state.class_step = false
       state.bet_step = false

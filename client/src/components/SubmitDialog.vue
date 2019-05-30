@@ -3,6 +3,7 @@
     persistent
     v-model="active"
     width="500"
+    lazy
   >
     <v-card v-if="items.length">
       <v-card-title>
