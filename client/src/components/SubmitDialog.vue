@@ -19,7 +19,7 @@
               <h1>Payment instructions</h1>
               <h3>For questions where the lottery was selected:</h3>
               <p>This is your computer clock, presenting the time down to the millisecond (1/1000th of a second).</p>
-              <p>If the last two digits of the stopped clock are strictly less than the lottery winning chances you win the $1 bonus, and if they are more, then you win nothing.</p>
+              <p>If the last two digits of the stopped clock are strictly less than the lottery winning chances you win the ${{ reward }} bonus, and if they are more, then you win nothing.</p>
               <p>Now, try to stop the clock showing the current time to millisecond precision by clicking on it. Because of the human reaction time, it is not possible for you to control these last two digits of the millisecond clock. The purpose of this is to generate a random number, and match your probability of winning to the selected round chances. </p>
               <stopwatch />
               <h3>For questions in which you selected to test your choice to the question about the presence of a jackhammer:</h3>
@@ -126,7 +126,7 @@ export default {
     },
   },
   computed: {
-    ...mapState(['items']),
+    ...mapState(['items', 'reward']),
     ...mapGetters(['is_type1', 'is_type2', 'round_number', 'is_last_item']),
     current_item() {
       return this.items[this.submit_step < 0 ? 0 : this.submit_step]

@@ -72,6 +72,7 @@ export default new Vuex.Store({
     audio_step: false,
     class_step: false,
     bet_step: false,
+    reward: parseInt(args['reward'], 10) || 1
   },
   getters: {
     is_type1(state) {
@@ -82,6 +83,12 @@ export default new Vuex.Store({
     },
     wins(state) {
       return state.items.filter((obj) => obj.won).length
+    },
+    reward_total(state, getters) {
+      return state.reward * getters.wins
+    },
+    reward_max(state) {
+      return state.reward * state.items.length
     },
     round_number(state) {
       return state.is_practice ? '(practice)' : state.step + 1

@@ -107,8 +107,6 @@
         <!--                      -->
         <code-dialog
           v-model="code_dialog"
-          :uuid="id"
-          :reward="wins"
         />
         <!-- Sample Dialog -->
         <!--               -->

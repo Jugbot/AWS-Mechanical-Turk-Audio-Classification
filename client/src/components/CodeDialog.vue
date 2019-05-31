@@ -12,14 +12,14 @@
         Survey Code
       </v-card-title>
       <v-card-text>
-        <p>Thank you for participating, your bonus is ${{ reward }}.00</p>
+        <p>Thank you for participating, your bonus is ${{ reward_total }}.00</p>
         <p>Copy the code below to the MTurk assignment to get approved and paid.</p>
         <v-text-field
           light
           class="centered"
           solo
           readonly
-          :value="uuid"
+          :value="id"
         />
         <v-data-table
           light
@@ -80,7 +80,7 @@
 </template>
 
 <script>
-import {mapState} from 'vuex'
+import {mapState, mapGetters} from 'vuex'
 
 export default {
   name: 'CodeDialog',
@@ -89,15 +89,7 @@ export default {
     event: 'active_parent_change',
   },
   props: {
-    active_parent: Boolean,
-    uuid: {
-      type: String,
-      default: ""
-    },
-    reward: {
-      type: Number,
-      default: 0
-    },
+    active_parent: Boolean
   },
   data() {
     return {
@@ -110,7 +102,7 @@ export default {
   },
   computed: {
     ...mapState(['items', 'id']),
-    // ...mapGetters(['is_type1', 'is_type2']),
+    ...mapGetters(['reward_total']),
     tableItems() {
       return this.items.map((o, i) => {
         return {
