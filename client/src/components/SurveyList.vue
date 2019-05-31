@@ -74,7 +74,7 @@
                       :value="item.confidence"
                       @change="betComplete();setItem({'confidence': $event})"
                     >
-                      <span slot="prepend">0%</span>
+                      <span slot="prepend">50%</span>
                       <span slot="append">100%</span>
                     </v-slider>
                   </v-tooltip>

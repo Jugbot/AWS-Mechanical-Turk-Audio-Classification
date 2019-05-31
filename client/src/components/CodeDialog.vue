@@ -36,22 +36,45 @@
           </template>
         </v-data-table>
       </v-card-text>
-      <v-divider/>
-      <v-card-text class="accent">
-        <v-textarea
-          v-model="feedback"
-          label="optional feedback"
-        />
-        <v-btn
-          block
-          @click="submitFeedback()"
-          :loading="feedback_pending"
-          :color="feedback_success ? 'success' : 'primary'"
+      <v-dialog
+        v-model="feedback_dialog"
+        width="600"
+        persistent
+      >
+        <v-card
+          color="accent"
+          dark
         >
-          <span v-if="feedback_success">Feedback Recieved</span>
-          <span v-else>Submit Feedback</span>
-        </v-btn>
-      </v-card-text>
+          <v-card-text>
+            <v-textarea
+              v-model="feedback"
+              label="optional feedback"
+            />
+            <v-layout row>
+              <v-flex shrink>
+                <v-btn
+                  flat
+                  color="primary"
+                  @click="feedback_dialog=false"
+                >
+                  No Thanks
+                </v-btn>
+              </v-flex>
+              <v-flex grow>
+                <v-btn
+                  block
+                  @click="submitFeedback()"
+                  :loading="feedback_pending"
+                  :color="feedback_success ? 'success' : 'primary'"
+                >
+                  <span v-if="feedback_success">Feedback Recieved</span>
+                  <span v-else>Submit Feedback</span>
+                </v-btn>
+              </v-flex>
+            </v-layout>
+          </v-card-text>
+        </v-card>
+      </v-dialog>
     </v-card>
   </v-dialog>
 </template>
@@ -78,6 +101,7 @@ export default {
   },
   data() {
     return {
+      feedback_dialog: false,
       active: this.active_parent,
       feedback: '',
       feedback_pending: false,
@@ -107,6 +131,8 @@ export default {
   watch: {
     active_parent(newval) {
       this.active = newval
+      if (newval)
+        this.feedback_dialog = true
     },
     active(newval) {
       this.$emit('active_parent_change', newval)
