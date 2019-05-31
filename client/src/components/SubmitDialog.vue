@@ -43,11 +43,11 @@
             <h3>In round {{ submit_round_number }} your choice to the question about the presence of a jackhammer was selected for testing.</h3>
             <span v-if="item.won">
               <h3>Your answer was correct</h3>
-              <h1 class="green--text">You won a dollar!</h1>
+              <h1 class="green--text">You won a bonus!</h1>
             </span>
             <span v-else>
               <h3>Your answer was incorrect</h3>
-              <h1 class="red--text">No dollar won :(</h1>
+              <h1 class="red--text">No bonus won :(</h1>
             </span>
           </v-card-text>
           <v-card-text
@@ -61,11 +61,11 @@
             <template v-if="item.won != -1">
               <span v-if="item.won">
                 <h3>You won the lottery</h3>
-                <h1 class="green--text">You won a dollar!</h1>
+                <h1 class="green--text">You won a bonus!</h1>
               </span>
               <span v-else>
                 <h3>You lost the lottery</h3>
-                <h1 class="red--text">No dollar won :(</h1>
+                <h1 class="red--text">No bonus won :(</h1>
               </span>
             </template>
           </v-card-text>

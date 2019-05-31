@@ -104,7 +104,7 @@
               <v-card>
                 <v-card-title>
                   <span>
-                    <b>You have the chance to win a dollar in one of the following ways (choose one):</b> <br>
+                    <b>You have the chance to win a bonus in one of the following ways (choose one):</b> <br>
                     1) by lottery (<flash v-model="animate">{{ item.confidence }}%</flash> chance of winning), or<br>
                     2) if my answer to the question about the presence of a jackhammer is correct
                   </span>

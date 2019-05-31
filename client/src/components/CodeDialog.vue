@@ -12,7 +12,7 @@
         Survey Code
       </v-card-title>
       <v-card-text>
-        <p>Thank you for participating, your bonus is ${{ reward_total }}.00</p>
+        <p>Thank you for participating, your bonus is ${{ reward_total }}</p>
         <p>Copy the code below to the MTurk assignment to get approved and paid.</p>
         <v-text-field
           light
@@ -139,6 +139,7 @@ export default {
       this.feedback_pending = true
       this.$axios.post("/post/feedback", data).then(() => {
         this.feedback_success = true
+        this.feedback_dialog = false
       }).then(() => {
         this.feedback_pending = false
       })

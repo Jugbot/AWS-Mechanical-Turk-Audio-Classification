@@ -72,7 +72,7 @@ export default new Vuex.Store({
     audio_step: false,
     class_step: false,
     bet_step: false,
-    reward: parseInt(args['reward'], 10) || 1
+    reward: parseFloat(args['reward']) || 1.00
   },
   getters: {
     is_type1(state) {
