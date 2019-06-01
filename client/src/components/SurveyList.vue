@@ -68,6 +68,7 @@
                     <span>I am {{ item.confidence }}% confident in my answer that there is {{ !item.classification ? "not" : "" }} a jackhammer present in the recording.</span>
                     <v-slider
                       thumb-label
+                      :min="50"
                       :step="10"
                       slot="activator"
                       :color="bet_step ? '' : 'grey'"

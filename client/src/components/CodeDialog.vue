@@ -12,7 +12,7 @@
         Survey Code
       </v-card-title>
       <v-card-text>
-        <p>Thank you for participating, your bonus is ${{ reward_total }}</p>
+        <p>Thank you for participating, your bonus is ${{ reward_total.toFixed(2) }}</p>
         <p>Copy the code below to the MTurk assignment to get approved and paid.</p>
         <v-text-field
           light
@@ -108,7 +108,7 @@ export default {
         return {
           round: i+1,
           won: (o.won ? 'YES' : 'NO'),
-          type: (o.type==0 ? 'Lottery' : 'Answer' )
+          type: (o.type==0 ? 'Lottery' : 'Answer to question about jackhammer' )
         }
       })
     },
