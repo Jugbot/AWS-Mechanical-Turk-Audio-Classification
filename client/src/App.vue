@@ -57,7 +57,6 @@
                 :disabled="!bet_step"
                 @click="processRound()"
               >
-                <!-- TODO -->
                 {{ !is_last_item ? 'Next Recording' : 'Finish' }}
               </v-btn>
               <v-spacer />
@@ -93,7 +92,6 @@
         <!--                      -->
         <instructions-dialog
           v-model="instructions_dialog"
-          :consent_form="instructions_consent"
           :instructions="is_type1 ? instructions_type1 : instructions_type2"
           @active_parent_change="showTooltip()"
         />
@@ -154,7 +152,6 @@ import ErrorDialog from '@/components/ErrorDialog'
 import CodeDialog from '@/components/CodeDialog'
 import SubmitDialog from '@/components/SubmitDialog'
 import RoundDialog from '@/components/RoundDialog'
-import consentForm from '@/consent_form.js'
 import SurveyList from  '@/components/SurveyList'
 import type1instr from '@/components/instructions/type1.js'
 import type2instr from '@/components/instructions/type2.js'
@@ -177,7 +174,6 @@ export default {
       submit_dialog: false,
       round_dialog: false,
       instructions_dialog: true,
-      instructions_consent: consentForm,
       instructions_type1: type1instr,
       instructions_type2: type2instr,
       instructions_tooltip: false,

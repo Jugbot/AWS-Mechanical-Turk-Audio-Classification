@@ -38,7 +38,9 @@ function makeItems(arr) {
 let args = window.surveydata
 if (!args) {
   console.error("No data recieved from server! Demo only. ")
-  args = {}
+  args = {
+    items: []
+  }
   var demo = true
 }
 
@@ -88,7 +90,7 @@ export default new Vuex.Store({
       return state.reward * getters.wins
     },
     reward_max(state) {
-      return state.reward * state.items.length
+      return state.reward * args['items'].length
     },
     round_number(state) {
       return state.is_practice ? '(practice)' : state.step + 1

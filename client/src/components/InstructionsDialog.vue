@@ -13,10 +13,7 @@ active_parent<template lang="html">
       </v-card-title>
       <v-window v-model="step">
         <v-window-item :value="0">
-          <iframe
-            :srcdoc="consent_form"
-            style="width: 100%; height:400px; background-color: #fff;"
-          />
+          <consent-form />
         </v-window-item>
         <v-window-item :value="1">
           <v-card-text
@@ -52,18 +49,18 @@ active_parent<template lang="html">
 </template>
 
 <script>
+import ConsentForm from '@/components/ConsentForm'
 export default {
   name: 'InstructionsDialog',
   model: {
     prop: 'active_parent',
     event: 'active_parent_change',
   },
+  components: {
+    'consent-form': ConsentForm
+  },
   props: {
     active_parent: Boolean,
-    consent_form: {
-      type: String,
-      default: ""
-    },
     instructions: {
       type: Array,
       default: () => {return [""]}
