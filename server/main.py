@@ -10,7 +10,11 @@ app = Flask(__name__,
             template_folder="../docs")
 
 BATCH_SIZE = 10
-PAY_PER_ANNOTATION = 0.20
+PAY_PER_ANNOTATION_NORMAL = 0.24
+PAY_PER_ANNOTATION_LOTTERY = 0.20
+
+NORMAL_TASK = 1
+LOTTERY_TASK = 2
 
 @app.route('/')
 def home():
@@ -45,7 +49,7 @@ def home():
 
     data = {
         'id': uid,
-        'reward': PAY_PER_ANNOTATION,
+        'reward': (task_type == NORMAL_TASK) ? PAY_PER_ANNOTATION_NORMAL : PAY_PER_ANNOTATION_LOTTERY,
         'task_type': task_type,
         'items': items,
     }
