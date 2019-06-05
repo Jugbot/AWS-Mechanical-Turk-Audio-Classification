@@ -49,7 +49,7 @@ def home():
 
     data = {
         'id': uid,
-        'reward': (task_type == NORMAL_TASK) ? PAY_PER_ANNOTATION_NORMAL : PAY_PER_ANNOTATION_LOTTERY,
+        'reward': PAY_PER_ANNOTATION_NORMAL if (task_type == NORMAL_TASK) else PAY_PER_ANNOTATION_LOTTERY,
         'task_type': task_type,
         'items': items,
     }
