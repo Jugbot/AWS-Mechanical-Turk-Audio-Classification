@@ -48,11 +48,11 @@
           <v-card-text>
             <v-textarea
               v-model="feedback"
-              label="required feedback"
+              label="optional feedback"
               hint="Can you tell us if there was anything that was unclear?"
             />
             <v-layout row>
-              <!-- <v-flex shrink>
+              <v-flex shrink>
                 <v-btn
                   flat
                   color="primary"
@@ -60,11 +60,10 @@
                 >
                   No Thanks
                 </v-btn> 
-              </v-flex> -->
+              </v-flex>
               <v-flex grow>
                 <v-btn
                   block
-                  :disabled="!feedback"
                   @click="submitFeedback()"
                   :loading="feedback_pending"
                   :color="feedback_success ? 'success' : 'primary'"
