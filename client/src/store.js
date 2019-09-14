@@ -122,6 +122,7 @@ export default new Vuex.Store({
           state.items[index][key] = data[key]
         else
           console.error("Invalid key: " + key)
+        state.items[index].timestamp = new Date().toISOString()
       }
     },
     endPractice(state) {

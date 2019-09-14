@@ -71,7 +71,7 @@ def results():
     for item in data['items']:
         rec = ses.query(Recording).filter(Recording.file_name == item["file"].split('/')[-1]).one()
         ann = Annotation(recording=rec, class_label='jackhammer', won=int(item["won"]),
-                         presence_of_label=item['classification'])
+                         presence_of_label=item['classification'], timestamp=item["timestamp"])
         if survey.task_type == 1:
             ann.confidence = item['confidence']
             # bonus_type_one(ann)

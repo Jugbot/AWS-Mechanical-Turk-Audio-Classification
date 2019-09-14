@@ -67,6 +67,7 @@ class Annotation(Base):
     confidence = Column(Integer)
     choices = Column(postgresql.ARRAY(Integer))
     presence_of_label = Column(String)
+    timestamp = Column(DateTime)
     # bonus calculations
     lotto_choice = Column(Integer)
     won = Column(SmallInteger)
