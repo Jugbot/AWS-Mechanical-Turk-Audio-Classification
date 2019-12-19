@@ -213,6 +213,9 @@ export default {
       this.round_dialog = true
     },
     showTooltip() {
+      console.log(is_type1)
+      console.log(is_type2)
+      console.log(is_type3)
       this.instructions_tooltip = true;
       setTimeout(() => {
         this.instructions_tooltip = false;
