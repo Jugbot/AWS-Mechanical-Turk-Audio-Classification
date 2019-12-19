@@ -57,6 +57,7 @@ def home():
         'task_type': task_type,
         'items': items,
     }
+    print(data)
     return render_template("index.html", data=data)
 
 
