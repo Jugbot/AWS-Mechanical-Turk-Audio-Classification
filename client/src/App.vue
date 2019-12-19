@@ -195,9 +195,9 @@ export default {
   methods: {
     ...mapMutations(['setItem', 'nextItem', 'endPractice']),
     processRound() {
-      console.log(is_type1)
-      console.log(is_type2)
-      console.log(is_type3)
+      console.log(this.is_type1)
+      console.log(this.is_type2)
+      console.log(this.is_type3)
 
       if (this.is_type2) {
         let r = Math.floor(Math.random() * 5)
@@ -213,9 +213,9 @@ export default {
       this.round_dialog = true
     },
     showTooltip() {
-      console.log(is_type1)
-      console.log(is_type2)
-      console.log(is_type3)
+      console.log(this.is_type1)
+      console.log(this.is_type2)
+      console.log(this.is_type3)
       this.instructions_tooltip = true;
       setTimeout(() => {
         this.instructions_tooltip = false;
