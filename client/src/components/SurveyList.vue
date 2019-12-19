@@ -36,7 +36,7 @@
                 <v-radio-group
                   row
                   :value="item.classification"
-                  @change="classComplete();setItem({'classification': $event})"
+                  @change="classComplete();setItem({'classification': $event});betComplete()"
                 >
                   <v-radio
                     label="Yes"
