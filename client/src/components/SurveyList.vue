@@ -99,7 +99,7 @@
               </v-card>
             </v-flex>
           </template>
-          <template v-if="is_type2">
+          <template v-if="is_type2 || is_type3">
             <!-- Type 2: Lottery -->
             <v-flex v-show="class_step">
               <v-card>
