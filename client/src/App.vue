@@ -55,7 +55,7 @@
                 block
                 :color=" !is_last_item ? 'primary' : 'success'"
 
-                :disabled="!is_type3 ? !bet_step : false "
+                :disabled="!is_type3 ? !bet_step : !class_step "
                 @click="processRound()"
               >
                 {{ !is_last_item ? 'Next Recording' : 'Finish' }}
@@ -190,7 +190,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['debug', 'bet_step', 'is_practice', 'id', 'items']),
+    ...mapState(['debug', 'bet_step', 'class_step', 'is_practice', 'id', 'items']),
     ...mapGetters(['is_type1', 'is_type2', 'is_type3', 'wins', 'round_number', 'is_last_item', 'current_item', 'max_round_number']),
   },
   methods: {
