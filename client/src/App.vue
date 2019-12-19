@@ -54,7 +54,8 @@
                 depressed
                 block
                 :color=" !is_last_item ? 'primary' : 'success'"
-                :disabled="!bet_step"
+
+                :disabled="!is_type3 ? !bet_step : false "
                 @click="processRound()"
               >
                 {{ !is_last_item ? 'Next Recording' : 'Finish' }}
