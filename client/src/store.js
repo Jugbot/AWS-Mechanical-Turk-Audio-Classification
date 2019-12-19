@@ -83,6 +83,9 @@ export default new Vuex.Store({
     is_type2(state) {
       return state.survey_type === 2
     },
+    is_type3(state) {
+      return state.survey_type === 3
+    },
     wins(state) {
       return state.items.filter((obj) => obj.won).length
     },

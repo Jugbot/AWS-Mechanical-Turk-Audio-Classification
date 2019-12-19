@@ -36,7 +36,7 @@
           :value="index"
         >
           <v-card-text
-            v-if="is_type1 || item.type == 1"
+            v-if="is_type1 || item.type == 1 || is_type3"
             class="text-xs-center"
           >
             <h1>Answer Test</h1>
@@ -127,7 +127,7 @@ export default {
   },
   computed: {
     ...mapState(['items', 'reward']),
-    ...mapGetters(['is_type1', 'is_type2', 'round_number', 'is_last_item']),
+    ...mapGetters(['is_type1', 'is_type2', 'is_type3', 'round_number', 'is_last_item']),
     current_item() {
       return this.items[this.submit_step < 0 ? 0 : this.submit_step]
     },

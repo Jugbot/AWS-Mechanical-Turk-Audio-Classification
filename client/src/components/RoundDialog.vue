@@ -16,7 +16,7 @@
             <span v-if="current_item.type == 0">You will draw a {{ current_item.chance }}% chance lottery after round {{ max_round_number }}. </span>
             <span v-else>Your choice in the question about the presence of a jackhammer will be tested after round {{ max_round_number }}.</span>
           </template>
-          <template v-if="is_type1">
+          <template v-if="is_type1 || is_type3">
             <span>Your choice on the question about the presence of a jackhammer will be tested after round {{ max_round_number }}.</span>
           </template>
         </v-card-text>
@@ -63,7 +63,7 @@ export default {
   },
   computed: {
     ...mapState(['is_practice', 'practices_performed']),
-    ...mapGetters(['is_type1', 'is_type2', 'round_number', 'max_round_number', 'is_last_item', 'current_item']),
+    ...mapGetters(['is_type1', 'is_type2', 'is_type3', 'round_number', 'max_round_number', 'is_last_item', 'current_item']),
   },
   watch: {
     active_parent(newval) {
