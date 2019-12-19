@@ -66,7 +66,7 @@ export default new Vuex.Store({
   state: {
     id: args['id'] || "tH1s-i5-A-s4mpL3-c0D3",
     survey_type: parseInt(args['task_type'], 10) || Math.floor(Math.random() * 2) + 1,
-    debug: false,
+    debug: true,
     items: makeItems(args["practice_items"]),
     is_practice: true,
     practices_performed: 1,
