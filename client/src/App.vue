@@ -35,7 +35,7 @@
                 align-center
               >
                 <h3 class="headline">
-                  Audio Classification {{ is_practice ? " (Practice)":null }}
+                  Audio Classification {{ is_practice ? " (Practice)": is_type3 }}
                 </h3>
                 <span class="subheading">Click Play to begin</span>
               </v-layout>
