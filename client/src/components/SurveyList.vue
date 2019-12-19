@@ -52,7 +52,7 @@
           </v-flex>
           <!-- Confidence & Lottery -->
           <!--                      -->
-          <template v-if="is_type1">
+          <template v-if="is_type1 || is_type3">
             <!-- Type 1: Confidence -->
             <v-flex v-show="class_step">
               <v-card>
@@ -99,7 +99,7 @@
               </v-card>
             </v-flex>
           </template>
-          <template v-if="is_type2 || is_type3">
+          <template v-if="is_type2">
             <!-- Type 2: Lottery -->
             <v-flex v-show="class_step">
               <v-card>
@@ -153,7 +153,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['is_type1', 'is_type2', 'wins', 'round_number', 'is_last_item', 'current_item']),
+    ...mapGetters(['is_type1', 'is_type2', 'is_type3', 'wins', 'round_number', 'is_last_item', 'current_item']),
     ...mapState(['items', 'debug', 'bet_step', 'class_step', 'audio_step', 'step']),
   },
   methods: {
