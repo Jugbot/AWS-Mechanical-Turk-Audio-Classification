@@ -1,9 +1,12 @@
 module.exports = {
-  publicPath: '',
+  publicPath: undefined,
+  outputDir: undefined,
   assetsDir: 'assets',
   runtimeCompiler: true,
+  productionSourceMap: undefined,
+  parallel: undefined,
+  css: undefined,
   lintOnSave: undefined,
-
   chainWebpack: config => {
     config.module
       .rule('vue')

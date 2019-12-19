@@ -90,6 +90,7 @@ class RecordingGroup(Base):
     folder = Column(String, unique=True)
     completions_type1 = Column(Integer, default=0)
     completions_type2 = Column(Integer, default=0)
+    completions_type3 = Column(Integer, default=0)
     """ relationships """
     recordings = relationship("Recording", back_populates="group")
 

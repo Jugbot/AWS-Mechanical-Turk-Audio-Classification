@@ -20,7 +20,7 @@
                 class="teal--text"
                 @click="$emit('sample')"
               >
-                <span>What does a jackhammer sound like?</span>
+                <span>What does a jackhammer sound like? {{ is_type1 }}</span>
               </v-btn>
             </v-audio>
           </v-flex>
@@ -36,7 +36,7 @@
                 <v-radio-group
                   row
                   :value="item.classification"
-                  @change="classComplete();setItem({'classification': $event})"
+                  @change="classComplete();setItem({'classification': $event});"
                 >
                   <v-radio
                     label="Yes"
@@ -99,6 +99,7 @@
               </v-card>
             </v-flex>
           </template>
+         
           <template v-if="is_type2">
             <!-- Type 2: Lottery -->
             <v-flex v-show="class_step">
@@ -153,7 +154,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['is_type1', 'is_type2', 'wins', 'round_number', 'is_last_item', 'current_item']),
+    ...mapGetters(['is_type1', 'is_type2', 'is_type3', 'wins', 'round_number', 'is_last_item', 'current_item']),
     ...mapState(['items', 'debug', 'bet_step', 'class_step', 'audio_step', 'step']),
   },
   methods: {

@@ -15,6 +15,7 @@ PAY_PER_ANNOTATION_LOTTERY = 0.20
 
 NORMAL_TASK = 1
 LOTTERY_TASK = 2
+NEW_TASK = 3
 
 @app.route('/')
 def home():
@@ -22,15 +23,18 @@ def home():
     random.seed(uid)
     recordings_type2 = ses.query(RecordingGroup).filter((RecordingGroup.completions_type2 < BATCH_SIZE)).all()
     recordings_type1 = ses.query(RecordingGroup).filter((RecordingGroup.completions_type1 < BATCH_SIZE)).all()
-    groups = recordings_type2 + recordings_type1
+    recordings_type3 = ses.query(RecordingGroup).filter((RecordingGroup.completions_type3 < BATCH_SIZE)).all()
+    groups = recordings_type2 + recordings_type1 + recordings_type3
     # recording groups with neither type batch satisfied are counted twice
     group = random.choice(groups)
-    if group.completions_type2 < BATCH_SIZE and group.completions_type1 < BATCH_SIZE:
-        task_type = random.randint(1, 2)
+    if group.completions_type2 < BATCH_SIZE and group.completions_type1 < BATCH_SIZE and group.completions_type3 < group.completions_type3:
+        task_type = random.randint(1, 2, 3)
     elif group.completions_type1 < BATCH_SIZE:
         task_type = 1
-    else:
+    elif group.completions_type2 < BATCH_SIZE:
         task_type = 2
+    else:
+    	task_type = 3
     items = []
     if app.debug:
         print("sending small debug batch")
@@ -49,10 +53,11 @@ def home():
 
     data = {
         'id': uid,
-        'reward': PAY_PER_ANNOTATION_NORMAL if (task_type == NORMAL_TASK) else PAY_PER_ANNOTATION_LOTTERY,
+        'reward': PAY_PER_ANNOTATION_NORMAL if (task_type == NORMAL_TASK or task_type == NEW_TASK) else PAY_PER_ANNOTATION_LOTTERY,
         'task_type': task_type,
         'items': items,
     }
+    print(data)
     return render_template("index.html", data=data)
 
 
@@ -79,6 +84,8 @@ def results():
             ann.choices = [int(c) for c in item['choices']]
             ann.lotto_choice = item['chose']
             # bonus_type_two(ann)
+        elif survey.task_type == 3:
+        	continue
         else:
             ses.rollback()
             app.logger.info("Incorrect task type (%s)", survey.task_type)
@@ -91,6 +98,8 @@ def results():
             survey.recording_group.completions_type1 += 1
         elif survey.task_type == 2:
             survey.recording_group.completions_type2 += 1
+        elif survey.task_type == 3:
+        	survey.recording_group.completions_type3 += 1
 
     ses.commit()
     return "success"
@@ -124,6 +133,9 @@ def result():
     elif survey.task_type == 2:
         ann.choices = [int(c) for c in item['choices']]
         response = bonus_type_two(ann)
+    elif survey.task_type == 3:
+    	ann.presence_of_label = 1 if (item['presence_of_label'] == 'true') else 0
+    	response = bonus_type_one()
     else:
         ses.rollback()
         app.logger.info("Incorrect task type (%s)", survey.task_type)
@@ -149,6 +161,8 @@ def process_result():
             survey.recording_group.completions_type1 += 1
         elif survey.task_type == 2:
             survey.recording_group.completions_type2 += 1
+        elif survey.task_type == 3:
+        	survey.recording_group.completions_type3 += 1
 
 
 if __name__ == "__main__":
