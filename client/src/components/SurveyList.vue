@@ -36,7 +36,7 @@
                 <v-radio-group
                   row
                   :value="item.classification"
-                  @change="classComplete();setItem({'classification': $event});betComplete()"
+                  @change="classComplete();setItem({'classification': $event});"
                 >
                   <v-radio
                     label="Yes"
@@ -52,7 +52,54 @@
           </v-flex>
           <!-- Confidence & Lottery -->
           <!--                      -->
-          <template v-if="is_type1 || is_type3">
+          <template v-if="is_type1">
+            <!-- Type 1: Confidence -->
+            <v-flex v-show="class_step">
+              <v-card>
+                <v-card-title>
+                  How confident are you that there is {{ !item.classification ? "not" : "" }} a jackhammer present in the recording?
+                </v-card-title>
+                <v-divider />
+                <v-card-actions>
+                  <v-tooltip
+                    bottom
+                    class="v-input"
+                  >
+                    <span>I am {{ item.confidence }}% confident in my answer that there is {{ !item.classification ? "not" : "" }} a jackhammer present in the recording.</span>
+                    <v-slider
+                      thumb-label
+                      :min="50"
+                      :step="10"
+                      slot="activator"
+                      :color="bet_step ? '' : 'grey'"
+                      :value="item.confidence"
+                      @change="betComplete();setItem({'confidence': $event})"
+                    >
+                      <span slot="prepend">50%</span>
+                      <span slot="append">100%</span>
+                    </v-slider>
+                  </v-tooltip>
+                </v-card-actions>
+                <v-card-actions>
+                  <v-layout
+                    row
+                    wrap
+                  >
+                    <v-flex xs6>
+                      not at all confident
+                    </v-flex>
+                    <v-flex
+                      xs6
+                      text-xs-right
+                    >
+                      certain, completely confident
+                    </v-flex>
+                  </v-layout>
+                </v-card-actions>
+              </v-card>
+            </v-flex>
+          </template>
+          <template v-if="is_type3">
             <!-- Type 1: Confidence -->
             <v-flex v-show="class_step">
               <v-card>
