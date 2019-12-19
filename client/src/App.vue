@@ -37,10 +37,7 @@
                 <h3 class="headline">
                   Audio Classification {{ is_practice ? " (Practice)":null }}
                 </h3>
-                <h3 class="headline">
-                  Audio Classification {{ is_type3 ? " (Type 3)": " (Not Type 3)" }}
-                </h3>
-                <span class="subheading">Click Play to begin</span>
+                <span class="subheading">Click Play to begin {{ is_type3 ? " (Type 3)": " (Not Type 3)" }}</span>
               </v-layout>
             </v-card-title>
             <!-- Tasks -->
