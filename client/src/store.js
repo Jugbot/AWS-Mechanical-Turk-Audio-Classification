@@ -110,8 +110,6 @@ export default new Vuex.Store({
   },
   mutations: {
     toggleDebug(state) {
-
-      console.log(state.survey_type)
       state.debug = !state.debug
     },
     setItem(state, data) {

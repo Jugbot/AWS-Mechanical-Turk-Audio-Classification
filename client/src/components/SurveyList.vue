@@ -20,7 +20,7 @@
                 class="teal--text"
                 @click="$emit('sample')"
               >
-                <span>What does a jackhammer sound like?</span>
+                <span>What does a jackhammer sound like? {{ is_type1 }}</span>
               </v-btn>
             </v-audio>
           </v-flex>
