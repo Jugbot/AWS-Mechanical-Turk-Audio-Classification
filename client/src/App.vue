@@ -55,7 +55,7 @@
                 block
                 :color=" !is_last_item ? 'primary' : 'success'"
 
-                :disabled="!is_type3 ? !bet_step : class_step "
+                :disabled="!class_step "
                 @click="processRound()"
               >
                 {{ !is_last_item ? 'Next Recording' : 'Finish' }}
