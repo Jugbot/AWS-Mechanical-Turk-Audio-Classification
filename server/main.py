@@ -34,7 +34,7 @@ def home():
     elif group.completions_type2 < BATCH_SIZE:
         task_type = 2
     else:
-    	task_type = 3
+    	task_type = 1
     items = []
     if app.debug:
         print("sending small debug batch")
@@ -133,9 +133,9 @@ def result():
     elif survey.task_type == 2:
         ann.choices = [int(c) for c in item['choices']]
         response = bonus_type_two(ann)
-    elif survey.task_type == 3:
-    	ann.presence_of_label = 1 if (item['presence_of_label'] == 'true') else 0
-    	response = bonus_type_one()
+    #elif survey.task_type == 3:
+    	#ann.presence_of_label = 1 if (item['presence_of_label'] == 'true') else 0
+    	#response = bonus_type_one()
     else:
         ses.rollback()
         app.logger.info("Incorrect task type (%s)", survey.task_type)
