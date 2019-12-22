@@ -35,7 +35,7 @@
                 align-center
               >
                 <h3 class="headline">
-                  Audio Classification {{ is_practice ? " (Beta Testing)":null }}
+                  Audio Classification {{ is_practice ? " (Practice)":null }}
                 </h3>
                 <span class="subheading">Click Play to begin</span>
               </v-layout>
@@ -54,7 +54,7 @@
                 depressed
                 block
                 :color=" !is_last_item ? 'primary' : 'success'"
-                :disabled="!bet_step"
+                :disabled="!is_type3 ? !bet_step : !class_step"
                 @click="processRound()"
               >
                 {{ !is_last_item ? 'Next Recording' : 'Finish' }}
@@ -92,7 +92,7 @@
         <!--                      -->
         <instructions-dialog
           v-model="instructions_dialog"
-          :instructions="is_type1 ? instructions_type1 : instructions_type2"
+          :instructions="is_type1 ? instructions_type1 : is_type2 ? instructions_type2 : instructions_type3"
           @active_parent_change="showTooltip()"
         />
         <!-- Process Message -->
@@ -155,6 +155,7 @@ import RoundDialog from '@/components/RoundDialog'
 import SurveyList from  '@/components/SurveyList'
 import type1instr from '@/components/instructions/type1.js'
 import type2instr from '@/components/instructions/type2.js'
+import type3instr from '@/components/instructions/type3.js'
 import { mapState, mapMutations, mapGetters } from 'vuex'
 
 export default {
@@ -176,6 +177,7 @@ export default {
       instructions_dialog: true,
       instructions_type1: type1instr,
       instructions_type2: type2instr,
+      instructions_type3: type3instr,
       instructions_tooltip: false,
       audiosample_dialog: false,
       error_dialog: false,
@@ -187,8 +189,8 @@ export default {
     }
   },
   computed: {
-    ...mapState(['debug', 'bet_step', 'is_practice', 'id', 'items']),
-    ...mapGetters(['is_type1', 'is_type2', 'wins', 'round_number', 'is_last_item', 'current_item', 'max_round_number']),
+    ...mapState(['debug', 'bet_step', 'class_step', 'is_practice', 'id', 'items']),
+    ...mapGetters(['is_type1', 'is_type2', 'is_type3', 'wins', 'round_number', 'is_last_item', 'current_item', 'max_round_number']),
   },
   methods: {
     ...mapMutations(['setItem', 'nextItem', 'endPractice']),
@@ -202,7 +204,7 @@ export default {
           chance: (r + 5) * 10
         })
       }
-      if (this.is_type1 || this.current_item.type == 1) {
+      if (this.is_type1 || this.current_item.type == 1 || this.is_type3) {
         this.setItem({won: this.current_item.truth == this.current_item.classification})
       }
       this.round_dialog = true

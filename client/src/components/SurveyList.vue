@@ -154,7 +154,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['is_type1', 'is_type2', 'wins', 'round_number', 'is_last_item', 'current_item']),
+    ...mapGetters(['is_type1', 'is_type2', 'is_type3', 'wins', 'round_number', 'is_last_item', 'current_item']),
     ...mapState(['items', 'debug', 'bet_step', 'class_step', 'audio_step', 'step']),
   },
   methods: {

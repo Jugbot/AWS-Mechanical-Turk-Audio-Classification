@@ -27,14 +27,14 @@ def home():
     groups = recordings_type2 + recordings_type1 + recordings_type3
     # recording groups with neither type batch satisfied are counted twice
     group = random.choice(groups)
-    if group.completions_type2 < BATCH_SIZE and group.completions_type1 < BATCH_SIZE and group.completions_type3 < group.completions_type3:
+    if group.completions_type2 < BATCH_SIZE and group.completions_type1 < BATCH_SIZE and group.completions_type3 < BATCH_SIZE:
         task_type = random.randint(1, 2, 3)
     elif group.completions_type1 < BATCH_SIZE:
         task_type = 1
     elif group.completions_type2 < BATCH_SIZE:
         task_type = 2
     else:
-    	task_type = 1
+    	task_type = 3
     items = []
     if app.debug:
         print("sending small debug batch")
@@ -85,10 +85,12 @@ def results():
             ann.lotto_choice = item['chose']
             # bonus_type_two(ann)
         elif survey.task_type == 3:
-        	continue
+            survey.annotations.append(ann)
+            continue
         else:
             ses.rollback()
             app.logger.info("Incorrect task type (%s)", survey.task_type)
+        
         survey.annotations.append(ann)
     survey.wins = data["wins"]
 
@@ -133,9 +135,9 @@ def result():
     elif survey.task_type == 2:
         ann.choices = [int(c) for c in item['choices']]
         response = bonus_type_two(ann)
-    #elif survey.task_type == 3:
+    elif survey.task_type == 3:
     	#ann.presence_of_label = 1 if (item['presence_of_label'] == 'true') else 0
-    	#response = bonus_type_one()
+    	response = bonus_type_one()
     else:
         ses.rollback()
         app.logger.info("Incorrect task type (%s)", survey.task_type)

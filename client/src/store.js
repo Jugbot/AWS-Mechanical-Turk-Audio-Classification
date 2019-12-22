@@ -65,7 +65,7 @@ export default new Vuex.Store({
   strict: true,
   state: {
     id: args['id'] || "tH1s-i5-A-s4mpL3-c0D3",
-    survey_type: parseInt(args['task_type'], 10) || Math.floor(Math.random() * 2) + 1,
+    survey_type: parseInt(args['task_type'], 10) || Math.floor(Math.random() * 3) + 1,
     debug: false,
     items: makeItems(args["practice_items"]),
     is_practice: true,
@@ -82,6 +82,9 @@ export default new Vuex.Store({
     },
     is_type2(state) {
       return state.survey_type === 2
+    },
+    is_type3(state) {
+      return state.survey_type === 3
     },
     wins(state) {
       return state.items.filter((obj) => obj.won).length
