@@ -33,7 +33,7 @@ def home():
         task_type = 1
     elif group.completions_type2 < BATCH_SIZE:
         task_type = 2
-    else:
+    else group.completions_type3 < BATCH_SIZE:
     	task_type = 3
     items = []
     if app.debug:
