@@ -10,6 +10,7 @@ app = Flask(__name__,
             template_folder="../docs")
 
 BATCH_SIZE = 12
+print(BATCH_SIZE)
 PAY_PER_ANNOTATION_NORMAL = 0.24
 PAY_PER_ANNOTATION_LOTTERY = 0.20
 
@@ -22,7 +23,9 @@ def home():
     uid = uuid.uuid4()
     random.seed(uid)
     recordings_type2 = ses.query(RecordingGroup).filter((RecordingGroup.completions_type2 < BATCH_SIZE)).all()
+    print(recordings_type2)
     recordings_type1 = ses.query(RecordingGroup).filter((RecordingGroup.completions_type1 < BATCH_SIZE)).all()
+    print(recordings_type1)
     #recordings_type3 = ses.query(RecordingGroup).filter((RecordingGroup.completions_type3 < BATCH_SIZE)).all()
     #groups = recordings_type2 + recordings_type1 + recordings_type3
     groups = recordings_type2 + recordings_type1
