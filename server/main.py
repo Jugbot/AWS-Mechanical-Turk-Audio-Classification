@@ -9,7 +9,7 @@ app = Flask(__name__,
             static_folder="../docs/assets",
             template_folder="../docs")
 
-BATCH_SIZE = 10
+BATCH_SIZE = 12
 PAY_PER_ANNOTATION_NORMAL = 0.24
 PAY_PER_ANNOTATION_LOTTERY = 0.20
 
@@ -23,18 +23,21 @@ def home():
     random.seed(uid)
     recordings_type2 = ses.query(RecordingGroup).filter((RecordingGroup.completions_type2 < BATCH_SIZE)).all()
     recordings_type1 = ses.query(RecordingGroup).filter((RecordingGroup.completions_type1 < BATCH_SIZE)).all()
-    recordings_type3 = ses.query(RecordingGroup).filter((RecordingGroup.completions_type3 < BATCH_SIZE)).all()
-    groups = recordings_type2 + recordings_type1 + recordings_type3
+    #recordings_type3 = ses.query(RecordingGroup).filter((RecordingGroup.completions_type3 < BATCH_SIZE)).all()
+    #groups = recordings_type2 + recordings_type1 + recordings_type3
+    groups = recordings_type2 + recordings_type1
     # recording groups with neither type batch satisfied are counted twice
     group = random.choice(groups)
-    if group.completions_type2 < BATCH_SIZE and group.completions_type1 < BATCH_SIZE and group.completions_type3 < BATCH_SIZE:
-        task_type = random.randint(1, 2, 3)
+    #if group.completions_type2 < BATCH_SIZE and group.completions_type1 < BATCH_SIZE and group.completions_type3 < BATCH_SIZE:
+        #task_type = random.randint(1, 2, 3)
+    if group.completions_type2 < BATCH_SIZE and group.completions_type1 < BATCH_SIZE:
+        task_type = random.randint(1, 2)
     elif group.completions_type1 < BATCH_SIZE:
         task_type = 1
     elif group.completions_type2 < BATCH_SIZE:
         task_type = 2
-    elif group.completions_type3 < BATCH_SIZE:
-    	task_type = 3
+    #elif group.completions_type3 < BATCH_SIZE:
+    	#task_type = 3
     items = []
     if app.debug:
         print("sending small debug batch")
